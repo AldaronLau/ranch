@@ -1,0 +1,23 @@
+[package]
+name = "ranch"
+version = "0.1.0"
+edition = "2024"
+description = "Ranged integers"
+license = "Apache-2.0 OR BSL-1.0 OR MIT"
+documentation = "https://docs.rs/ranch"
+homepage = "https://github.com/AldaronLau/ranch/releases"
+repository = "https://github.com/AldaronLau/ranch"
+readme = "README.md"
+keywords = ["daku", "time", "types"]
+categories = ["date-and-time", "data-structures", "no-std", "no-std::no-alloc"]
+include = [
+    "/LICENSE_APACHE",
+    "/LICENSE_BOOST",
+    "/LICENSE_MIT",
+    "/README.md",
+    "/src/*",
+    "/examples/*",
+]
+rust-version = "1.85"
+
+[dependencies]
