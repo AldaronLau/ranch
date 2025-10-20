@@ -8,8 +8,8 @@ documentation = "https://docs.rs/ranch"
 homepage = "https://github.com/AldaronLau/ranch/releases"
 repository = "https://github.com/AldaronLau/ranch"
 readme = "README.md"
-keywords = ["daku", "time", "types"]
-categories = ["date-and-time", "data-structures", "no-std", "no-std::no-alloc"]
+keywords = ["ranged", "int", "const", "generics", "integers"]
+categories = ["no-std", "no-std::no-alloc", "mathematics", "rust-patterns"]
 include = [
     "/LICENSE_APACHE",
     "/LICENSE_BOOST",

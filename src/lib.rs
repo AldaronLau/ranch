@@ -33,3 +33,79 @@
     rustdoc::unescaped_backticks,
     rustdoc::redundant_explicit_links
 )]
+
+mod error;
+mod parsing_error;
+mod ranged_u128;
+mod ranged_u16;
+mod ranged_u32;
+mod ranged_u64;
+mod ranged_u8;
+
+use core::fmt;
+
+pub use self::{
+    error::{Error, Result},
+    parsing_error::{ParsingError, ParsingResult},
+    ranged_u8::RangedU8,
+    ranged_u16::RangedU16,
+    ranged_u32::RangedU32,
+    ranged_u64::RangedU64,
+    ranged_u128::RangedU128,
+};
+
+macro_rules! impl_ranged_fmt {
+    ($type:ident, $primitive:ty, [$($Trait:ident),* $(,)?] $(,)?) => {
+        $(
+            impl<const MIN: $primitive, const MAX: $primitive> fmt::$Trait
+            for $type<MIN, MAX>
+            where
+            {
+                #[inline]
+                fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                    <$primitive as fmt::$Trait>::fmt(&self.get(), f)
+                }
+            }
+        )*
+    };
+}
+
+impl_ranged_fmt!(
+    RangedU8,
+    u8,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedU16,
+    u16,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedU32,
+    u32,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedU64,
+    u64,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedU128,
+    u128,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
