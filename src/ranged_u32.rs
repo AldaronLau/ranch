@@ -120,6 +120,17 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     /// Add two ranged integers together.
     ///
     /// Returns [`None`] on overflow.
+    ///
+    /// ```rust
+    /// # use ranch::RangedU32;
+    /// let a = RangedU32::<1, 100>::new_const::<50>();
+    /// let b = RangedU32::<1, 100>::new_const::<5>();
+    /// let c = a.checked_add(b).unwrap();
+    ///
+    /// assert!(c.checked_add(a).is_none());
+    /// assert_eq!(c.get(), 55);
+    /// assert_eq!(a.checked_add(a).unwrap().get(), 100);
+    /// ```
     pub const fn checked_add(self, other: Self) -> Option<Self> {
         let Some(value) = self.get().checked_add(other.get()) else {
             return None;
