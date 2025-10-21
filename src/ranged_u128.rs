@@ -292,3 +292,10 @@ impl<const MIN: u128, const MAX: u128> core::str::FromStr
         Self::new(parsed).map_err(From::from)
     }
 }
+
+impl<const MIN: u128, const MAX: u128> crate::error::Saturate
+    for RangedU128<MIN, MAX>
+{
+    const MAX: Self = Self::MAX;
+    const MIN: Self = Self::MIN;
+}

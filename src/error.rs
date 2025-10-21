@@ -28,3 +28,33 @@ impl fmt::Display for Error {
         }
     }
 }
+
+impl Error {
+    /// Saturate out of bounds values.
+    ///
+    /// ```rust
+    /// # use ranch::{RangedU8, Error};
+    /// assert_eq!(
+    ///     RangedU8::<1, 3>::new(0).unwrap_or_else(Error::saturate),
+    ///     RangedU8::<1, 3>::new_const::<1>(),
+    /// );
+    /// assert_eq!(
+    ///     RangedU8::<1, 3>::new(4).unwrap_or_else(Error::saturate),
+    ///     RangedU8::<1, 3>::new_const::<3>(),
+    /// );
+    /// ```
+    pub const fn saturate<T>(self) -> T
+    where
+        T: Saturate,
+    {
+        match self {
+            Self::PosOverflow => T::MAX,
+            Self::NegOverflow => T::MIN,
+        }
+    }
+}
+
+pub trait Saturate {
+    const MIN: Self;
+    const MAX: Self;
+}
