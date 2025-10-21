@@ -36,6 +36,7 @@
 
 mod error;
 mod parsing_error;
+mod ranged_i8;
 mod ranged_u128;
 mod ranged_u16;
 mod ranged_u32;
@@ -47,6 +48,7 @@ use core::fmt;
 pub use self::{
     error::{Error, Result},
     parsing_error::{ParsingError, ParsingResult},
+    ranged_i8::RangedI8,
     ranged_u8::RangedU8,
     ranged_u16::RangedU16,
     ranged_u32::RangedU32,
@@ -105,6 +107,14 @@ impl_ranged_fmt!(
 impl_ranged_fmt!(
     RangedU128,
     u128,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedI8,
+    i8,
     [
         Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
     ],
