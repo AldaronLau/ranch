@@ -1,11 +1,11 @@
-//! Ranged integers
+//! Ranged integer types and math.
 
 #![doc(
     html_logo_url = "https://ardaku.github.io/mm/logo.svg",
     html_favicon_url = "https://ardaku.github.io/mm/icon.svg"
 )]
 #![no_std]
-#![forbid(unsafe_code)]
+#![deny(unsafe_code)]
 #![warn(
     anonymous_parameters,
     missing_copy_implementations,
@@ -34,6 +34,7 @@
     rustdoc::redundant_explicit_links
 )]
 
+pub mod conversions;
 mod error;
 mod format;
 pub mod parsing;

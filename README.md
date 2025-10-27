@@ -9,7 +9,7 @@
 [![Crates.io](https://img.shields.io/crates/l/ranch)](https://github.com/search?q=repo%3AAldaronLau%2Franch+path%3A**%2FLICENSE*&type=code)
 [![Docs.rs](https://docs.rs/ranch/badge.svg)](https://docs.rs/ranch/)
 
-Ranged integers for Rust
+Ranged integer types and math for Rust
 
 Check out the [documentation] for examples.
 

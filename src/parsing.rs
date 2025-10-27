@@ -1,4 +1,4 @@
-//! Types related to parsing
+//! Error types related to parsing
 
 use core::{error, fmt, result};
 

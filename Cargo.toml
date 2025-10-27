@@ -2,7 +2,7 @@
 name = "ranch"
 version = "0.1.0"
 edition = "2024"
-description = "Ranged integers"
+description = "Ranged integer types and math"
 license = "Apache-2.0 OR BSL-1.0 OR MIT"
 documentation = "https://docs.rs/ranch"
 homepage = "https://github.com/AldaronLau/ranch/releases"
@@ -19,5 +19,3 @@ include = [
     "/examples/*",
 ]
 rust-version = "1.85"
-
-[dependencies]
