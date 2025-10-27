@@ -34,6 +34,7 @@
     rustdoc::redundant_explicit_links
 )]
 
+pub mod aliases;
 pub mod conversions;
 mod convert;
 mod error;
