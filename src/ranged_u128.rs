@@ -159,6 +159,17 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     /// Add two ranged integers together.
     ///
     /// Returns [`Self::MAX`] on overflow.
+    ///
+    /// ```rust
+    /// # use ranch::RangedU128;
+    /// let a = RangedU128::<1, 100>::new_const::<50>();
+    /// let b = RangedU128::<1, 100>::new_const::<5>();
+    /// let c = a.saturating_add(b);
+    ///
+    /// assert_eq!(c.saturating_add(a).get(), 100);
+    /// assert_eq!(c.get(), 55);
+    /// assert_eq!(a.saturating_add(a).get(), 100);
+    /// ```
     pub const fn saturating_add(self, other: impl AsRepr<u128>) -> Self {
         let other = conversions::as_repr(other);
 
@@ -171,6 +182,17 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     /// Multiply two ranged integers together.
     ///
     /// Returns [`None`] on overflow.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedU128};
+    /// let a = RangedU128::<0, 100>::new_const::<50>();
+    /// let b = RangedU128::<0, 100>::new_const::<5>();
+    /// let c = RangedU128::<0, 100>::new_const::<75>();
+    ///
+    /// assert_eq!(b.checked_mul(b).unwrap().get(), 25);
+    /// assert_eq!(a.checked_mul(c), None);
+    /// assert_eq!(c.checked_mul(c), None);
+    /// ```
     pub const fn checked_mul(self, other: impl AsRepr<u128>) -> Option<Self> {
         let other = conversions::as_repr(other);
         let Some(value) = self.get().checked_mul(other) else {
@@ -186,6 +208,17 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     /// Multiply two ranged integers together.
     ///
     /// Returns [`Self::MAX`] on overflow.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedU128};
+    /// let a = RangedU128::<0, 100>::new_const::<50>();
+    /// let b = RangedU128::<0, 100>::new_const::<5>();
+    /// let c = RangedU128::<0, 100>::new_const::<75>();
+    ///
+    /// assert_eq!(b.saturating_mul(b).get(), 25);
+    /// assert_eq!(a.saturating_mul(c).get(), 100);
+    /// assert_eq!(c.saturating_mul(c).get(), 100);
+    /// ```
     pub const fn saturating_mul(self, other: impl AsRepr<u128>) -> Self {
         let other = conversions::as_repr(other);
 
@@ -300,6 +333,18 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     }
 
     /// Calculate the midpoint (average) between `self` and `rhs`.
+    ///
+    /// ```rust
+    /// # use ranch::RangedU128;
+    /// let a = RangedU128::<0, 8>::new_const::<0>();
+    /// let b = RangedU128::<0, 8>::new_const::<2>();
+    /// let c = RangedU128::<0, 8>::new_const::<4>();
+    /// let d = RangedU128::<0, 8>::new_const::<3>();
+    /// let e = RangedU128::<0, 8>::new_const::<7>();
+    ///
+    /// assert_eq!(a.midpoint(c), b);
+    /// assert_eq!(a.midpoint(e), d);
+    /// ```
     pub const fn midpoint(self, rhs: Self) -> Self {
         let Ok(value) = Self::new(self.get().midpoint(rhs.get())) else {
             panic!("unexpected midpoint value")

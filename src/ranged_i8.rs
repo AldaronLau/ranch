@@ -160,6 +160,19 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// Returns [`Self::MIN`] on negative overflow, and [`Self::MAX`] on
     /// positive overflow.
+    ///
+    /// ```rust
+    /// # use ranch::RangedI8;
+    /// let a = RangedI8::<-100, 100>::new_const::<50>();
+    /// let b = RangedI8::<-100, 100>::new_const::<5>();
+    /// let c = a.saturating_add(b);
+    /// let d = RangedI8::<-100, 100>::new_const::<-75>();
+    ///
+    /// assert_eq!(c.saturating_add(a).get(), 100);
+    /// assert_eq!(c.get(), 55);
+    /// assert_eq!(a.saturating_add(a).get(), 100);
+    /// assert_eq!(d.saturating_add(d).get(), -100);
+    /// ```
     pub const fn saturating_add(self, other: impl AsRepr<i8>) -> Self {
         let other = conversions::as_repr(other);
 
@@ -173,6 +186,17 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// Multiply two ranged integers together.
     ///
     /// Returns an [`Error`] on overflow.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedI8};
+    /// let a = RangedI8::<-100, 100>::new_const::<50>();
+    /// let b = RangedI8::<-100, 100>::new_const::<5>();
+    /// let c = RangedI8::<-100, 100>::new_const::<-75>();
+    ///
+    /// assert_eq!(b.checked_mul(b).unwrap().get(), 25);
+    /// assert_eq!(a.checked_mul(c).unwrap_err(), Error::NegOverflow);
+    /// assert_eq!(c.checked_mul(c).unwrap_err(), Error::PosOverflow);
+    /// ```
     pub const fn checked_mul(self, other: impl AsRepr<i8>) -> Result<Self> {
         let other = conversions::as_repr(other);
         let Some(value) = self.get().checked_mul(other) else {
@@ -190,6 +214,17 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// Returns [`Self::MIN`] on negative overflow, and [`Self::MAX`] on
     /// positive overflow.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedI8};
+    /// let a = RangedI8::<-100, 100>::new_const::<50>();
+    /// let b = RangedI8::<-100, 100>::new_const::<5>();
+    /// let c = RangedI8::<-100, 100>::new_const::<-75>();
+    ///
+    /// assert_eq!(b.saturating_mul(b).get(), 25);
+    /// assert_eq!(a.saturating_mul(c).get(), -100);
+    /// assert_eq!(c.saturating_mul(c).get(), 100);
+    /// ```
     pub const fn saturating_mul(self, other: impl AsRepr<i8>) -> Self {
         let other = conversions::as_repr(other);
 
@@ -306,16 +341,46 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     }
 
     /// Return `true` if `self` is negative; `false` if zero or positive.
+    ///
+    /// ```rust
+    /// # use ranch::RangedI8;
+    /// assert!(!RangedI8::<-100, 100>::new_const::<10>().is_negative());
+    /// assert!(RangedI8::<-100, 100>::new_const::<-10>().is_negative());
+    /// ```
     pub const fn is_negative(self) -> bool {
         self.get().is_negative()
     }
 
     /// Return `true` if `self` is positive; `false` if zero or negative.
+    ///
+    /// ```rust
+    /// # use ranch::RangedI8;
+    /// assert!(RangedI8::<-100, 100>::new_const::<10>().is_positive());
+    /// assert!(!RangedI8::<-100, 100>::new_const::<-10>().is_positive());
+    /// ```
     pub const fn is_positive(self) -> bool {
         self.get().is_positive()
     }
 
     /// Calculate the midpoint (average) between `self` and `rhs`.
+    ///
+    /// ```rust
+    /// # use ranch::RangedI8;
+    /// let a = RangedI8::<-8, 8>::new_const::<0>();
+    /// let b = RangedI8::<-8, 8>::new_const::<2>();
+    /// let c = RangedI8::<-8, 8>::new_const::<4>();
+    /// let d = RangedI8::<-8, 8>::new_const::<-1>();
+    /// let e = RangedI8::<-8, 8>::new_const::<-7>();
+    /// let f = RangedI8::<-8, 8>::new_const::<-3>();
+    /// let g = RangedI8::<-8, 8>::new_const::<3>();
+    /// let h = RangedI8::<-8, 8>::new_const::<7>();
+    ///
+    /// assert_eq!(a.midpoint(c), b);
+    /// assert_eq!(d.midpoint(b), a);
+    /// assert_eq!(e.midpoint(a), f);
+    /// assert_eq!(a.midpoint(e), f);
+    /// assert_eq!(a.midpoint(h), g);
+    /// ```
     pub const fn midpoint(self, rhs: Self) -> Self {
         let Ok(value) = Self::new(midpoint(self.get(), rhs.get())) else {
             panic!("unexpected midpoint value")
