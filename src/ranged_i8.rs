@@ -6,7 +6,7 @@ use crate::{
 /// [`i8`] with a specified minimum and maximum value
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 #[repr(transparent)]
-pub struct RangedI8<const MIN: i8, const MAX: i8>(i8);
+pub struct RangedI8<const MIN: i8, const MAX: i8>(pub(crate) i8);
 
 // unsafe: `repr(transparent)` is `repr(i8)`
 #[expect(unsafe_code)]
