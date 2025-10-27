@@ -1,13 +1,13 @@
-use core::{error, fmt};
+//! Types related to parsing
 
-use crate::Error;
+use core::{error, fmt, result};
 
 /// Parsing ranged integer result
-pub type ParsingResult<T = (), E = ParsingError> = Result<T, E>;
+pub type Result<T = (), E = Error> = result::Result<T, E>;
 
 /// Error parsing ranged integer
 #[derive(Eq, PartialEq, Debug)]
-pub enum ParsingError {
+pub enum Error {
     /// Internal parsing error
     ParseInt(core::num::ParseIntError),
     /// Integer is too large to store in target integer type
@@ -16,9 +16,9 @@ pub enum ParsingError {
     NegOverflow,
 }
 
-impl error::Error for ParsingError {}
+impl error::Error for Error {}
 
-impl fmt::Display for ParsingError {
+impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::ParseInt(err) => err.fmt(f),
@@ -34,17 +34,17 @@ impl fmt::Display for ParsingError {
     }
 }
 
-impl From<core::num::ParseIntError> for ParsingError {
+impl From<core::num::ParseIntError> for Error {
     fn from(error: core::num::ParseIntError) -> Self {
         Self::ParseInt(error)
     }
 }
 
-impl From<Error> for ParsingError {
-    fn from(error: Error) -> Self {
+impl From<crate::Error> for Error {
+    fn from(error: crate::Error) -> Self {
         match error {
-            Error::PosOverflow => Self::PosOverflow,
-            Error::NegOverflow => Self::NegOverflow,
+            crate::Error::PosOverflow => Self::PosOverflow,
+            crate::Error::NegOverflow => Self::NegOverflow,
         }
     }
 }
