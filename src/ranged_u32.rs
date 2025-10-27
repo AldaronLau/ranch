@@ -279,6 +279,225 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
 
         value
     }
+
+    /// Add two numbers together.
+    ///
+    /// ```rust
+    /// # use ranch::RangedU32;
+    /// let a = RangedU32::<1, 3>::new_const::<1>();
+    /// let b = RangedU32::<1, 3>::new_const::<2>();
+    /// let output: RangedU32::<2, 6> = a.add(b);
+    ///
+    /// assert_eq!(output.get(), 3);
+    /// ```
+    ///
+    /// Does not compile:
+    ///
+    /// ```compile_fail
+    /// # use ranch::RangedU32;
+    /// let a = RangedU32::<1, 3>::new_const::<1>();
+    /// let b = RangedU32::<1, 3>::new_const::<2>();
+    /// let output: RangedU32::<1, 6> = a.add(b);
+    ///
+    /// assert_eq!(output.get(), 3);
+    /// ```
+    pub const fn add<
+        const RHS_MIN: u32,
+        const RHS_MAX: u32,
+        const OUTPUT_MIN: u32,
+        const OUTPUT_MAX: u32,
+    >(
+        self,
+        rhs: RangedU32<RHS_MIN, RHS_MAX>,
+    ) -> RangedU32<OUTPUT_MIN, OUTPUT_MAX> {
+        const {
+            if MIN + RHS_MIN != OUTPUT_MIN {
+                panic!("Min mismatch");
+            }
+
+            if MAX + RHS_MAX != OUTPUT_MAX {
+                panic!("Max mismatch");
+            }
+        }
+
+        RangedU32(self.get() + rhs.get())
+    }
+
+    /// Subtract a number from `self`.
+    ///
+    /// ```rust
+    /// # use ranch::RangedU32;
+    /// let a = RangedU32::<2, 5>::new_const::<3>();
+    /// let b = RangedU32::<1, 2>::new_const::<1>();
+    /// let output: RangedU32::<0, 4> = a.sub(b);
+    ///
+    /// assert_eq!(output.get(), 2);
+    /// ```
+    ///
+    /// Does not compile:
+    ///
+    /// ```compile_fail
+    /// # use ranch::RangedU32;
+    /// let a = RangedU32::<2, 5>::new_const::<3>();
+    /// let b = RangedU32::<1, 2>::new_const::<1>();
+    /// let output: RangedU32::<0, 3> = a.sub(b);
+    ///
+    /// assert_eq!(output.get(), 2);
+    /// ```
+    pub const fn sub<
+        const RHS_MIN: u32,
+        const RHS_MAX: u32,
+        const OUTPUT_MIN: u32,
+        const OUTPUT_MAX: u32,
+    >(
+        self,
+        rhs: RangedU32<RHS_MIN, RHS_MAX>,
+    ) -> RangedU32<OUTPUT_MIN, OUTPUT_MAX> {
+        const {
+            if MIN - RHS_MAX != OUTPUT_MIN {
+                panic!("Min mismatch");
+            }
+
+            if MAX - RHS_MIN != OUTPUT_MAX {
+                panic!("Max mismatch");
+            }
+        }
+
+        RangedU32(self.get() - rhs.get())
+    }
+
+    /// Multiply two numbers together.
+    ///
+    /// ```rust
+    /// # use ranch::RangedU32;
+    /// let a = RangedU32::<1, 3>::new_const::<1>();
+    /// let b = RangedU32::<2, 3>::new_const::<2>();
+    /// let output: RangedU32::<2, 9> = a.mul(b);
+    ///
+    /// assert_eq!(output.get(), 2);
+    /// ```
+    ///
+    /// Does not compile:
+    ///
+    /// ```compile_fail
+    /// # use ranch::RangedU32;
+    /// let a = RangedU32::<1, 3>::new_const::<1>();
+    /// let b = RangedU32::<2, 3>::new_const::<2>();
+    /// let output: RangedU32::<1, 9> = a.mul(b);
+    ///
+    /// assert_eq!(output.get(), 2);
+    /// ```
+    pub const fn mul<
+        const RHS_MIN: u32,
+        const RHS_MAX: u32,
+        const OUTPUT_MIN: u32,
+        const OUTPUT_MAX: u32,
+    >(
+        self,
+        rhs: RangedU32<RHS_MIN, RHS_MAX>,
+    ) -> RangedU32<OUTPUT_MIN, OUTPUT_MAX> {
+        const {
+            if MIN * RHS_MIN != OUTPUT_MIN {
+                panic!("Min mismatch");
+            }
+
+            if MAX * RHS_MAX != OUTPUT_MAX {
+                panic!("Max mismatch");
+            }
+        }
+
+        RangedU32(self.get() * rhs.get())
+    }
+
+    /// Divide `self` by a number.
+    ///
+    /// ```rust
+    /// # use ranch::RangedU32;
+    /// let a = RangedU32::<2, 5>::new_const::<3>();
+    /// let b = RangedU32::<1, 2>::new_const::<2>();
+    /// let output: RangedU32::<1, 2> = a.div(b);
+    ///
+    /// assert_eq!(output.get(), 1);
+    /// ```
+    ///
+    /// Does not compile:
+    //
+    /// ```compile_fail
+    /// # use ranch::RangedU32;
+    /// let a = RangedU32::<2, 5>::new_const::<3>();
+    /// let b = RangedU32::<1, 2>::new_const::<1>();
+    /// let output: RangedU32::<0, 2> = a.div(b);
+    ///
+    /// assert_eq!(output.get(), 1);
+    /// ```
+    pub const fn div<
+        const RHS_MIN: u32,
+        const RHS_MAX: u32,
+        const OUTPUT_MIN: u32,
+        const OUTPUT_MAX: u32,
+    >(
+        self,
+        rhs: RangedU32<RHS_MIN, RHS_MAX>,
+    ) -> RangedU32<OUTPUT_MIN, OUTPUT_MAX> {
+        const {
+            if RHS_MIN == 0 {
+                panic!("Division by zero not allowed");
+            }
+
+            if MIN / RHS_MAX != OUTPUT_MIN {
+                panic!("Min mismatch");
+            }
+
+            if MAX / RHS_MAX != OUTPUT_MAX {
+                panic!("Max mismatch");
+            }
+        }
+
+        RangedU32(self.get() / rhs.get())
+    }
+
+    /// Raise to an integer power.
+    ///
+    /// ```rust
+    /// # use ranch::RangedU32;
+    /// let a = RangedU32::<1, 3>::new_const::<2>();
+    /// let b = RangedU32::<2, 3>::new_const::<2>();
+    /// let output: RangedU32::<1, 27> = a.pow(b);
+    ///
+    /// assert_eq!(output.get(), 4);
+    /// ```
+    ///
+    /// Does not compile:
+    ///
+    /// ```compile_fail
+    /// # use ranch::RangedU32;
+    /// let a = RangedU32::<1, 3>::new_const::<2>();
+    /// let b = RangedU32::<2, 3>::new_const::<2>();
+    /// let output: RangedU32::<0, 27> = a.pow(b);
+    ///
+    /// assert_eq!(output.get(), 4);
+    /// ```
+    pub const fn pow<
+        const RHS_MIN: u32,
+        const RHS_MAX: u32,
+        const OUTPUT_MIN: u32,
+        const OUTPUT_MAX: u32,
+    >(
+        self,
+        rhs: RangedU32<RHS_MIN, RHS_MAX>,
+    ) -> RangedU32<OUTPUT_MIN, OUTPUT_MAX> {
+        const {
+            if MIN.pow(RHS_MIN) != OUTPUT_MIN {
+                panic!("Min mismatch");
+            }
+
+            if MAX.pow(RHS_MAX) != OUTPUT_MAX {
+                panic!("Max mismatch");
+            }
+        }
+
+        RangedU32(self.get().pow(rhs.get()))
+    }
 }
 
 impl<const MIN: u32, const MAX: u32> core::str::FromStr

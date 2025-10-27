@@ -1,4 +1,4 @@
-use crate::{Error, ParsingError, ParsingResult, Result};
+use crate::{Error, ParsingError, ParsingResult, RangedU32, Result};
 
 /// [`i8`] with a specified minimum and maximum value
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -293,6 +293,260 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
         };
 
         value
+    }
+
+    /// Add two numbers together.
+    ///
+    /// ```rust
+    /// # use ranch::RangedI8;
+    /// let a = RangedI8::<1, 3>::new_const::<1>();
+    /// let b = RangedI8::<-1, 3>::new_const::<2>();
+    /// let output: RangedI8::<0, 6> = a.add(b);
+    ///
+    /// assert_eq!(output.get(), 3);
+    /// ```
+    ///
+    /// Does not compile:
+    ///
+    /// ```compile_fail
+    /// # use ranch::RangedI8;
+    /// let a = RangedI8::<1, 3>::new_const::<1>();
+    /// let b = RangedI8::<-1, 3>::new_const::<2>();
+    /// let output: RangedI8::<1, 6> = a.add(b);
+    ///
+    /// assert_eq!(output.get(), 3);
+    /// ```
+    pub const fn add<
+        const RHS_MIN: i8,
+        const RHS_MAX: i8,
+        const OUTPUT_MIN: i8,
+        const OUTPUT_MAX: i8,
+    >(
+        self,
+        rhs: RangedI8<RHS_MIN, RHS_MAX>,
+    ) -> RangedI8<OUTPUT_MIN, OUTPUT_MAX> {
+        const {
+            if MIN + RHS_MIN != OUTPUT_MIN {
+                panic!("Min mismatch");
+            }
+
+            if MAX + RHS_MAX != OUTPUT_MAX {
+                panic!("Max mismatch");
+            }
+        }
+
+        RangedI8(self.get() + rhs.get())
+    }
+
+    /// Subtract a number from `self`.
+    ///
+    /// ```rust
+    /// # use ranch::RangedI8;
+    /// let a = RangedI8::<2, 5>::new_const::<3>();
+    /// let b = RangedI8::<-1, 3>::new_const::<1>();
+    /// let output: RangedI8::<-1, 6> = a.sub(b);
+    ///
+    /// assert_eq!(output.get(), 2);
+    /// ```
+    ///
+    /// Does not compile:
+    ///
+    /// ```compile_fail
+    /// # use ranch::RangedI8;
+    /// let a = RangedI8::<2, 5>::new_const::<3>();
+    /// let b = RangedI8::<-1, 3>::new_const::<1>();
+    /// let output: RangedI8::<0, 6> = a.sub(b);
+    ///
+    /// assert_eq!(output.get(), 2);
+    /// ```
+    pub const fn sub<
+        const RHS_MIN: i8,
+        const RHS_MAX: i8,
+        const OUTPUT_MIN: i8,
+        const OUTPUT_MAX: i8,
+    >(
+        self,
+        rhs: RangedI8<RHS_MIN, RHS_MAX>,
+    ) -> RangedI8<OUTPUT_MIN, OUTPUT_MAX> {
+        const {
+            if MIN - RHS_MAX != OUTPUT_MIN {
+                panic!("Min mismatch");
+            }
+
+            if MAX - RHS_MIN != OUTPUT_MAX {
+                panic!("Max mismatch");
+            }
+        }
+
+        RangedI8(self.get() - rhs.get())
+    }
+
+    /// Multiply two numbers together.
+    ///
+    /// ```rust
+    /// # use ranch::RangedI8;
+    /// let a = RangedI8::<-2, 3>::new_const::<1>();
+    /// let b = RangedI8::<0, 3>::new_const::<2>();
+    /// let output: RangedI8::<-6, 9> = a.mul(b);
+    ///
+    /// assert_eq!(output.get(), 2);
+    /// ```
+    ///
+    /// Does not compile:
+    ///
+    /// ```compile_fail
+    /// # use ranch::RangedI8;
+    /// let a = RangedI8::<-2, 3>::new_const::<1>();
+    /// let b = RangedI8::<0, 3>::new_const::<2>();
+    /// let output: RangedI8::<0, 9> = a.mul(b);
+    ///
+    /// assert_eq!(output.get(), 2);
+    /// ```
+    pub const fn mul<
+        const RHS_MIN: i8,
+        const RHS_MAX: i8,
+        const OUTPUT_MIN: i8,
+        const OUTPUT_MAX: i8,
+    >(
+        self,
+        rhs: RangedI8<RHS_MIN, RHS_MAX>,
+    ) -> RangedI8<OUTPUT_MIN, OUTPUT_MAX> {
+        const {
+            let (min_min, min_max) = (MIN * RHS_MIN, MIN * RHS_MAX);
+            let min = if min_min < min_max { min_min } else { min_max };
+            let (max_min, max_max) = (MAX * RHS_MIN, MAX * RHS_MAX);
+            let max = if max_min > max_max { max_min } else { max_max };
+
+            if min != OUTPUT_MIN {
+                panic!("Min mismatch");
+            }
+
+            if max != OUTPUT_MAX {
+                panic!("Max mismatch");
+            }
+        }
+
+        RangedI8(self.get() * rhs.get())
+    }
+
+    /// Divide `self` by a number.
+    ///
+    /// ```rust
+    /// # use ranch::RangedI8;
+    /// let a = RangedI8::<2, 5>::new_const::<3>();
+    /// let b = RangedI8::<1, 2>::new_const::<2>();
+    /// let output: RangedI8::<1, 2> = a.div(b);
+    ///
+    /// assert_eq!(output.get(), 1);
+    /// ```
+    ///
+    /// Does not compile:
+    //
+    /// ```compile_fail
+    /// # use ranch::RangedI8;
+    /// let a = RangedI8::<2, 5>::new_const::<3>();
+    /// let b = RangedI8::<1, 2>::new_const::<1>();
+    /// let output: RangedI8::<0, 2> = a.div(b);
+    ///
+    /// assert_eq!(output.get(), 1);
+    /// ```
+    pub const fn div<
+        const RHS_MIN: i8,
+        const RHS_MAX: i8,
+        const OUTPUT_MIN: i8,
+        const OUTPUT_MAX: i8,
+    >(
+        self,
+        rhs: RangedI8<RHS_MIN, RHS_MAX>,
+    ) -> RangedI8<OUTPUT_MIN, OUTPUT_MAX> {
+        const {
+            if RHS_MIN == 0 || RHS_MAX == 0 {
+                panic!("Division by zero not allowed");
+            }
+
+            let (min_min, min_max) = (MIN / RHS_MIN, MIN / RHS_MAX);
+            let (max_min, max_max) = (MAX / RHS_MIN, MAX / RHS_MAX);
+            let min = if min_min < min_max { min_min } else { min_max };
+            let min = if max_min < min { max_min } else { min };
+            let min = if max_max < min { max_max } else { min };
+            let max = if max_min > max_max { max_min } else { max_max };
+            let max = if min_min > min { min_min } else { max };
+            let max = if min_max > min { min_max } else { max };
+
+            if min != OUTPUT_MIN {
+                panic!("Min mismatch");
+            }
+
+            if max != OUTPUT_MAX {
+                panic!("Max mismatch");
+            }
+        }
+
+        RangedI8(self.get() / rhs.get())
+    }
+
+    /// Raise to an integer power.
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI8, RangedU32};
+    /// let a = RangedI8::<-1, 3>::new_const::<2>();
+    /// let b = RangedU32::<2, 3>::new_const::<2>();
+    /// let output: RangedI8::<-1, 27> = a.pow(b);
+    ///
+    /// assert_eq!(output.get(), 4);
+    /// ```
+    ///
+    /// Does not compile:
+    ///
+    /// ```compile_fail
+    /// # use ranch::{RangedI8, RangedU32};
+    /// let a = RangedI8::<1, 3>::new_const::<2>();
+    /// let b = RangedU32::<2, 3>::new_const::<2>();
+    /// let output: RangedI8::<0, 27> = a.pow(b);
+    ///
+    /// assert_eq!(output.get(), 4);
+    /// ```
+    pub const fn pow<
+        const RHS_MIN: u32,
+        const RHS_MAX: u32,
+        const OUTPUT_MIN: i8,
+        const OUTPUT_MAX: i8,
+    >(
+        self,
+        rhs: RangedU32<RHS_MIN, RHS_MAX>,
+    ) -> RangedI8<OUTPUT_MIN, OUTPUT_MAX> {
+        const {
+            if MIN.is_negative() {
+                let min = MIN.pow(RHS_MIN);
+                let max = MAX.pow(RHS_MAX);
+                let rhs_max = if RHS_MAX % 2 == 0 {
+                    RHS_MAX - 1
+                } else {
+                    RHS_MAX
+                };
+                let rhs_min = if RHS_MIN % 2 == 0 {
+                    RHS_MIN - 1
+                } else {
+                    RHS_MIN
+                };
+                let min_min = MIN.pow(rhs_min);
+                let min_max = MAX.pow(rhs_max);
+                let min = if min_min < min { min_min } else { min };
+                let min = if min_max < min { min_max } else { min };
+
+                if min != OUTPUT_MIN {
+                    panic!("Min mismatch");
+                } else if max != OUTPUT_MAX {
+                    panic!("Max mismatch");
+                }
+            } else if MIN.pow(RHS_MIN) != OUTPUT_MIN {
+                panic!("Min mismatch");
+            } else if MAX.pow(RHS_MAX) != OUTPUT_MAX {
+                panic!("Max mismatch");
+            }
+        }
+
+        RangedI8(self.get().pow(rhs.get()))
     }
 }
 
