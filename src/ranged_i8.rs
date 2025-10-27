@@ -1,7 +1,7 @@
 use crate::{
     Error, ParsingError, ParsingResult, RangedU32, Result,
-    conversions::{self, AsRepr},
 };
+use as_repr::AsRepr;
 
 /// [`i8`] with a specified minimum and maximum value
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -32,7 +32,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// assert_eq!(RangedI8::<1, 2>::new(3).unwrap_err(), Error::PosOverflow);
     /// ```
     pub const fn new(value: impl AsRepr<i8>) -> Result<Self> {
-        let value = conversions::as_repr(value);
+        let value = as_repr::as_repr(value);
 
         if value < MIN {
             return Err(Error::NegOverflow);
@@ -142,7 +142,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// assert_eq!(a.checked_add(a).unwrap().get(), 100);
     /// ```
     pub const fn checked_add(self, other: impl AsRepr<i8>) -> Result<Self> {
-        let other = conversions::as_repr(other);
+        let other = as_repr::as_repr(other);
         let Some(value) = self.get().checked_add(other) else {
             return Err(
                 if self.get().saturating_add(other) == Self::MAX.get() {
@@ -174,7 +174,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// assert_eq!(d.saturating_add(d).get(), -100);
     /// ```
     pub const fn saturating_add(self, other: impl AsRepr<i8>) -> Self {
-        let other = conversions::as_repr(other);
+        let other = as_repr::as_repr(other);
 
         match Self::new(self.get().saturating_add(other)) {
             Ok(value) => value,
@@ -198,7 +198,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// assert_eq!(c.checked_mul(c).unwrap_err(), Error::PosOverflow);
     /// ```
     pub const fn checked_mul(self, other: impl AsRepr<i8>) -> Result<Self> {
-        let other = conversions::as_repr(other);
+        let other = as_repr::as_repr(other);
         let Some(value) = self.get().checked_mul(other) else {
             return Err(if self.is_negative() ^ other.is_negative() {
                 Error::NegOverflow
@@ -226,7 +226,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// assert_eq!(c.saturating_mul(c).get(), 100);
     /// ```
     pub const fn saturating_mul(self, other: impl AsRepr<i8>) -> Self {
-        let other = conversions::as_repr(other);
+        let other = as_repr::as_repr(other);
 
         match Self::new(self.get().saturating_mul(other)) {
             Ok(value) => value,
@@ -239,7 +239,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// Returns an [`Error`] on overflow.
     pub const fn checked_pow(self, other: impl AsRepr<u32>) -> Result<Self> {
-        let other = conversions::as_repr(other);
+        let other = as_repr::as_repr(other);
         let Some(value) = self.get().checked_pow(other) else {
             return Err(if self.is_negative() && other % 2 == 1 {
                 Error::NegOverflow
@@ -256,7 +256,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// Returns [`Self::MIN`] on negative overflow, and [`Self::MAX`] on
     /// positive overflow.
     pub const fn saturating_pow(self, other: impl AsRepr<u32>) -> Self {
-        let other = conversions::as_repr(other);
+        let other = as_repr::as_repr(other);
 
         match Self::new(self.get().saturating_pow(other)) {
             Ok(value) => value,
@@ -272,7 +272,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
         self,
         rhs: impl AsRepr<i8>,
     ) -> Result<Option<Self>> {
-        let rhs = conversions::as_repr(rhs);
+        let rhs = as_repr::as_repr(rhs);
 
         if rhs == 0 {
             return Ok(None);
@@ -301,7 +301,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// This function will panic if `rhs` is zero.
     pub const fn saturating_div(self, rhs: impl AsRepr<i8>) -> Self {
-        let rhs = conversions::as_repr(rhs);
+        let rhs = as_repr::as_repr(rhs);
 
         match Self::new(self.get().saturating_div(rhs)) {
             Ok(value) => value,
@@ -314,7 +314,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// Returns an [`Error`] on overflow.
     pub const fn checked_sub(self, other: impl AsRepr<i8>) -> Result<Self> {
-        let other = conversions::as_repr(other);
+        let other = as_repr::as_repr(other);
         let Some(value) = self.get().checked_sub(other) else {
             return Err(if other.is_negative() {
                 Error::PosOverflow
@@ -331,7 +331,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// Returns [`Self::MIN`] on negative overflow, and [`Self::MAX`] on
     /// positive overflow.
     pub const fn saturating_sub(self, other: impl AsRepr<i8>) -> Self {
-        let other = conversions::as_repr(other);
+        let other = as_repr::as_repr(other);
 
         match Self::new(self.get().saturating_sub(other)) {
             Ok(value) => value,
