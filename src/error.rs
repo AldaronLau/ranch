@@ -43,6 +43,7 @@ impl Error {
     ///     RangedU8::<1, 3>::new_const::<3>(),
     /// );
     /// ```
+    #[must_use]
     pub const fn saturate<T>(self) -> T
     where
         T: Saturate,

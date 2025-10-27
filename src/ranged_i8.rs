@@ -66,6 +66,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// ```compile_fail
     /// RangedI8::<1, 3>::new_const::<4>();
     /// ```
+    #[must_use]
     pub const fn new_const<const N: i8>() -> Self {
         const {
             if N < MIN || N > MAX {
@@ -82,6 +83,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// # use ranch::RangedI8;
     /// assert_eq!(42, RangedI8::<1, 100>::new_const::<42>().get());
     /// ```
+    #[must_use]
     pub const fn get(self) -> i8 {
         self.0
     }
@@ -95,6 +97,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// assert_eq!(n.leading_zeros(), 1);
     /// ```
+    #[must_use]
     pub const fn leading_zeros(self) -> u32 {
         self.get().leading_zeros()
     }
@@ -108,6 +111,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// assert_eq!(n.trailing_zeros(), 3);
     /// ```
+    #[must_use]
     pub const fn trailing_zeros(self) -> u32 {
         self.get().trailing_zeros()
     }
@@ -122,6 +126,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// assert_eq!(a.count_ones(), 1);
     /// assert_eq!(b.count_ones(), 3);
     /// ```
+    #[must_use]
     pub const fn count_ones(self) -> u32 {
         self.get().count_ones()
     }
@@ -140,6 +145,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// assert_eq!(c.get(), 55);
     /// assert_eq!(a.checked_add(a).unwrap().get(), 100);
     /// ```
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn checked_add(self, other: impl AsRepr<i8>) -> Result<Self> {
         let other = as_repr::as_repr(other);
         let Some(value) = self.get().checked_add(other) else {
@@ -172,6 +179,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// assert_eq!(a.saturating_add(a).get(), 100);
     /// assert_eq!(d.saturating_add(d).get(), -100);
     /// ```
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn saturating_add(self, other: impl AsRepr<i8>) -> Self {
         let other = as_repr::as_repr(other);
 
@@ -196,6 +205,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// assert_eq!(a.checked_mul(c).unwrap_err(), Error::NegOverflow);
     /// assert_eq!(c.checked_mul(c).unwrap_err(), Error::PosOverflow);
     /// ```
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn checked_mul(self, other: impl AsRepr<i8>) -> Result<Self> {
         let other = as_repr::as_repr(other);
         let Some(value) = self.get().checked_mul(other) else {
@@ -224,6 +235,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// assert_eq!(a.saturating_mul(c).get(), -100);
     /// assert_eq!(c.saturating_mul(c).get(), 100);
     /// ```
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn saturating_mul(self, other: impl AsRepr<i8>) -> Self {
         let other = as_repr::as_repr(other);
 
@@ -237,6 +250,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// Raise to an integer power.
     ///
     /// Returns an [`Error`] on overflow.
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn checked_pow(self, other: impl AsRepr<u32>) -> Result<Self> {
         let other = as_repr::as_repr(other);
         let Some(value) = self.get().checked_pow(other) else {
@@ -254,6 +269,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// Returns [`Self::MIN`] on negative overflow, and [`Self::MAX`] on
     /// positive overflow.
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn saturating_pow(self, other: impl AsRepr<u32>) -> Self {
         let other = as_repr::as_repr(other);
 
@@ -267,6 +284,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// Checked integer division.
     ///
     /// Returns an [`Error`] on overflow; [`None`] if `rhs == 0`.
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn checked_div(
         self,
         rhs: impl AsRepr<i8>,
@@ -299,6 +318,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// # Panics
     ///
     /// This function will panic if `rhs` is zero.
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn saturating_div(self, rhs: impl AsRepr<i8>) -> Self {
         let rhs = as_repr::as_repr(rhs);
 
@@ -312,6 +333,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// Subtract a ranged integers from another.
     ///
     /// Returns an [`Error`] on overflow.
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn checked_sub(self, other: impl AsRepr<i8>) -> Result<Self> {
         let other = as_repr::as_repr(other);
         let Some(value) = self.get().checked_sub(other) else {
@@ -329,6 +352,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// Returns [`Self::MIN`] on negative overflow, and [`Self::MAX`] on
     /// positive overflow.
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn saturating_sub(self, other: impl AsRepr<i8>) -> Self {
         let other = as_repr::as_repr(other);
 
@@ -346,6 +371,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// assert!(!RangedI8::<-100, 100>::new_const::<10>().is_negative());
     /// assert!(RangedI8::<-100, 100>::new_const::<-10>().is_negative());
     /// ```
+    #[must_use]
     pub const fn is_negative(self) -> bool {
         self.get().is_negative()
     }
@@ -357,6 +383,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// assert!(RangedI8::<-100, 100>::new_const::<10>().is_positive());
     /// assert!(!RangedI8::<-100, 100>::new_const::<-10>().is_positive());
     /// ```
+    #[must_use]
     pub const fn is_positive(self) -> bool {
         self.get().is_positive()
     }
@@ -380,6 +407,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// assert_eq!(a.midpoint(e), f);
     /// assert_eq!(a.midpoint(h), g);
     /// ```
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn midpoint(self, rhs: Self) -> Self {
         let Ok(value) = Self::new(midpoint(self.get(), rhs.get())) else {
             panic!("unexpected midpoint value")
@@ -409,6 +438,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// assert_eq!(output.get(), 3);
     /// ```
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn add<
         const RHS_MIN: i8,
         const RHS_MAX: i8,
@@ -452,6 +483,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn sub<
         const RHS_MIN: i8,
         const RHS_MAX: i8,
@@ -495,6 +528,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn mul<
         const RHS_MIN: i8,
         const RHS_MAX: i8,
@@ -543,6 +578,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// assert_eq!(output.get(), 1);
     /// ```
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn div<
         const RHS_MIN: i8,
         const RHS_MAX: i8,
@@ -599,6 +636,8 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// assert_eq!(output.get(), 4);
     /// ```
+    #[must_use = "this returns the result of the operation, \
+                  without modifying the original"]
     pub const fn pow<
         const RHS_MIN: u32,
         const RHS_MAX: u32,
