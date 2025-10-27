@@ -1,7 +1,6 @@
-use crate::{
-    Error, ParsingError, ParsingResult, Result,
-};
 use as_repr::AsRepr;
+
+use crate::{Error, ParsingError, ParsingResult, Result};
 
 /// [`u32`] with a specified minimum and maximum value
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
