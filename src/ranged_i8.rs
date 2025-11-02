@@ -1,6 +1,6 @@
 use as_repr::AsRepr;
 
-use crate::{Error, ParsingError, ParsingResult, RangedU32, Result};
+use crate::{Error, ParsingError, ParsingResult, Quotient, RangedU32, Result};
 
 /// [`i8`] with a specified minimum and maximum value
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -283,17 +283,17 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
 
     /// Checked integer division.
     ///
-    /// Returns an [`Error`] on overflow; [`None`] if `rhs == 0`.
+    /// Returns an [`Error`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn checked_div(
         self,
         rhs: impl AsRepr<i8>,
-    ) -> Result<Option<Self>> {
+    ) -> Result<Quotient<Self>> {
         let rhs = as_repr::as_repr(rhs);
 
         if rhs == 0 {
-            return Ok(None);
+            return Ok(Quotient::Nan);
         }
 
         let Some(value) = self.get().checked_div(rhs) else {
@@ -305,29 +305,29 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
         };
 
         match Self::new(value) {
-            Ok(v) => Ok(Some(v)),
+            Ok(v) => Ok(Quotient::Number(v)),
             Err(e) => Err(e),
         }
     }
 
     /// Saturating integer division.
     ///
-    /// Returns [`Self::MIN`] on negative overflow, and [`Self::MAX`] on
-    /// positive overflow.
-    ///
-    /// # Panics
-    ///
-    /// This function will panic if `rhs` is zero.
+    /// Returns [`Self::MIN`] on negative overflow, [`Self::MAX`] on positive
+    /// overflow, and [`Quotient::Nan`] if `rhs` is 0.
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn saturating_div(self, rhs: impl AsRepr<i8>) -> Self {
+    pub const fn saturating_div(self, rhs: impl AsRepr<i8>) -> Quotient<Self> {
         let rhs = as_repr::as_repr(rhs);
 
-        match Self::new(self.get().saturating_div(rhs)) {
+        if rhs == 0 {
+            return Quotient::Nan;
+        }
+
+        Quotient::Number(match Self::new(self.get().saturating_div(rhs)) {
             Ok(value) => value,
             Err(Error::NegOverflow) => Self::MIN,
             Err(Error::PosOverflow) => Self::MAX,
-        }
+        })
     }
 
     /// Subtract a ranged integers from another.

@@ -38,7 +38,9 @@ pub mod aliases;
 mod convert;
 mod error;
 mod format;
+mod ops;
 pub mod parsing;
+mod quotient;
 mod ranged_i8;
 mod ranged_u128;
 mod ranged_u16;
@@ -48,6 +50,7 @@ mod ranged_u8;
 
 pub use self::{
     error::{Error, Result},
+    quotient::Quotient,
     ranged_i8::RangedI8,
     ranged_u8::RangedU8,
     ranged_u16::RangedU16,

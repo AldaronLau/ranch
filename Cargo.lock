@@ -4,9 +4,9 @@ version = 4
 
 [[package]]
 name = "as_repr"
-version = "1.0.1"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94030bbfc93f4c09a4861a46a94856b4e596eca7a747031de04c34fd37356f48"
+checksum = "74fb299e940315615022885ecd941b19f781aad197d93b31b2569f1f09f34f30"
 
 [[package]]
 name = "ranch"

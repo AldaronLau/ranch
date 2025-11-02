@@ -2,6 +2,22 @@ use core::fmt;
 
 use super::*;
 
+macro_rules! impl_quotient_fmt {
+    ($type:ident, [$($Trait:ident),* $(,)?] $(,)?) => {
+        $(
+            impl<T> fmt::$Trait for Quotient<T> where T: fmt::$Trait {
+                #[inline]
+                fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                    match self {
+                        Quotient::Nan => f.write_str("NaN"),
+                        Quotient::Number(number) => number.fmt(f),
+                    }
+                }
+            }
+        )*
+    };
+}
+
 macro_rules! impl_ranged_fmt {
     ($type:ident, $primitive:ty, [$($Trait:ident),* $(,)?] $(,)?) => {
         $(
@@ -17,6 +33,13 @@ macro_rules! impl_ranged_fmt {
         )*
     };
 }
+
+impl_quotient_fmt!(
+    Quotient,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
 
 impl_ranged_fmt!(
     RangedU8,

@@ -1,6 +1,6 @@
 use as_repr::AsRepr;
 
-use crate::{Error, ParsingError, ParsingResult, Result};
+use crate::{Error, ParsingError, ParsingResult, Quotient, Result};
 
 /// [`u32`] with a specified minimum and maximum value
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -273,37 +273,40 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
 
     /// Checked integer division.
     ///
-    /// Returns [`None`] on overflow or `rhs == 0`.
+    /// Returns [`None`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn checked_div(self, rhs: impl AsRepr<u32>) -> Option<Self> {
+    pub const fn checked_div(
+        self,
+        rhs: impl AsRepr<u32>,
+    ) -> Option<Quotient<Self>> {
         let rhs = as_repr::as_repr(rhs);
         let Some(value) = self.get().checked_div(rhs) else {
-            return None;
+            return Some(Quotient::Nan);
         };
 
         match Self::new(value) {
-            Ok(value) => Some(value),
+            Ok(value) => Some(Quotient::Number(value)),
             Err(_) => None,
         }
     }
 
     /// Saturating integer division.
     ///
-    /// Returns [`Self::MIN`] on overflow.
-    ///
-    /// # Panics
-    ///
-    /// This function will panic if `rhs` is zero.
+    /// Returns [`Self::MIN`] on overflow, and [`Quotient::Nan`] if `rhs` is 0.
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn saturating_div(self, rhs: impl AsRepr<u32>) -> Self {
+    pub const fn saturating_div(self, rhs: impl AsRepr<u32>) -> Quotient<Self> {
         let rhs = as_repr::as_repr(rhs);
 
-        match Self::new(self.get().saturating_div(rhs)) {
+        if rhs == 0 {
+            return Quotient::Nan;
+        }
+
+        Quotient::Number(match Self::new(self.get().saturating_div(rhs)) {
             Ok(value) => value,
             Err(_) => Self::MIN,
-        }
+        })
     }
 
     /// Subtract a ranged integers from another.
