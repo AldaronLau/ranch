@@ -239,6 +239,17 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     /// Raise to an integer power.
     ///
     /// Returns [`None`] on overflow.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedU8};
+    /// let a = RangedU8::<0, 100>::new_const::<50>();
+    /// let b = RangedU8::<0, 100>::new_const::<5>();
+    /// let c = RangedU8::<0, 100>::new_const::<2>();
+    ///
+    /// assert_eq!(a.checked_pow(2), None);
+    /// assert_eq!(b.checked_pow(2).unwrap().get(), 25);
+    /// assert_eq!(c.checked_pow(3).unwrap().get(), 8);
+    /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn checked_pow(self, other: impl AsRepr<u32>) -> Option<Self> {
@@ -256,6 +267,17 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     /// Raise to an integer power.
     ///
     /// Returns [`Self::MAX`] on overflow.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedU8};
+    /// let a = RangedU8::<0, 100>::new_const::<50>();
+    /// let b = RangedU8::<0, 100>::new_const::<5>();
+    /// let c = RangedU8::<0, 100>::new_const::<2>();
+    ///
+    /// assert_eq!(a.saturating_pow(2).get(), 100);
+    /// assert_eq!(b.saturating_pow(2).get(), 25);
+    /// assert_eq!(c.saturating_pow(3).get(), 8);
+    /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn saturating_pow(self, other: impl AsRepr<u32>) -> Self {

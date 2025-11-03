@@ -250,6 +250,19 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// Raise to an integer power.
     ///
     /// Returns an [`Error`] on overflow.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedI8};
+    /// let a = RangedI8::<-100, 100>::new_const::<50>();
+    /// let b = RangedI8::<-100, 100>::new_const::<5>();
+    /// let c = RangedI8::<-100, 100>::new_const::<-75>();
+    /// let d = RangedI8::<-100, 100>::new_const::<2>();
+    ///
+    /// assert_eq!(a.checked_pow(2).unwrap_err(), Error::PosOverflow);
+    /// assert_eq!(b.checked_pow(2).unwrap().get(), 25);
+    /// assert_eq!(c.checked_pow(3).unwrap_err(), Error::NegOverflow);
+    /// assert_eq!(d.checked_pow(3).unwrap().get(), 8);
+    /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn checked_pow(self, other: impl AsRepr<u32>) -> Result<Self> {
@@ -269,6 +282,19 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// Returns [`Self::MIN`] on negative overflow, and [`Self::MAX`] on
     /// positive overflow.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedI8};
+    /// let a = RangedI8::<-100, 100>::new_const::<50>();
+    /// let b = RangedI8::<-100, 100>::new_const::<5>();
+    /// let c = RangedI8::<-100, 100>::new_const::<-75>();
+    /// let d = RangedI8::<-100, 100>::new_const::<2>();
+    ///
+    /// assert_eq!(a.saturating_pow(2).get(), 100);
+    /// assert_eq!(b.saturating_pow(2).get(), 25);
+    /// assert_eq!(c.saturating_pow(3).get(), -100);
+    /// assert_eq!(d.saturating_pow(3).get(), 8);
+    /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn saturating_pow(self, other: impl AsRepr<u32>) -> Self {
