@@ -393,6 +393,16 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// Subtract a ranged integers from another.
     ///
     /// Returns an [`Error`] on overflow.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedI8};
+    /// let a = RangedI8::<1, 100>::new_const::<50>();
+    /// let b = a.checked_sub(5).unwrap();
+    ///
+    /// assert_eq!(a.checked_sub(-51), Err(Error::PosOverflow));
+    /// assert_eq!(b.get(), 45);
+    /// assert_eq!(a.checked_sub(a), Err(Error::NegOverflow));
+    /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn checked_sub(self, other: impl AsRepr<i8>) -> Result<Self> {
@@ -412,6 +422,16 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// Returns [`Self::MIN`] on negative overflow, and [`Self::MAX`] on
     /// positive overflow.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedI8};
+    /// let a = RangedI8::<1, 100>::new_const::<50>();
+    /// let b = a.saturating_sub(5);
+    ///
+    /// assert_eq!(a.saturating_sub(-51).get(), 100);
+    /// assert_eq!(b.get(), 45);
+    /// assert_eq!(a.saturating_sub(a).get(), 1);
+    /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn saturating_sub(self, other: impl AsRepr<i8>) -> Self {

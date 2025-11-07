@@ -363,6 +363,15 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     /// Subtract a ranged integers from another.
     ///
     /// Returns [`None`] on overflow.
+    ///
+    /// ```rust
+    /// # use ranch::RangedU32;
+    /// let a = RangedU32::<1, 100>::new_const::<50>();
+    /// let b = a.checked_sub(5).unwrap();
+    ///
+    /// assert_eq!(b.get(), 45);
+    /// assert!(a.checked_sub(a).is_none());
+    /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn checked_sub(self, other: impl AsRepr<u32>) -> Option<Self> {
@@ -380,6 +389,15 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     /// Subtract a ranged integers from another.
     ///
     /// Returns [`Self::MIN`] on overflow.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedU32};
+    /// let a = RangedU32::<1, 100>::new_const::<50>();
+    /// let b = a.saturating_sub(5);
+    ///
+    /// assert_eq!(b.get(), 45);
+    /// assert_eq!(a.saturating_sub(a).get(), 1);
+    /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn saturating_sub(self, other: impl AsRepr<u32>) -> Self {
