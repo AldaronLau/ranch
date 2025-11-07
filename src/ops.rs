@@ -21,11 +21,13 @@ impl OpsAsRepr<u64> for u64 {}
 impl OpsAsRepr<u128> for u128 {}
 
 impl<const MIN: i8, const MAX: i8> OpsAsRepr<i8> for RangedI8<MIN, MAX> {}
-//impl<const MIN: i16, const MAX: i16> OpsAsRepr<i16> for RangedI16<MIN, MAX>
-// {} impl<const MIN: i32, const MAX: i32> OpsAsRepr<i32> for RangedI32<MIN,
-// MAX> {} impl<const MIN: i64, const MAX: i64> OpsAsRepr<i64> for
-// RangedI64<MIN, MAX> {} impl<const MIN: i128, const MAX: i128> OpsAsRepr<i128>
-// for RangedI128<MIN, MAX> {}
+impl<const MIN: i16, const MAX: i16> OpsAsRepr<i16> for RangedI16<MIN, MAX> {}
+impl<const MIN: i32, const MAX: i32> OpsAsRepr<i32> for RangedI32<MIN, MAX> {}
+impl<const MIN: i64, const MAX: i64> OpsAsRepr<i64> for RangedI64<MIN, MAX> {}
+impl<const MIN: i128, const MAX: i128> OpsAsRepr<i128>
+    for RangedI128<MIN, MAX>
+{
+}
 impl<const MIN: u8, const MAX: u8> OpsAsRepr<u8> for RangedU8<MIN, MAX> {}
 impl<const MIN: u16, const MAX: u16> OpsAsRepr<u16> for RangedU16<MIN, MAX> {}
 impl<const MIN: u32, const MAX: u32> OpsAsRepr<u32> for RangedU32<MIN, MAX> {}
@@ -127,6 +129,10 @@ macro_rules! impl_ops {
 }
 
 impl_ops!(RangedI8, i8);
+impl_ops!(RangedI16, i16);
+impl_ops!(RangedI32, i32);
+impl_ops!(RangedI64, i64);
+impl_ops!(RangedI128, i128);
 
 impl_ops!(RangedU8, u8);
 impl_ops!(RangedU16, u16);

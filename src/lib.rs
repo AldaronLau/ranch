@@ -41,6 +41,10 @@ mod format;
 mod ops;
 pub mod parsing;
 mod quotient;
+mod ranged_i128;
+mod ranged_i16;
+mod ranged_i32;
+mod ranged_i64;
 mod ranged_i8;
 mod ranged_u128;
 mod ranged_u16;
@@ -52,6 +56,10 @@ pub use self::{
     error::{Error, Result},
     quotient::Quotient,
     ranged_i8::RangedI8,
+    ranged_i16::RangedI16,
+    ranged_i32::RangedI32,
+    ranged_i64::RangedI64,
+    ranged_i128::RangedI128,
     ranged_u8::RangedU8,
     ranged_u16::RangedU16,
     ranged_u32::RangedU32,

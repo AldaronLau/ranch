@@ -88,3 +88,35 @@ impl_ranged_fmt!(
         Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
     ],
 );
+
+impl_ranged_fmt!(
+    RangedI16,
+    i16,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedI32,
+    i32,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedI64,
+    i64,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedI128,
+    i128,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);

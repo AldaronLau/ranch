@@ -46,3 +46,46 @@ pub type u80 = RangedU128<0, { 2u128.pow(80) - 1 }>;
 pub type u96 = RangedU128<0, { 2u128.pow(96) - 1 }>;
 /// 112 bit unsigned integer
 pub type u112 = RangedU128<0, { 2u128.pow(112) - 1 }>;
+
+/// 1 bit signed integer
+pub type i1 = RangedI8<{ -2i8.pow(0) }, { 2i8.pow(0) - 1 }>;
+/// 2 bit signed integer
+pub type i2 = RangedI8<{ -2i8.pow(1) }, { 2i8.pow(1) - 1 }>;
+/// 3 bit signed integer
+pub type i3 = RangedI8<{ -2i8.pow(2) }, { 2i8.pow(2) - 1 }>;
+/// 4 bit signed integer
+pub type i4 = RangedI8<{ -2i8.pow(3) }, { 2i8.pow(3) - 1 }>;
+/// 5 bit signed integer
+pub type i5 = RangedI8<{ -2i8.pow(4) }, { 2i8.pow(4) - 1 }>;
+/// 6 bit signed integer
+pub type i6 = RangedI8<{ -2i8.pow(5) }, { 2i8.pow(5) - 1 }>;
+/// 7 bit signed integer
+pub type i7 = RangedI8<{ -2i8.pow(6) }, { 2i8.pow(6) - 1 }>;
+
+/// 10 bit signed integer
+pub type i10 = RangedI16<{ -2i16.pow(9) }, { 2i16.pow(9) - 1 }>;
+/// 12 bit signed integer
+pub type i12 = RangedI16<{ -2i16.pow(11) }, { 2i16.pow(11) - 1 }>;
+/// 14 bit signed integer
+pub type i14 = RangedI16<{ -2i16.pow(13) }, { 2i16.pow(13) - 1 }>;
+
+/// 20 bit signed integer
+pub type i20 = RangedI32<{ -2i32.pow(19) }, { 2i32.pow(19) - 1 }>;
+/// 24 bit signed integer
+pub type i24 = RangedI32<{ -2i32.pow(23) }, { 2i32.pow(23) - 1 }>;
+/// 28 bit signed integer
+pub type i28 = RangedI32<{ -2i32.pow(27) }, { 2i32.pow(27) - 1 }>;
+
+/// 40 bit signed integer
+pub type i40 = RangedI64<{ -2i64.pow(39) }, { 2i64.pow(39) - 1 }>;
+/// 48 bit signed integer
+pub type i48 = RangedI64<{ -2i64.pow(47) }, { 2i64.pow(47) - 1 }>;
+/// 56 bit signed integer
+pub type i56 = RangedI64<{ -2i64.pow(55) }, { 2i64.pow(55) - 1 }>;
+
+/// 80 bit signed integer
+pub type i80 = RangedI128<{ -2i128.pow(79) }, { 2i128.pow(79) - 1 }>;
+/// 96 bit signed integer
+pub type i96 = RangedI128<{ -2i128.pow(95) }, { 2i128.pow(95) - 1 }>;
+/// 112 bit signed integer
+pub type i112 = RangedI128<{ -2i128.pow(111) }, { 2i128.pow(111) - 1 }>;
