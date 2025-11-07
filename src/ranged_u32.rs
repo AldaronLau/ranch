@@ -296,6 +296,19 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     /// Checked integer division.
     ///
     /// Returns [`None`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedU32, Quotient};
+    /// let a = RangedU32::<1, 50>::new_const::<50>();
+    /// let b = RangedU32::<1, 50>::new_const::<1>();
+    ///
+    /// assert_eq!(
+    ///     a.checked_div(2),
+    ///     Some(Quotient::Number(RangedU32::new_const::<25>())),
+    /// );
+    /// assert_eq!(a.checked_div(0), Some(Quotient::Nan));
+    /// assert_eq!(b.checked_div(2), None);
+    /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn checked_div(
@@ -316,6 +329,22 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     /// Saturating integer division.
     ///
     /// Returns [`Self::MIN`] on overflow, and [`Quotient::Nan`] if `rhs` is 0.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedU32, Quotient};
+    /// let a = RangedU32::<1, 50>::new_const::<50>();
+    /// let b = RangedU32::<1, 50>::new_const::<1>();
+    ///
+    /// assert_eq!(
+    ///     a.saturating_div(2),
+    ///     Quotient::Number(RangedU32::new_const::<25>()),
+    /// );
+    /// assert_eq!(a.saturating_div(0), Quotient::Nan);
+    /// assert_eq!(
+    ///     b.saturating_div(2),
+    ///     Quotient::Number(RangedU32::new_const::<1>()),
+    /// );
+    /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn saturating_div(self, rhs: impl AsRepr<u32>) -> Quotient<Self> {
@@ -365,6 +394,19 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     /// Return the smallest power of two greater than or equal to self.
     ///
     /// Returns [`None`] on overflow.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedU32};
+    /// let a = RangedU32::<0, 33>::new_const::<0>();
+    /// let b = RangedU32::<0, 33>::new_const::<9>();
+    /// let c = RangedU32::<0, 33>::new_const::<32>();
+    /// let d = RangedU32::<0, 33>::new_const::<33>();
+    ///
+    /// assert_eq!(a.checked_next_power_of_two().unwrap().get(), 1);
+    /// assert_eq!(b.checked_next_power_of_two().unwrap().get(), 16);
+    /// assert_eq!(c.checked_next_power_of_two().unwrap().get(), 32);
+    /// assert_eq!(d.checked_next_power_of_two(), None);
+    /// ```
     #[must_use]
     pub const fn checked_next_power_of_two(self) -> Option<Self> {
         let Some(value) = self.get().checked_next_power_of_two() else {
@@ -378,6 +420,19 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     }
 
     /// Returns true if and only if `self == (1 << k)` for some `k`.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedU32};
+    /// let a = RangedU32::<0, 32>::new_const::<0>();
+    /// let b = RangedU32::<0, 32>::new_const::<9>();
+    /// let c = RangedU32::<0, 32>::new_const::<32>();
+    /// let d = RangedU32::<0, 32>::new_const::<1>();
+    ///
+    /// assert!(!a.is_power_of_two());
+    /// assert!(!b.is_power_of_two());
+    /// assert!(c.is_power_of_two());
+    /// assert!(d.is_power_of_two());
+    /// ```
     #[must_use]
     pub const fn is_power_of_two(self) -> bool {
         self.get().is_power_of_two()

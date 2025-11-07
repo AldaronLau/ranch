@@ -310,6 +310,20 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// Checked integer division.
     ///
     /// Returns an [`Error`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedI8, Quotient};
+    /// let a = RangedI8::<-100, 10>::new_const::<-50>();
+    /// let b = RangedI8::<-10, 100>::new_const::<50>();
+    ///
+    /// assert_eq!(
+    ///     a.checked_div(2),
+    ///     Ok(Quotient::Number(RangedI8::new_const::<-25>())),
+    /// );
+    /// assert_eq!(a.checked_div(0), Ok(Quotient::Nan));
+    /// assert_eq!(a.checked_div(-1), Err(Error::PosOverflow));
+    /// assert_eq!(b.checked_div(-2), Err(Error::NegOverflow));
+    /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn checked_div(
@@ -340,6 +354,26 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// Returns [`Self::MIN`] on negative overflow, [`Self::MAX`] on positive
     /// overflow, and [`Quotient::Nan`] if `rhs` is 0.
+    ///
+    /// ```rust
+    /// # use ranch::{Error, RangedI8, Quotient};
+    /// let a = RangedI8::<-100, 10>::new_const::<-50>();
+    /// let b = RangedI8::<-10, 100>::new_const::<50>();
+    ///
+    /// assert_eq!(
+    ///     a.saturating_div(2),
+    ///     Quotient::Number(RangedI8::new_const::<-25>()),
+    /// );
+    /// assert_eq!(a.saturating_div(0), Quotient::Nan);
+    /// assert_eq!(
+    ///     a.saturating_div(-1),
+    ///     Quotient::Number(RangedI8::new_const::<10>()),
+    /// );
+    /// assert_eq!(
+    ///     b.saturating_div(-2),
+    ///     Quotient::Number(RangedI8::new_const::<-10>()),
+    /// );
+    /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn saturating_div(self, rhs: impl AsRepr<i8>) -> Quotient<Self> {
