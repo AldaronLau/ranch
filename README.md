@@ -16,6 +16,8 @@ Check out the [documentation] for examples.
 ### Features
 
  - Compile-time checked constructors for ranged integers
+ - Operations and conversions for ranged integers
+ - Aliases for arbitrary width integers and unit integers
 
 ## MSRV
 

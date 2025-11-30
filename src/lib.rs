@@ -51,6 +51,7 @@ mod ranged_u16;
 mod ranged_u32;
 mod ranged_u64;
 mod ranged_u8;
+pub mod unit;
 
 pub use self::{
     error::{Error, Result},
