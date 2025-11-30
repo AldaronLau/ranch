@@ -4,13 +4,13 @@ use super::*;
 
 macro_rules! impl_ranged_conversion {
     ($type:ident, $p:ty $(,)?) => {
-        impl From<$p> for $type::<{ <$p>::MIN }, { <$p>::MAX }> {
+        impl From<$p> for $type<{ <$p>::MIN }, { <$p>::MAX }> {
             fn from(primitive: $p) -> Self {
                 Self(primitive)
             }
         }
 
-        impl<const MIN: $p, const MAX: $p> From<$type::<MIN, MAX>> for $p {
+        impl<const MIN: $p, const MAX: $p> From<$type<MIN, MAX>> for $p {
             fn from(ranged: $type<MIN, MAX>) -> Self {
                 ranged.get()
             }
@@ -20,14 +20,14 @@ macro_rules! impl_ranged_conversion {
 
 macro_rules! impl_unsigned_nonzero_conversion {
     ($type:ident, $p:ty $(,)?) => {
-        impl From<NonZero<$p>> for $type::<1, { <$p>::MAX }> {
+        impl From<NonZero<$p>> for $type<1, { <$p>::MAX }> {
             fn from(non_zero: NonZero<$p>) -> Self {
                 Self(non_zero.get())
             }
         }
 
-        impl From<$type::<1, { <$p>::MAX }>> for NonZero<$p> {
-            fn from(ranged: $type::<1, { <$p>::MAX }>) -> Self {
+        impl From<$type<1, { <$p>::MAX }>> for NonZero<$p> {
+            fn from(ranged: $type<1, { <$p>::MAX }>) -> Self {
                 // saturate if there's a bug and a value out of range
                 NonZero::new(ranged.get()).unwrap_or(NonZero::<$p>::MIN)
             }
@@ -37,8 +37,8 @@ macro_rules! impl_unsigned_nonzero_conversion {
 
 macro_rules! impl_signed_nonzero_conversion {
     ($type:ident, $p:ty $(,)?) => {
-        impl From<$type::<1, { <$p>::MAX }>> for NonZero<$p> {
-            fn from(ranged: $type::<1, { <$p>::MAX }>) -> Self {
+        impl From<$type<1, { <$p>::MAX }>> for NonZero<$p> {
+            fn from(ranged: $type<1, { <$p>::MAX }>) -> Self {
                 // saturate if there's a bug and a value out of range
                 NonZero::new(ranged.get()).unwrap_or(NonZero::<$p>::MIN)
             }
