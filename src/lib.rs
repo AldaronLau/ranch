@@ -1,4 +1,4 @@
-//! Ranged integer types and math.
+//! Ranged integer types and math
 
 #![doc(
     html_logo_url = "https://ardaku.github.io/mm/logo.svg",
@@ -34,7 +34,7 @@
     rustdoc::redundant_explicit_links
 )]
 
-pub mod aliases;
+pub mod bitwise;
 mod convert;
 mod error;
 mod format;
