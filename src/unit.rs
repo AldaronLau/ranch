@@ -35,6 +35,19 @@ macro_rules! impl_default {
                 Self::new_const::<VAL>()
             }
         }
+
+        impl<const VAL: $p> Extend<$type<VAL>> for $type<VAL> {
+            fn extend<T: IntoIterator<Item = Self>>(&mut self, iter: T) {
+                iter.into_iter().for_each(drop);
+            }
+        }
+
+        impl<const VAL: $p> FromIterator<$type<VAL>> for $type<VAL> {
+            fn from_iter<I: IntoIterator<Item = $type<VAL>>>(iter: I) -> Self {
+                iter.into_iter().for_each(drop);
+                Self::default()
+            }
+        }
     };
 }
 
