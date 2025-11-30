@@ -779,3 +779,638 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
         RangedU128(self.get())
     }
 }
+
+impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
+    /// Convert to [`RangedI8`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI8};
+    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let expanded_i8: RangedI8<0, 4> = ranged_i8.to_ranged_i8();
+    ///
+    /// assert_eq!(expanded_i8.get(), ranged_i8.get().into());
+    /// ```
+    pub const fn to_ranged_i8<const OUT_MIN: i8, const OUT_MAX: i8>(
+        self,
+    ) -> RangedI8<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI8(self.get())
+    }
+
+    /// Convert to [`RangedI16`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI8, RangedI16};
+    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i16: RangedI16<0, 2> = ranged_i8.to_ranged_i16();
+    ///
+    /// assert_eq!(ranged_i16.get(), ranged_i8.get().into());
+    /// ```
+    pub const fn to_ranged_i16<const OUT_MIN: i16, const OUT_MAX: i16>(
+        self,
+    ) -> RangedI16<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN as i16 {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX as i16 {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI16(self.get() as i16)
+    }
+
+    /// Convert to [`RangedI32`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI8, RangedI32};
+    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i32: RangedI32<0, 2> = ranged_i8.to_ranged_i32();
+    ///
+    /// assert_eq!(ranged_i32.get(), ranged_i8.get().into());
+    /// ```
+    pub const fn to_ranged_i32<const OUT_MIN: i32, const OUT_MAX: i32>(
+        self,
+    ) -> RangedI32<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN as i32 {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX as i32 {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI32(self.get() as i32)
+    }
+
+    /// Convert to [`RangedI64`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI8, RangedI64};
+    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i64: RangedI64<0, 2> = ranged_i8.to_ranged_i64();
+    ///
+    /// assert_eq!(ranged_i64.get(), ranged_i8.get().into());
+    /// ```
+    pub const fn to_ranged_i64<const OUT_MIN: i64, const OUT_MAX: i64>(
+        self,
+    ) -> RangedI64<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN as i64 {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX as i64 {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI64(self.get() as i64)
+    }
+
+    /// Convert to [`RangedI128`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI8, RangedI128};
+    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i128: RangedI128<0, 2> = ranged_i8.to_ranged_i128();
+    ///
+    /// assert_eq!(ranged_i128.get(), ranged_i8.get().into());
+    /// ```
+    pub const fn to_ranged_i128<const OUT_MIN: i128, const OUT_MAX: i128>(
+        self,
+    ) -> RangedI128<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN as i128 {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX as i128 {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI128(self.get() as i128)
+    }
+}
+
+impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
+    /// Convert to [`RangedI8`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI8, RangedI16};
+    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i8: RangedI8<0, 2> = ranged_i16.to_ranged_i8();
+    ///
+    /// assert_eq!(ranged_i16.get(), ranged_i8.get().into());
+    /// ```
+    pub const fn to_ranged_i8<const OUT_MIN: i8, const OUT_MAX: i8>(
+        self,
+    ) -> RangedI8<OUT_MIN, OUT_MAX> {
+        const {
+            if (OUT_MIN as i16) > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if (OUT_MAX as i16) < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI8(self.get() as i8)
+    }
+
+    /// Convert to [`RangedI16`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI16};
+    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let expanded_i16: RangedI16<0, 4> = ranged_i16.to_ranged_i16();
+    ///
+    /// assert_eq!(expanded_i16.get(), ranged_i16.get().into());
+    /// ```
+    pub const fn to_ranged_i16<const OUT_MIN: i16, const OUT_MAX: i16>(
+        self,
+    ) -> RangedI16<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI16(self.get())
+    }
+
+    /// Convert to [`RangedI32`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI16, RangedI32};
+    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i32: RangedI32<0, 2> = ranged_i16.to_ranged_i32();
+    ///
+    /// assert_eq!(ranged_i32.get(), ranged_i16.get().into());
+    /// ```
+    pub const fn to_ranged_i32<const OUT_MIN: i32, const OUT_MAX: i32>(
+        self,
+    ) -> RangedI32<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN as i32 {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX as i32 {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI32(self.get() as i32)
+    }
+
+    /// Convert to [`RangedI64`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI16, RangedI64};
+    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i64: RangedI64<0, 2> = ranged_i16.to_ranged_i64();
+    ///
+    /// assert_eq!(ranged_i64.get(), ranged_i16.get().into());
+    /// ```
+    pub const fn to_ranged_i64<const OUT_MIN: i64, const OUT_MAX: i64>(
+        self,
+    ) -> RangedI64<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN as i64 {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX as i64 {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI64(self.get() as i64)
+    }
+
+    /// Convert to [`RangedI128`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI16, RangedI128};
+    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i128: RangedI128<0, 2> = ranged_i16.to_ranged_i128();
+    ///
+    /// assert_eq!(ranged_i128.get(), ranged_i16.get().into());
+    /// ```
+    pub const fn to_ranged_i128<const OUT_MIN: i128, const OUT_MAX: i128>(
+        self,
+    ) -> RangedI128<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN as i128 {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX as i128 {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI128(self.get() as i128)
+    }
+}
+
+impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
+    /// Convert to [`RangedI8`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI8, RangedI32};
+    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i8: RangedI8<0, 2> = ranged_i32.to_ranged_i8();
+    ///
+    /// assert_eq!(ranged_i32.get(), ranged_i8.get().into());
+    /// ```
+    pub const fn to_ranged_i8<const OUT_MIN: i8, const OUT_MAX: i8>(
+        self,
+    ) -> RangedI8<OUT_MIN, OUT_MAX> {
+        const {
+            if (OUT_MIN as i32) > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if (OUT_MAX as i32) < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI8(self.get() as i8)
+    }
+
+    /// Convert to [`RangedI16`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI16, RangedI32};
+    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i16: RangedI16<0, 2> = ranged_i32.to_ranged_i16();
+    ///
+    /// assert_eq!(ranged_i32.get(), ranged_i16.get().into());
+    /// ```
+    pub const fn to_ranged_i16<const OUT_MIN: i16, const OUT_MAX: i16>(
+        self,
+    ) -> RangedI16<OUT_MIN, OUT_MAX> {
+        const {
+            if (OUT_MIN as i32) > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if (OUT_MAX as i32) < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI16(self.get() as i16)
+    }
+
+    /// Convert to [`RangedI32`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI32};
+    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let expanded_i32: RangedI32<0, 4> = ranged_i32.to_ranged_i32();
+    ///
+    /// assert_eq!(expanded_i32.get(), ranged_i32.get().into());
+    /// ```
+    pub const fn to_ranged_i32<const OUT_MIN: i32, const OUT_MAX: i32>(
+        self,
+    ) -> RangedI32<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI32(self.get())
+    }
+
+    /// Convert to [`RangedI64`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI32, RangedI64};
+    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i64: RangedI64<0, 2> = ranged_i32.to_ranged_i64();
+    ///
+    /// assert_eq!(ranged_i64.get(), ranged_i32.get().into());
+    /// ```
+    pub const fn to_ranged_i64<const OUT_MIN: i64, const OUT_MAX: i64>(
+        self,
+    ) -> RangedI64<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN as i64 {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX as i64 {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI64(self.get() as i64)
+    }
+
+    /// Convert to [`RangedI128`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI32, RangedI128};
+    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i128: RangedI128<0, 2> = ranged_i32.to_ranged_i128();
+    ///
+    /// assert_eq!(ranged_i128.get(), ranged_i32.get().into());
+    /// ```
+    pub const fn to_ranged_i128<const OUT_MIN: i128, const OUT_MAX: i128>(
+        self,
+    ) -> RangedI128<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN as i128 {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX as i128 {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI128(self.get() as i128)
+    }
+}
+
+impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
+    /// Convert to [`RangedI8`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI8, RangedI64};
+    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i8: RangedI8<0, 2> = ranged_i64.to_ranged_i8();
+    ///
+    /// assert_eq!(ranged_i64.get(), ranged_i8.get().into());
+    /// ```
+    pub const fn to_ranged_i8<const OUT_MIN: i8, const OUT_MAX: i8>(
+        self,
+    ) -> RangedI8<OUT_MIN, OUT_MAX> {
+        const {
+            if (OUT_MIN as i64) > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if (OUT_MAX as i64) < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI8(self.get() as i8)
+    }
+
+    /// Convert to [`RangedI16`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI16, RangedI64};
+    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i16: RangedI16<0, 2> = ranged_i64.to_ranged_i16();
+    ///
+    /// assert_eq!(ranged_i64.get(), ranged_i16.get().into());
+    /// ```
+    pub const fn to_ranged_i16<const OUT_MIN: i16, const OUT_MAX: i16>(
+        self,
+    ) -> RangedI16<OUT_MIN, OUT_MAX> {
+        const {
+            if (OUT_MIN as i64) > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if (OUT_MAX as i64) < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI16(self.get() as i16)
+    }
+
+    /// Convert to [`RangedI32`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI32, RangedI64};
+    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i32: RangedI32<0, 2> = ranged_i64.to_ranged_i32();
+    ///
+    /// assert_eq!(ranged_i64.get(), ranged_i32.get().into());
+    /// ```
+    pub const fn to_ranged_i32<const OUT_MIN: i32, const OUT_MAX: i32>(
+        self,
+    ) -> RangedI32<OUT_MIN, OUT_MAX> {
+        const {
+            if (OUT_MIN as i64) > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if (OUT_MAX as i64) < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI32(self.get() as i32)
+    }
+
+    /// Convert to [`RangedI64`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI64};
+    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let expanded_i64: RangedI64<0, 4> = ranged_i64.to_ranged_i64();
+    ///
+    /// assert_eq!(expanded_i64.get(), ranged_i64.get().into());
+    /// ```
+    pub const fn to_ranged_i64<const OUT_MIN: i64, const OUT_MAX: i64>(
+        self,
+    ) -> RangedI64<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI64(self.get())
+    }
+
+    /// Convert to [`RangedI128`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI64, RangedI128};
+    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i128: RangedI128<0, 2> = ranged_i64.to_ranged_i128();
+    ///
+    /// assert_eq!(ranged_i128.get(), ranged_i64.get().into());
+    /// ```
+    pub const fn to_ranged_i128<const OUT_MIN: i128, const OUT_MAX: i128>(
+        self,
+    ) -> RangedI128<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN as i128 {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX as i128 {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI128(self.get() as i128)
+    }
+}
+
+impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
+    /// Convert to [`RangedI8`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI8, RangedI128};
+    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i8: RangedI8<0, 2> = ranged_i128.to_ranged_i8();
+    ///
+    /// assert_eq!(ranged_i128.get(), ranged_i8.get().into());
+    /// ```
+    pub const fn to_ranged_i8<const OUT_MIN: i8, const OUT_MAX: i8>(
+        self,
+    ) -> RangedI8<OUT_MIN, OUT_MAX> {
+        const {
+            if (OUT_MIN as i128) > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if (OUT_MAX as i128) < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI8(self.get() as i8)
+    }
+
+    /// Convert to [`RangedI16`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI16, RangedI128};
+    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i16: RangedI16<0, 2> = ranged_i128.to_ranged_i16();
+    ///
+    /// assert_eq!(ranged_i128.get(), ranged_i16.get().into());
+    /// ```
+    pub const fn to_ranged_i16<const OUT_MIN: i16, const OUT_MAX: i16>(
+        self,
+    ) -> RangedI16<OUT_MIN, OUT_MAX> {
+        const {
+            if (OUT_MIN as i128) > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if (OUT_MAX as i128) < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI16(self.get() as i16)
+    }
+
+    /// Convert to [`RangedI32`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI32, RangedI128};
+    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i32: RangedI32<0, 2> = ranged_i128.to_ranged_i32();
+    ///
+    /// assert_eq!(ranged_i128.get(), ranged_i32.get().into());
+    /// ```
+    pub const fn to_ranged_i32<const OUT_MIN: i32, const OUT_MAX: i32>(
+        self,
+    ) -> RangedI32<OUT_MIN, OUT_MAX> {
+        const {
+            if (OUT_MIN as i128) > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if (OUT_MAX as i128) < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI32(self.get() as i32)
+    }
+
+    /// Convert to [`RangedI64`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI64, RangedI128};
+    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i64: RangedI64<0, 2> = ranged_i128.to_ranged_i64();
+    ///
+    /// assert_eq!(ranged_i128.get(), ranged_i64.get().into());
+    /// ```
+    pub const fn to_ranged_i64<const OUT_MIN: i64, const OUT_MAX: i64>(
+        self,
+    ) -> RangedI64<OUT_MIN, OUT_MAX> {
+        const {
+            if (OUT_MIN as i128) > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if (OUT_MAX as i128) < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI64(self.get() as i64)
+    }
+
+    /// Convert to [`RangedI128`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedI128};
+    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let expanded_i128: RangedI128<0, 4> = ranged_i128.to_ranged_i128();
+    ///
+    /// assert_eq!(expanded_i128.get(), ranged_i128.get().into());
+    /// ```
+    pub const fn to_ranged_i128<const OUT_MIN: i128, const OUT_MAX: i128>(
+        self,
+    ) -> RangedI128<OUT_MIN, OUT_MAX> {
+        const {
+            if OUT_MIN > MIN {
+                panic!("minimum must be lower or match");
+            }
+
+            if OUT_MAX < MAX {
+                panic!("maximum must be higher or match");
+            }
+        }
+
+        RangedI128(self.get())
+    }
+}
