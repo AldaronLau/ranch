@@ -5,7 +5,9 @@ use super::*;
 macro_rules! impl_quotient_fmt {
     ($type:ident, [$($Trait:ident),* $(,)?] $(,)?) => {
         $(
-            impl<T> fmt::$Trait for Quotient<T> where T: fmt::$Trait {
+            impl<T> fmt::$Trait for Quotient<T>
+                where T: fmt::$Trait + Copy + Clone
+            {
                 #[inline]
                 fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
                     match self {
