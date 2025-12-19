@@ -41,30 +41,27 @@ mod format;
 mod ops;
 pub mod parsing;
 mod quotient;
-mod ranged_i128;
-mod ranged_i16;
-mod ranged_i32;
-mod ranged_i64;
-mod ranged_i8;
-mod ranged_u128;
-mod ranged_u16;
-mod ranged_u32;
-mod ranged_u64;
-mod ranged_u8;
+mod ranged {
+    pub(super) mod i128;
+    pub(super) mod i16;
+    pub(super) mod i32;
+    pub(super) mod i64;
+    pub(super) mod i8;
+    pub(super) mod u128;
+    pub(super) mod u16;
+    pub(super) mod u32;
+    pub(super) mod u64;
+    pub(super) mod u8;
+}
 pub mod unit;
 
 pub use self::{
     error::{Error, Result},
     quotient::Quotient,
-    ranged_i8::RangedI8,
-    ranged_i16::RangedI16,
-    ranged_i32::RangedI32,
-    ranged_i64::RangedI64,
-    ranged_i128::RangedI128,
-    ranged_u8::RangedU8,
-    ranged_u16::RangedU16,
-    ranged_u32::RangedU32,
-    ranged_u64::RangedU64,
-    ranged_u128::RangedU128,
+    ranged::{
+        i8::RangedI8, i16::RangedI16, i32::RangedI32, i64::RangedI64,
+        i128::RangedI128, u8::RangedU8, u16::RangedU16, u32::RangedU32,
+        u64::RangedU64, u128::RangedU128,
+    },
 };
 use crate::parsing::{Error as ParsingError, Result as ParsingResult};
