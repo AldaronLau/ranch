@@ -60,7 +60,7 @@ macro_rules! impl_try_from {
                 type Error = Error;
 
                 fn try_from(ranged: $type<IN_MIN, IN_MAX>) -> Result<Self> {
-                    Self::new(<$q>::from(ranged.get()))
+                    Self::with_primitive(<$q>::from(ranged.get()))
                 }
             }
 
@@ -78,7 +78,7 @@ macro_rules! impl_try_from {
                 fn try_from(ranged: $t<IN_MIN, IN_MAX>) -> Result<Self> {
                     let value = ranged.get();
 
-                    Self::new(<$p>::try_from(value).map_err(|_| {
+                    Self::with_primitive(<$p>::try_from(value).map_err(|_| {
                         if value < 0 {
                             Error::NegOverflow
                         } else {
@@ -2722,6 +2722,66 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
         }
 
         RangedI128(self.get() as _)
+    }
+}
+
+impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
+    fn with_primitive(value: i8) -> Result<Self> {
+        Self::with_i8(value)
+    }
+}
+
+impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
+    fn with_primitive(value: u8) -> Result<Self> {
+        Self::with_u8(value)
+    }
+}
+
+impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
+    fn with_primitive(value: i16) -> Result<Self> {
+        Self::with_i16(value)
+    }
+}
+
+impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
+    fn with_primitive(value: u16) -> Result<Self> {
+        Self::with_u16(value)
+    }
+}
+
+impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
+    fn with_primitive(value: i32) -> Result<Self> {
+        Self::with_i32(value)
+    }
+}
+
+impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
+    fn with_primitive(value: u32) -> Result<Self> {
+        Self::with_u32(value)
+    }
+}
+
+impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
+    fn with_primitive(value: i64) -> Result<Self> {
+        Self::with_i64(value)
+    }
+}
+
+impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
+    fn with_primitive(value: u64) -> Result<Self> {
+        Self::with_u64(value)
+    }
+}
+
+impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
+    fn with_primitive(value: i128) -> Result<Self> {
+        Self::with_i128(value)
+    }
+}
+
+impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
+    fn with_primitive(value: u128) -> Result<Self> {
+        Self::with_u128(value)
     }
 }
 

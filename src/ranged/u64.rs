@@ -28,12 +28,12 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU64, Error};
-    /// RangedU64::<1, 2>::new(1).unwrap();
-    /// RangedU64::<1, 2>::new(2).unwrap();
-    /// assert_eq!(RangedU64::<1, 2>::new(0).unwrap_err(), Error::NegOverflow);
-    /// assert_eq!(RangedU64::<1, 2>::new(3).unwrap_err(), Error::PosOverflow);
+    /// RangedU64::<1, 2>::with_u64(1).unwrap();
+    /// RangedU64::<1, 2>::with_u64(2).unwrap();
+    /// assert_eq!(RangedU64::<1, 2>::with_u64(0).unwrap_err(), Error::NegOverflow);
+    /// assert_eq!(RangedU64::<1, 2>::with_u64(3).unwrap_err(), Error::PosOverflow);
     /// ```
-    pub const fn new(value: impl AsRepr<u64>) -> Result<Self> {
+    pub const fn with_u64(value: impl AsRepr<u64>) -> Result<Self> {
         let value = as_repr::as_repr(value);
 
         if value < MIN {
@@ -156,7 +156,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             return None;
         };
 
-        match Self::new(value) {
+        match Self::with_u64(value) {
             Ok(value) => Some(value),
             Err(_) => None,
         }
@@ -181,7 +181,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     pub const fn saturating_add(self, other: impl AsRepr<u64>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::new(self.get().saturating_add(other)) {
+        match Self::with_u64(self.get().saturating_add(other)) {
             Ok(value) => value,
             Err(_) => Self::MAX,
         }
@@ -209,7 +209,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             return None;
         };
 
-        match Self::new(value) {
+        match Self::with_u64(value) {
             Ok(value) => Some(value),
             Err(_) => None,
         }
@@ -234,7 +234,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     pub const fn saturating_mul(self, other: impl AsRepr<u64>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::new(self.get().saturating_mul(other)) {
+        match Self::with_u64(self.get().saturating_mul(other)) {
             Ok(value) => value,
             Err(_) => Self::MAX,
         }
@@ -262,7 +262,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             return None;
         };
 
-        match Self::new(value) {
+        match Self::with_u64(value) {
             Ok(value) => Some(value),
             Err(_) => None,
         }
@@ -287,7 +287,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     pub const fn saturating_pow(self, other: impl AsRepr<u32>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::new(self.get().saturating_pow(other)) {
+        match Self::with_u64(self.get().saturating_pow(other)) {
             Ok(value) => value,
             Err(_) => Self::MAX,
         }
@@ -320,7 +320,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             return Some(Quotient::Nan);
         };
 
-        match Self::new(value) {
+        match Self::with_u64(value) {
             Ok(value) => Some(Quotient::Number(value)),
             Err(_) => None,
         }
@@ -354,7 +354,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             return Quotient::Nan;
         }
 
-        Quotient::Number(match Self::new(self.get().saturating_div(rhs)) {
+        Quotient::Number(match Self::with_u64(self.get().saturating_div(rhs)) {
             Ok(value) => value,
             Err(_) => Self::MIN,
         })
@@ -380,7 +380,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             return None;
         };
 
-        match Self::new(value) {
+        match Self::with_u64(value) {
             Ok(value) => Some(value),
             Err(_) => None,
         }
@@ -403,7 +403,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     pub const fn saturating_sub(self, other: impl AsRepr<u64>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::new(self.get().saturating_sub(other)) {
+        match Self::with_u64(self.get().saturating_sub(other)) {
             Ok(value) => value,
             Err(_) => Self::MIN,
         }
@@ -431,7 +431,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             return None;
         };
 
-        Some(match Self::new(value) {
+        Some(match Self::with_u64(value) {
             Ok(value) => value,
             Err(_) => return None,
         })
@@ -472,7 +472,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn midpoint(self, rhs: Self) -> Self {
-        let Ok(value) = Self::new(self.get().midpoint(rhs.get())) else {
+        let Ok(value) = Self::with_u64(self.get().midpoint(rhs.get())) else {
             panic!("unexpected midpoint value")
         };
 
@@ -717,7 +717,7 @@ impl<const MIN: u64, const MAX: u64> core::str::FromStr
     fn from_str(src: &str) -> ParsingResult<Self> {
         let parsed = src.parse::<u64>()?;
 
-        Self::new(parsed).map_err(From::from)
+        Self::with_u64(parsed).map_err(From::from)
     }
 }
 

@@ -25,12 +25,12 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, Error};
-    /// RangedU8::<1, 2>::new(1).unwrap();
-    /// RangedU8::<1, 2>::new(2).unwrap();
-    /// assert_eq!(RangedU8::<1, 2>::new(0).unwrap_err(), Error::NegOverflow);
-    /// assert_eq!(RangedU8::<1, 2>::new(3).unwrap_err(), Error::PosOverflow);
+    /// RangedU8::<1, 2>::with_u8(1).unwrap();
+    /// RangedU8::<1, 2>::with_u8(2).unwrap();
+    /// assert_eq!(RangedU8::<1, 2>::with_u8(0).unwrap_err(), Error::NegOverflow);
+    /// assert_eq!(RangedU8::<1, 2>::with_u8(3).unwrap_err(), Error::PosOverflow);
     /// ```
-    pub const fn new(value: impl AsRepr<u8>) -> Result<Self> {
+    pub const fn with_u8(value: impl AsRepr<u8>) -> Result<Self> {
         let value = as_repr::as_repr(value);
 
         if value < MIN {
@@ -153,7 +153,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             return None;
         };
 
-        match Self::new(value) {
+        match Self::with_u8(value) {
             Ok(value) => Some(value),
             Err(_) => None,
         }
@@ -178,7 +178,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     pub const fn saturating_add(self, other: impl AsRepr<u8>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::new(self.get().saturating_add(other)) {
+        match Self::with_u8(self.get().saturating_add(other)) {
             Ok(value) => value,
             Err(_) => Self::MAX,
         }
@@ -206,7 +206,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             return None;
         };
 
-        match Self::new(value) {
+        match Self::with_u8(value) {
             Ok(value) => Some(value),
             Err(_) => None,
         }
@@ -230,7 +230,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
                   without modifying the original"]
     pub const fn saturating_mul(self, other: impl AsRepr<u8>) -> Self {
         let other = as_repr::as_repr(other);
-        match Self::new(self.get().saturating_mul(other)) {
+        match Self::with_u8(self.get().saturating_mul(other)) {
             Ok(value) => value,
             Err(_) => Self::MAX,
         }
@@ -258,7 +258,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             return None;
         };
 
-        match Self::new(value) {
+        match Self::with_u8(value) {
             Ok(value) => Some(value),
             Err(_) => None,
         }
@@ -283,7 +283,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     pub const fn saturating_pow(self, other: impl AsRepr<u32>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::new(self.get().saturating_pow(other)) {
+        match Self::with_u8(self.get().saturating_pow(other)) {
             Ok(value) => value,
             Err(_) => Self::MAX,
         }
@@ -316,7 +316,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             return Some(Quotient::Nan);
         };
 
-        match Self::new(value) {
+        match Self::with_u8(value) {
             Ok(value) => Some(Quotient::Number(value)),
             Err(_) => None,
         }
@@ -350,7 +350,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             return Quotient::Nan;
         }
 
-        Quotient::Number(match Self::new(self.get().saturating_div(rhs)) {
+        Quotient::Number(match Self::with_u8(self.get().saturating_div(rhs)) {
             Ok(value) => value,
             Err(_) => Self::MIN,
         })
@@ -376,7 +376,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             return None;
         };
 
-        match Self::new(value) {
+        match Self::with_u8(value) {
             Ok(value) => Some(value),
             Err(_) => None,
         }
@@ -399,7 +399,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     pub const fn saturating_sub(self, other: impl AsRepr<u8>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::new(self.get().saturating_sub(other)) {
+        match Self::with_u8(self.get().saturating_sub(other)) {
             Ok(value) => value,
             Err(_) => Self::MIN,
         }
@@ -427,7 +427,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             return None;
         };
 
-        Some(match Self::new(value) {
+        Some(match Self::with_u8(value) {
             Ok(value) => value,
             Err(_) => return None,
         })
@@ -468,7 +468,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn midpoint(self, rhs: Self) -> Self {
-        let Ok(value) = Self::new(self.get().midpoint(rhs.get())) else {
+        let Ok(value) = Self::with_u8(self.get().midpoint(rhs.get())) else {
             panic!("unexpected midpoint value")
         };
 
@@ -711,7 +711,7 @@ impl<const MIN: u8, const MAX: u8> core::str::FromStr for RangedU8<MIN, MAX> {
     fn from_str(src: &str) -> ParsingResult<Self> {
         let parsed = src.parse::<u8>()?;
 
-        Self::new(parsed).map_err(From::from)
+        Self::with_u8(parsed).map_err(From::from)
     }
 }
 

@@ -28,12 +28,12 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI128, Error};
-    /// RangedI128::<1, 2>::new(1).unwrap();
-    /// RangedI128::<1, 2>::new(2).unwrap();
-    /// assert_eq!(RangedI128::<1, 2>::new(0).unwrap_err(), Error::NegOverflow);
-    /// assert_eq!(RangedI128::<1, 2>::new(3).unwrap_err(), Error::PosOverflow);
+    /// RangedI128::<1, 2>::with_i128(1).unwrap();
+    /// RangedI128::<1, 2>::with_i128(2).unwrap();
+    /// assert_eq!(RangedI128::<1, 2>::with_i128(0).unwrap_err(), Error::NegOverflow);
+    /// assert_eq!(RangedI128::<1, 2>::with_i128(3).unwrap_err(), Error::PosOverflow);
     /// ```
-    pub const fn new(value: impl AsRepr<i128>) -> Result<Self> {
+    pub const fn with_i128(value: impl AsRepr<i128>) -> Result<Self> {
         let value = as_repr::as_repr(value);
 
         if value < MIN {
@@ -162,7 +162,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             );
         };
 
-        Self::new(value)
+        Self::with_i128(value)
     }
 
     /// Add two ranged integers together.
@@ -187,7 +187,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     pub const fn saturating_add(self, other: impl AsRepr<i128>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::new(self.get().saturating_add(other)) {
+        match Self::with_i128(self.get().saturating_add(other)) {
             Ok(value) => value,
             Err(Error::NegOverflow) => Self::MIN,
             Err(Error::PosOverflow) => Self::MAX,
@@ -220,7 +220,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             });
         };
 
-        Self::new(value)
+        Self::with_i128(value)
     }
 
     /// Multiply two ranged integers together.
@@ -243,7 +243,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     pub const fn saturating_mul(self, other: impl AsRepr<i128>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::new(self.get().saturating_mul(other)) {
+        match Self::with_i128(self.get().saturating_mul(other)) {
             Ok(value) => value,
             Err(Error::NegOverflow) => Self::MIN,
             Err(Error::PosOverflow) => Self::MAX,
@@ -278,7 +278,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             });
         };
 
-        Self::new(value)
+        Self::with_i128(value)
     }
 
     /// Raise to an integer power.
@@ -303,7 +303,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     pub const fn saturating_pow(self, other: impl AsRepr<u32>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::new(self.get().saturating_pow(other)) {
+        match Self::with_i128(self.get().saturating_pow(other)) {
             Ok(value) => value,
             Err(Error::NegOverflow) => Self::MIN,
             Err(Error::PosOverflow) => Self::MAX,
@@ -347,7 +347,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             });
         };
 
-        match Self::new(value) {
+        match Self::with_i128(value) {
             Ok(v) => Ok(Quotient::Number(v)),
             Err(e) => Err(e),
         }
@@ -389,7 +389,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             return Quotient::Nan;
         }
 
-        Quotient::Number(match Self::new(self.get().saturating_div(rhs)) {
+        Quotient::Number(match Self::with_i128(self.get().saturating_div(rhs)) {
             Ok(value) => value,
             Err(Error::NegOverflow) => Self::MIN,
             Err(Error::PosOverflow) => Self::MAX,
@@ -421,7 +421,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             });
         };
 
-        Self::new(value)
+        Self::with_i128(value)
     }
 
     /// Subtract a ranged integers from another.
@@ -443,7 +443,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     pub const fn saturating_sub(self, other: impl AsRepr<i128>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::new(self.get().saturating_sub(other)) {
+        match Self::with_i128(self.get().saturating_sub(other)) {
             Ok(value) => value,
             Err(Error::NegOverflow) => Self::MIN,
             Err(Error::PosOverflow) => Self::MAX,
@@ -496,7 +496,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn midpoint(self, rhs: Self) -> Self {
-        let Ok(value) = Self::new(midpoint(self.get(), rhs.get())) else {
+        let Ok(value) = Self::with_i128(midpoint(self.get(), rhs.get())) else {
             panic!("unexpected midpoint value")
         };
 
@@ -776,7 +776,7 @@ impl<const MIN: i128, const MAX: i128> core::str::FromStr
     fn from_str(src: &str) -> ParsingResult<Self> {
         let parsed = src.parse::<i128>()?;
 
-        Self::new(parsed).map_err(From::from)
+        Self::with_i128(parsed).map_err(From::from)
     }
 }
 
