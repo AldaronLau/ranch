@@ -22,6 +22,39 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     /// The smallest value that can be represented by this integer type.
     pub const MIN: Self = Self(MIN);
 
+    /// Create a new ranged integer.
+    ///
+    /// Won't compile if out of bounds.
+    ///
+    /// Compiles:
+    ///
+    /// ```rust
+    /// # use ranch::RangedU16;
+    /// RangedU16::<1, 3>::new::<1>();
+    /// RangedU16::<1, 3>::new::<2>();
+    /// RangedU16::<1, 3>::new::<3>();
+    /// ```
+    ///
+    /// Does not compile:
+    ///
+    /// ```compile_fail
+    /// RangedU16::<1, 3>::new::<0>();
+    /// ```
+    ///
+    /// ```compile_fail
+    /// RangedU16::<1, 3>::new::<4>();
+    /// ```
+    #[must_use]
+    pub const fn new<const N: u16>() -> Self {
+        const {
+            if N < MIN || N > MAX {
+                panic!("Out of bounds");
+            }
+        }
+
+        Self(N)
+    }
+
     /// Try to create a new ranged integer.
     ///
     /// Returns `None` if out of bounds.
@@ -47,44 +80,11 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
         Ok(Self(value))
     }
 
-    /// Create a new ranged integer.
-    ///
-    /// Won't compile if out of bounds.
-    ///
-    /// Compiles:
-    ///
-    /// ```rust
-    /// # use ranch::RangedU16;
-    /// RangedU16::<1, 3>::new_const::<1>();
-    /// RangedU16::<1, 3>::new_const::<2>();
-    /// RangedU16::<1, 3>::new_const::<3>();
-    /// ```
-    ///
-    /// Does not compile:
-    ///
-    /// ```compile_fail
-    /// RangedU16::<1, 3>::new_const::<0>();
-    /// ```
-    ///
-    /// ```compile_fail
-    /// RangedU16::<1, 3>::new_const::<4>();
-    /// ```
-    #[must_use]
-    pub const fn new_const<const N: u16>() -> Self {
-        const {
-            if N < MIN || N > MAX {
-                panic!("Out of bounds");
-            }
-        }
-
-        Self(N)
-    }
-
     /// Return the contained value as a primitive type.
     ///
     /// ```rust
     /// # use ranch::RangedU16;
-    /// assert_eq!(42, RangedU16::<1, 100>::new_const::<42>().get());
+    /// assert_eq!(42, RangedU16::<1, 100>::new::<42>().get());
     /// ```
     #[must_use]
     pub const fn get(self) -> u16 {
@@ -110,7 +110,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedU16;
-    /// let n = RangedU16::<0, 255>::new_const::<0b0101000>();
+    /// let n = RangedU16::<0, 255>::new::<0b0101000>();
     ///
     /// assert_eq!(n.trailing_zeros(), 3);
     /// ```
@@ -123,8 +123,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedU16;
-    /// let a = RangedU16::<0, 255>::new_const::<0b100_0000>();
-    /// let b = RangedU16::<0, 255>::new_const::<0b100_0011>();
+    /// let a = RangedU16::<0, 255>::new::<0b100_0000>();
+    /// let b = RangedU16::<0, 255>::new::<0b100_0011>();
     ///
     /// assert_eq!(a.count_ones(), 1);
     /// assert_eq!(b.count_ones(), 3);
@@ -140,8 +140,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedU16;
-    /// let a = RangedU16::<1, 100>::new_const::<50>();
-    /// let b = RangedU16::<1, 100>::new_const::<5>();
+    /// let a = RangedU16::<1, 100>::new::<50>();
+    /// let b = RangedU16::<1, 100>::new::<5>();
     /// let c = a.checked_add(b).unwrap();
     ///
     /// assert!(c.checked_add(a).is_none());
@@ -168,8 +168,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedU16;
-    /// let a = RangedU16::<1, 100>::new_const::<50>();
-    /// let b = RangedU16::<1, 100>::new_const::<5>();
+    /// let a = RangedU16::<1, 100>::new::<50>();
+    /// let b = RangedU16::<1, 100>::new::<5>();
     /// let c = a.saturating_add(b);
     ///
     /// assert_eq!(c.saturating_add(a).get(), 100);
@@ -193,9 +193,9 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedU16};
-    /// let a = RangedU16::<0, 100>::new_const::<50>();
-    /// let b = RangedU16::<0, 100>::new_const::<5>();
-    /// let c = RangedU16::<0, 100>::new_const::<75>();
+    /// let a = RangedU16::<0, 100>::new::<50>();
+    /// let b = RangedU16::<0, 100>::new::<5>();
+    /// let c = RangedU16::<0, 100>::new::<75>();
     ///
     /// assert_eq!(b.checked_mul(b).unwrap().get(), 25);
     /// assert_eq!(a.checked_mul(c), None);
@@ -221,9 +221,9 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedU16};
-    /// let a = RangedU16::<0, 100>::new_const::<50>();
-    /// let b = RangedU16::<0, 100>::new_const::<5>();
-    /// let c = RangedU16::<0, 100>::new_const::<75>();
+    /// let a = RangedU16::<0, 100>::new::<50>();
+    /// let b = RangedU16::<0, 100>::new::<5>();
+    /// let c = RangedU16::<0, 100>::new::<75>();
     ///
     /// assert_eq!(b.saturating_mul(b).get(), 25);
     /// assert_eq!(a.saturating_mul(c).get(), 100);
@@ -246,9 +246,9 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedU16};
-    /// let a = RangedU16::<0, 100>::new_const::<50>();
-    /// let b = RangedU16::<0, 100>::new_const::<5>();
-    /// let c = RangedU16::<0, 100>::new_const::<2>();
+    /// let a = RangedU16::<0, 100>::new::<50>();
+    /// let b = RangedU16::<0, 100>::new::<5>();
+    /// let c = RangedU16::<0, 100>::new::<2>();
     ///
     /// assert_eq!(a.checked_pow(2), None);
     /// assert_eq!(b.checked_pow(2).unwrap().get(), 25);
@@ -274,9 +274,9 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedU16};
-    /// let a = RangedU16::<0, 100>::new_const::<50>();
-    /// let b = RangedU16::<0, 100>::new_const::<5>();
-    /// let c = RangedU16::<0, 100>::new_const::<2>();
+    /// let a = RangedU16::<0, 100>::new::<50>();
+    /// let b = RangedU16::<0, 100>::new::<5>();
+    /// let c = RangedU16::<0, 100>::new::<2>();
     ///
     /// assert_eq!(a.saturating_pow(2).get(), 100);
     /// assert_eq!(b.saturating_pow(2).get(), 25);
@@ -299,12 +299,12 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedU16, Quotient};
-    /// let a = RangedU16::<1, 50>::new_const::<50>();
-    /// let b = RangedU16::<1, 50>::new_const::<1>();
+    /// let a = RangedU16::<1, 50>::new::<50>();
+    /// let b = RangedU16::<1, 50>::new::<1>();
     ///
     /// assert_eq!(
     ///     a.checked_div(2),
-    ///     Some(Quotient::Number(RangedU16::new_const::<25>())),
+    ///     Some(Quotient::Number(RangedU16::new::<25>())),
     /// );
     /// assert_eq!(a.checked_div(0), Some(Quotient::Nan));
     /// assert_eq!(b.checked_div(2), None);
@@ -332,17 +332,17 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedU16, Quotient};
-    /// let a = RangedU16::<1, 50>::new_const::<50>();
-    /// let b = RangedU16::<1, 50>::new_const::<1>();
+    /// let a = RangedU16::<1, 50>::new::<50>();
+    /// let b = RangedU16::<1, 50>::new::<1>();
     ///
     /// assert_eq!(
     ///     a.saturating_div(2),
-    ///     Quotient::Number(RangedU16::new_const::<25>()),
+    ///     Quotient::Number(RangedU16::new::<25>()),
     /// );
     /// assert_eq!(a.saturating_div(0), Quotient::Nan);
     /// assert_eq!(
     ///     b.saturating_div(2),
-    ///     Quotient::Number(RangedU16::new_const::<1>()),
+    ///     Quotient::Number(RangedU16::new::<1>()),
     /// );
     /// ```
     #[must_use = "this returns the result of the operation, \
@@ -366,7 +366,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedU16;
-    /// let a = RangedU16::<1, 100>::new_const::<50>();
+    /// let a = RangedU16::<1, 100>::new::<50>();
     /// let b = a.checked_sub(5).unwrap();
     ///
     /// assert_eq!(b.get(), 45);
@@ -392,7 +392,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedU16};
-    /// let a = RangedU16::<1, 100>::new_const::<50>();
+    /// let a = RangedU16::<1, 100>::new::<50>();
     /// let b = a.saturating_sub(5);
     ///
     /// assert_eq!(b.get(), 45);
@@ -415,10 +415,10 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedU16};
-    /// let a = RangedU16::<0, 33>::new_const::<0>();
-    /// let b = RangedU16::<0, 33>::new_const::<9>();
-    /// let c = RangedU16::<0, 33>::new_const::<32>();
-    /// let d = RangedU16::<0, 33>::new_const::<33>();
+    /// let a = RangedU16::<0, 33>::new::<0>();
+    /// let b = RangedU16::<0, 33>::new::<9>();
+    /// let c = RangedU16::<0, 33>::new::<32>();
+    /// let d = RangedU16::<0, 33>::new::<33>();
     ///
     /// assert_eq!(a.checked_next_power_of_two().unwrap().get(), 1);
     /// assert_eq!(b.checked_next_power_of_two().unwrap().get(), 16);
@@ -441,10 +441,10 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedU16};
-    /// let a = RangedU16::<0, 32>::new_const::<0>();
-    /// let b = RangedU16::<0, 32>::new_const::<9>();
-    /// let c = RangedU16::<0, 32>::new_const::<32>();
-    /// let d = RangedU16::<0, 32>::new_const::<1>();
+    /// let a = RangedU16::<0, 32>::new::<0>();
+    /// let b = RangedU16::<0, 32>::new::<9>();
+    /// let c = RangedU16::<0, 32>::new::<32>();
+    /// let d = RangedU16::<0, 32>::new::<1>();
     ///
     /// assert!(!a.is_power_of_two());
     /// assert!(!b.is_power_of_two());
@@ -460,11 +460,11 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedU16;
-    /// let a = RangedU16::<0, 8>::new_const::<0>();
-    /// let b = RangedU16::<0, 8>::new_const::<2>();
-    /// let c = RangedU16::<0, 8>::new_const::<4>();
-    /// let d = RangedU16::<0, 8>::new_const::<3>();
-    /// let e = RangedU16::<0, 8>::new_const::<7>();
+    /// let a = RangedU16::<0, 8>::new::<0>();
+    /// let b = RangedU16::<0, 8>::new::<2>();
+    /// let c = RangedU16::<0, 8>::new::<4>();
+    /// let d = RangedU16::<0, 8>::new::<3>();
+    /// let e = RangedU16::<0, 8>::new::<7>();
     ///
     /// assert_eq!(a.midpoint(c), b);
     /// assert_eq!(a.midpoint(e), d);
@@ -483,8 +483,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedU16;
-    /// let a = RangedU16::<1, 3>::new_const::<1>();
-    /// let b = RangedU16::<1, 3>::new_const::<2>();
+    /// let a = RangedU16::<1, 3>::new::<1>();
+    /// let b = RangedU16::<1, 3>::new::<2>();
     /// let output: RangedU16::<2, 6> = a.add(b);
     ///
     /// assert_eq!(output.get(), 3);
@@ -494,8 +494,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```compile_fail
     /// # use ranch::RangedU16;
-    /// let a = RangedU16::<1, 3>::new_const::<1>();
-    /// let b = RangedU16::<1, 3>::new_const::<2>();
+    /// let a = RangedU16::<1, 3>::new::<1>();
+    /// let b = RangedU16::<1, 3>::new::<2>();
     /// let output: RangedU16::<1, 6> = a.add(b);
     ///
     /// assert_eq!(output.get(), 3);
@@ -528,8 +528,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedU16;
-    /// let a = RangedU16::<2, 5>::new_const::<3>();
-    /// let b = RangedU16::<1, 2>::new_const::<1>();
+    /// let a = RangedU16::<2, 5>::new::<3>();
+    /// let b = RangedU16::<1, 2>::new::<1>();
     /// let output: RangedU16::<0, 4> = a.sub(b);
     ///
     /// assert_eq!(output.get(), 2);
@@ -539,8 +539,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```compile_fail
     /// # use ranch::RangedU16;
-    /// let a = RangedU16::<2, 5>::new_const::<3>();
-    /// let b = RangedU16::<1, 2>::new_const::<1>();
+    /// let a = RangedU16::<2, 5>::new::<3>();
+    /// let b = RangedU16::<1, 2>::new::<1>();
     /// let output: RangedU16::<0, 3> = a.sub(b);
     ///
     /// assert_eq!(output.get(), 2);
@@ -573,8 +573,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedU16;
-    /// let a = RangedU16::<1, 3>::new_const::<1>();
-    /// let b = RangedU16::<2, 3>::new_const::<2>();
+    /// let a = RangedU16::<1, 3>::new::<1>();
+    /// let b = RangedU16::<2, 3>::new::<2>();
     /// let output: RangedU16::<2, 9> = a.mul(b);
     ///
     /// assert_eq!(output.get(), 2);
@@ -584,8 +584,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```compile_fail
     /// # use ranch::RangedU16;
-    /// let a = RangedU16::<1, 3>::new_const::<1>();
-    /// let b = RangedU16::<2, 3>::new_const::<2>();
+    /// let a = RangedU16::<1, 3>::new::<1>();
+    /// let b = RangedU16::<2, 3>::new::<2>();
     /// let output: RangedU16::<1, 9> = a.mul(b);
     ///
     /// assert_eq!(output.get(), 2);
@@ -618,8 +618,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedU16;
-    /// let a = RangedU16::<2, 5>::new_const::<3>();
-    /// let b = RangedU16::<1, 2>::new_const::<2>();
+    /// let a = RangedU16::<2, 5>::new::<3>();
+    /// let b = RangedU16::<1, 2>::new::<2>();
     /// let output: RangedU16::<1, 2> = a.div(b);
     ///
     /// assert_eq!(output.get(), 1);
@@ -629,8 +629,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     //
     /// ```compile_fail
     /// # use ranch::RangedU16;
-    /// let a = RangedU16::<2, 5>::new_const::<3>();
-    /// let b = RangedU16::<1, 2>::new_const::<1>();
+    /// let a = RangedU16::<2, 5>::new::<3>();
+    /// let b = RangedU16::<1, 2>::new::<1>();
     /// let output: RangedU16::<0, 2> = a.div(b);
     ///
     /// assert_eq!(output.get(), 1);
@@ -667,8 +667,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU16, RangedU32};
-    /// let a = RangedU16::<1, 3>::new_const::<2>();
-    /// let b = RangedU32::<2, 3>::new_const::<2>();
+    /// let a = RangedU16::<1, 3>::new::<2>();
+    /// let b = RangedU32::<2, 3>::new::<2>();
     /// let output: RangedU16::<1, 27> = a.pow(b);
     ///
     /// assert_eq!(output.get(), 4);
@@ -678,8 +678,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```compile_fail
     /// # use ranch::{RangedU16, RangedU32};
-    /// let a = RangedU16::<1, 3>::new_const::<2>();
-    /// let b = RangedU32::<2, 3>::new_const::<2>();
+    /// let a = RangedU16::<1, 3>::new::<2>();
+    /// let b = RangedU32::<2, 3>::new::<2>();
     /// let output: RangedU16::<0, 27> = a.pow(b);
     ///
     /// assert_eq!(output.get(), 4);

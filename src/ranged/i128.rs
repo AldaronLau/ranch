@@ -22,6 +22,39 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     /// The smallest value that can be represented by this integer type.
     pub const MIN: Self = Self(MIN);
 
+    /// Create a new ranged integer.
+    ///
+    /// Won't compile if out of bounds.
+    ///
+    /// Compiles:
+    ///
+    /// ```rust
+    /// # use ranch::RangedI128;
+    /// RangedI128::<1, 3>::new::<1>();
+    /// RangedI128::<1, 3>::new::<2>();
+    /// RangedI128::<1, 3>::new::<3>();
+    /// ```
+    ///
+    /// Does not compile:
+    ///
+    /// ```compile_fail
+    /// RangedI128::<1, 3>::new::<0>();
+    /// ```
+    ///
+    /// ```compile_fail
+    /// RangedI128::<1, 3>::new::<4>();
+    /// ```
+    #[must_use]
+    pub const fn new<const N: i128>() -> Self {
+        const {
+            if N < MIN || N > MAX {
+                panic!("Out of bounds");
+            }
+        }
+
+        Self(N)
+    }
+
     /// Try to create a new ranged integer.
     ///
     /// Returns `None` if out of bounds.
@@ -47,44 +80,11 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
         Ok(Self(value))
     }
 
-    /// Create a new ranged integer.
-    ///
-    /// Won't compile if out of bounds.
-    ///
-    /// Compiles:
-    ///
-    /// ```rust
-    /// # use ranch::RangedI128;
-    /// RangedI128::<1, 3>::new_const::<1>();
-    /// RangedI128::<1, 3>::new_const::<2>();
-    /// RangedI128::<1, 3>::new_const::<3>();
-    /// ```
-    ///
-    /// Does not compile:
-    ///
-    /// ```compile_fail
-    /// RangedI128::<1, 3>::new_const::<0>();
-    /// ```
-    ///
-    /// ```compile_fail
-    /// RangedI128::<1, 3>::new_const::<4>();
-    /// ```
-    #[must_use]
-    pub const fn new_const<const N: i128>() -> Self {
-        const {
-            if N < MIN || N > MAX {
-                panic!("Out of bounds");
-            }
-        }
-
-        Self(N)
-    }
-
     /// Return the contained value as a primitive type.
     ///
     /// ```rust
     /// # use ranch::RangedI128;
-    /// assert_eq!(42, RangedI128::<1, 100>::new_const::<42>().get());
+    /// assert_eq!(42, RangedI128::<1, 100>::new::<42>().get());
     /// ```
     #[must_use]
     pub const fn get(self) -> i128 {
@@ -110,7 +110,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedI128;
-    /// let n = RangedI128::<-128, 127>::new_const::<0b0101000>();
+    /// let n = RangedI128::<-128, 127>::new::<0b0101000>();
     ///
     /// assert_eq!(n.trailing_zeros(), 3);
     /// ```
@@ -123,8 +123,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedI128;
-    /// let a = RangedI128::<-128, 127>::new_const::<0b100_0000>();
-    /// let b = RangedI128::<-128, 127>::new_const::<0b100_0011>();
+    /// let a = RangedI128::<-128, 127>::new::<0b100_0000>();
+    /// let b = RangedI128::<-128, 127>::new::<0b100_0011>();
     ///
     /// assert_eq!(a.count_ones(), 1);
     /// assert_eq!(b.count_ones(), 3);
@@ -140,8 +140,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedI128;
-    /// let a = RangedI128::<1, 100>::new_const::<50>();
-    /// let b = RangedI128::<1, 100>::new_const::<5>();
+    /// let a = RangedI128::<1, 100>::new::<50>();
+    /// let b = RangedI128::<1, 100>::new::<5>();
     /// let c = a.checked_add(b).unwrap();
     ///
     /// assert!(c.checked_add(a).is_err());
@@ -172,10 +172,10 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedI128;
-    /// let a = RangedI128::<-100, 100>::new_const::<50>();
-    /// let b = RangedI128::<-100, 100>::new_const::<5>();
+    /// let a = RangedI128::<-100, 100>::new::<50>();
+    /// let b = RangedI128::<-100, 100>::new::<5>();
     /// let c = a.saturating_add(b);
-    /// let d = RangedI128::<-100, 100>::new_const::<-75>();
+    /// let d = RangedI128::<-100, 100>::new::<-75>();
     ///
     /// assert_eq!(c.saturating_add(a).get(), 100);
     /// assert_eq!(c.get(), 55);
@@ -200,9 +200,9 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedI128};
-    /// let a = RangedI128::<-100, 100>::new_const::<50>();
-    /// let b = RangedI128::<-100, 100>::new_const::<5>();
-    /// let c = RangedI128::<-100, 100>::new_const::<-75>();
+    /// let a = RangedI128::<-100, 100>::new::<50>();
+    /// let b = RangedI128::<-100, 100>::new::<5>();
+    /// let c = RangedI128::<-100, 100>::new::<-75>();
     ///
     /// assert_eq!(b.checked_mul(b).unwrap().get(), 25);
     /// assert_eq!(a.checked_mul(c).unwrap_err(), Error::NegOverflow);
@@ -230,9 +230,9 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedI128};
-    /// let a = RangedI128::<-100, 100>::new_const::<50>();
-    /// let b = RangedI128::<-100, 100>::new_const::<5>();
-    /// let c = RangedI128::<-100, 100>::new_const::<-75>();
+    /// let a = RangedI128::<-100, 100>::new::<50>();
+    /// let b = RangedI128::<-100, 100>::new::<5>();
+    /// let c = RangedI128::<-100, 100>::new::<-75>();
     ///
     /// assert_eq!(b.saturating_mul(b).get(), 25);
     /// assert_eq!(a.saturating_mul(c).get(), -100);
@@ -256,10 +256,10 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedI128};
-    /// let a = RangedI128::<-100, 100>::new_const::<50>();
-    /// let b = RangedI128::<-100, 100>::new_const::<5>();
-    /// let c = RangedI128::<-100, 100>::new_const::<-75>();
-    /// let d = RangedI128::<-100, 100>::new_const::<2>();
+    /// let a = RangedI128::<-100, 100>::new::<50>();
+    /// let b = RangedI128::<-100, 100>::new::<5>();
+    /// let c = RangedI128::<-100, 100>::new::<-75>();
+    /// let d = RangedI128::<-100, 100>::new::<2>();
     ///
     /// assert_eq!(a.checked_pow(2).unwrap_err(), Error::PosOverflow);
     /// assert_eq!(b.checked_pow(2).unwrap().get(), 25);
@@ -288,10 +288,10 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedI128};
-    /// let a = RangedI128::<-100, 100>::new_const::<50>();
-    /// let b = RangedI128::<-100, 100>::new_const::<5>();
-    /// let c = RangedI128::<-100, 100>::new_const::<-75>();
-    /// let d = RangedI128::<-100, 100>::new_const::<2>();
+    /// let a = RangedI128::<-100, 100>::new::<50>();
+    /// let b = RangedI128::<-100, 100>::new::<5>();
+    /// let c = RangedI128::<-100, 100>::new::<-75>();
+    /// let d = RangedI128::<-100, 100>::new::<2>();
     ///
     /// assert_eq!(a.saturating_pow(2).get(), 100);
     /// assert_eq!(b.saturating_pow(2).get(), 25);
@@ -316,12 +316,12 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedI128, Quotient};
-    /// let a = RangedI128::<-100, 10>::new_const::<-50>();
-    /// let b = RangedI128::<-10, 100>::new_const::<50>();
+    /// let a = RangedI128::<-100, 10>::new::<-50>();
+    /// let b = RangedI128::<-10, 100>::new::<50>();
     ///
     /// assert_eq!(
     ///     a.checked_div(2),
-    ///     Ok(Quotient::Number(RangedI128::new_const::<-25>())),
+    ///     Ok(Quotient::Number(RangedI128::new::<-25>())),
     /// );
     /// assert_eq!(a.checked_div(0), Ok(Quotient::Nan));
     /// assert_eq!(a.checked_div(-1), Err(Error::PosOverflow));
@@ -360,21 +360,21 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedI128, Quotient};
-    /// let a = RangedI128::<-100, 10>::new_const::<-50>();
-    /// let b = RangedI128::<-10, 100>::new_const::<50>();
+    /// let a = RangedI128::<-100, 10>::new::<-50>();
+    /// let b = RangedI128::<-10, 100>::new::<50>();
     ///
     /// assert_eq!(
     ///     a.saturating_div(2),
-    ///     Quotient::Number(RangedI128::new_const::<-25>()),
+    ///     Quotient::Number(RangedI128::new::<-25>()),
     /// );
     /// assert_eq!(a.saturating_div(0), Quotient::Nan);
     /// assert_eq!(
     ///     a.saturating_div(-1),
-    ///     Quotient::Number(RangedI128::new_const::<10>()),
+    ///     Quotient::Number(RangedI128::new::<10>()),
     /// );
     /// assert_eq!(
     ///     b.saturating_div(-2),
-    ///     Quotient::Number(RangedI128::new_const::<-10>()),
+    ///     Quotient::Number(RangedI128::new::<-10>()),
     /// );
     /// ```
     #[must_use = "this returns the result of the operation, \
@@ -389,11 +389,13 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             return Quotient::Nan;
         }
 
-        Quotient::Number(match Self::with_i128(self.get().saturating_div(rhs)) {
-            Ok(value) => value,
-            Err(Error::NegOverflow) => Self::MIN,
-            Err(Error::PosOverflow) => Self::MAX,
-        })
+        Quotient::Number(
+            match Self::with_i128(self.get().saturating_div(rhs)) {
+                Ok(value) => value,
+                Err(Error::NegOverflow) => Self::MIN,
+                Err(Error::PosOverflow) => Self::MAX,
+            },
+        )
     }
 
     /// Subtract a ranged integers from another.
@@ -402,7 +404,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedI128};
-    /// let a = RangedI128::<1, 100>::new_const::<50>();
+    /// let a = RangedI128::<1, 100>::new::<50>();
     /// let b = a.checked_sub(5).unwrap();
     ///
     /// assert_eq!(a.checked_sub(-51), Err(Error::PosOverflow));
@@ -431,7 +433,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{Error, RangedI128};
-    /// let a = RangedI128::<1, 100>::new_const::<50>();
+    /// let a = RangedI128::<1, 100>::new::<50>();
     /// let b = a.saturating_sub(5);
     ///
     /// assert_eq!(a.saturating_sub(-51).get(), 100);
@@ -454,8 +456,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedI128;
-    /// assert!(!RangedI128::<-100, 100>::new_const::<10>().is_negative());
-    /// assert!(RangedI128::<-100, 100>::new_const::<-10>().is_negative());
+    /// assert!(!RangedI128::<-100, 100>::new::<10>().is_negative());
+    /// assert!(RangedI128::<-100, 100>::new::<-10>().is_negative());
     /// ```
     #[must_use]
     pub const fn is_negative(self) -> bool {
@@ -466,8 +468,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedI128;
-    /// assert!(RangedI128::<-100, 100>::new_const::<10>().is_positive());
-    /// assert!(!RangedI128::<-100, 100>::new_const::<-10>().is_positive());
+    /// assert!(RangedI128::<-100, 100>::new::<10>().is_positive());
+    /// assert!(!RangedI128::<-100, 100>::new::<-10>().is_positive());
     /// ```
     #[must_use]
     pub const fn is_positive(self) -> bool {
@@ -478,14 +480,14 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedI128;
-    /// let a = RangedI128::<-8, 8>::new_const::<0>();
-    /// let b = RangedI128::<-8, 8>::new_const::<2>();
-    /// let c = RangedI128::<-8, 8>::new_const::<4>();
-    /// let d = RangedI128::<-8, 8>::new_const::<-1>();
-    /// let e = RangedI128::<-8, 8>::new_const::<-7>();
-    /// let f = RangedI128::<-8, 8>::new_const::<-3>();
-    /// let g = RangedI128::<-8, 8>::new_const::<3>();
-    /// let h = RangedI128::<-8, 8>::new_const::<7>();
+    /// let a = RangedI128::<-8, 8>::new::<0>();
+    /// let b = RangedI128::<-8, 8>::new::<2>();
+    /// let c = RangedI128::<-8, 8>::new::<4>();
+    /// let d = RangedI128::<-8, 8>::new::<-1>();
+    /// let e = RangedI128::<-8, 8>::new::<-7>();
+    /// let f = RangedI128::<-8, 8>::new::<-3>();
+    /// let g = RangedI128::<-8, 8>::new::<3>();
+    /// let h = RangedI128::<-8, 8>::new::<7>();
     ///
     /// assert_eq!(a.midpoint(c), b);
     /// assert_eq!(d.midpoint(b), a);
@@ -507,8 +509,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedI128;
-    /// let a = RangedI128::<1, 3>::new_const::<1>();
-    /// let b = RangedI128::<-1, 3>::new_const::<2>();
+    /// let a = RangedI128::<1, 3>::new::<1>();
+    /// let b = RangedI128::<-1, 3>::new::<2>();
     /// let output: RangedI128::<0, 6> = a.add(b);
     ///
     /// assert_eq!(output.get(), 3);
@@ -518,8 +520,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```compile_fail
     /// # use ranch::RangedI128;
-    /// let a = RangedI128::<1, 3>::new_const::<1>();
-    /// let b = RangedI128::<-1, 3>::new_const::<2>();
+    /// let a = RangedI128::<1, 3>::new::<1>();
+    /// let b = RangedI128::<-1, 3>::new::<2>();
     /// let output: RangedI128::<1, 6> = a.add(b);
     ///
     /// assert_eq!(output.get(), 3);
@@ -552,8 +554,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedI128;
-    /// let a = RangedI128::<2, 5>::new_const::<3>();
-    /// let b = RangedI128::<-1, 3>::new_const::<1>();
+    /// let a = RangedI128::<2, 5>::new::<3>();
+    /// let b = RangedI128::<-1, 3>::new::<1>();
     /// let output: RangedI128::<-1, 6> = a.sub(b);
     ///
     /// assert_eq!(output.get(), 2);
@@ -563,8 +565,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```compile_fail
     /// # use ranch::RangedI128;
-    /// let a = RangedI128::<2, 5>::new_const::<3>();
-    /// let b = RangedI128::<-1, 3>::new_const::<1>();
+    /// let a = RangedI128::<2, 5>::new::<3>();
+    /// let b = RangedI128::<-1, 3>::new::<1>();
     /// let output: RangedI128::<0, 6> = a.sub(b);
     ///
     /// assert_eq!(output.get(), 2);
@@ -597,8 +599,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedI128;
-    /// let a = RangedI128::<-2, 3>::new_const::<1>();
-    /// let b = RangedI128::<0, 3>::new_const::<2>();
+    /// let a = RangedI128::<-2, 3>::new::<1>();
+    /// let b = RangedI128::<0, 3>::new::<2>();
     /// let output: RangedI128::<-6, 9> = a.mul(b);
     ///
     /// assert_eq!(output.get(), 2);
@@ -608,8 +610,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```compile_fail
     /// # use ranch::RangedI128;
-    /// let a = RangedI128::<-2, 3>::new_const::<1>();
-    /// let b = RangedI128::<0, 3>::new_const::<2>();
+    /// let a = RangedI128::<-2, 3>::new::<1>();
+    /// let b = RangedI128::<0, 3>::new::<2>();
     /// let output: RangedI128::<0, 9> = a.mul(b);
     ///
     /// assert_eq!(output.get(), 2);
@@ -647,8 +649,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::RangedI128;
-    /// let a = RangedI128::<2, 5>::new_const::<3>();
-    /// let b = RangedI128::<1, 2>::new_const::<2>();
+    /// let a = RangedI128::<2, 5>::new::<3>();
+    /// let b = RangedI128::<1, 2>::new::<2>();
     /// let output: RangedI128::<1, 2> = a.div(b);
     ///
     /// assert_eq!(output.get(), 1);
@@ -658,8 +660,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     //
     /// ```compile_fail
     /// # use ranch::RangedI128;
-    /// let a = RangedI128::<2, 5>::new_const::<3>();
-    /// let b = RangedI128::<1, 2>::new_const::<1>();
+    /// let a = RangedI128::<2, 5>::new::<3>();
+    /// let b = RangedI128::<1, 2>::new::<1>();
     /// let output: RangedI128::<0, 2> = a.div(b);
     ///
     /// assert_eq!(output.get(), 1);
@@ -705,8 +707,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI128, RangedU32};
-    /// let a = RangedI128::<-1, 3>::new_const::<2>();
-    /// let b = RangedU32::<2, 3>::new_const::<2>();
+    /// let a = RangedI128::<-1, 3>::new::<2>();
+    /// let b = RangedU32::<2, 3>::new::<2>();
     /// let output: RangedI128::<-1, 27> = a.pow(b);
     ///
     /// assert_eq!(output.get(), 4);
@@ -716,8 +718,8 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```compile_fail
     /// # use ranch::{RangedI128, RangedU32};
-    /// let a = RangedI128::<1, 3>::new_const::<2>();
-    /// let b = RangedU32::<2, 3>::new_const::<2>();
+    /// let a = RangedI128::<1, 3>::new::<2>();
+    /// let b = RangedU32::<2, 3>::new::<2>();
     /// let output: RangedI128::<0, 27> = a.pow(b);
     ///
     /// assert_eq!(output.get(), 4);

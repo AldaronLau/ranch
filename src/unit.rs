@@ -32,7 +32,7 @@ macro_rules! impl_default {
     ($type:ident, $p:ty $(,)?) => {
         impl<const VAL: $p> Default for $type<VAL> {
             fn default() -> Self {
-                Self::new_const::<VAL>()
+                Self::new::<VAL>()
             }
         }
 

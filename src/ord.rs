@@ -10,9 +10,9 @@ macro_rules! const_ord {
             ///
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($ty), ";")]
-            #[doc = concat!("let a = ", stringify!($ty), "::<4, 24>::new_const::<12>();")]
-            #[doc = concat!("let b = ", stringify!($ty), "::<6, 12>::new_const::<6>();")]
-            #[doc = concat!("let output = ", stringify!($ty), "::<4, 12>::new_const::<6>();")]
+            #[doc = concat!("let a = ", stringify!($ty), "::<4, 24>::new::<12>();")]
+            #[doc = concat!("let b = ", stringify!($ty), "::<6, 12>::new::<6>();")]
+            #[doc = concat!("let output = ", stringify!($ty), "::<4, 12>::new::<6>();")]
             ///
             /// assert_eq!(a.min(b), output);
             /// ```
@@ -49,9 +49,9 @@ macro_rules! const_ord {
             ///
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($ty), ";")]
-            #[doc = concat!("let a = ", stringify!($ty), "::<4, 24>::new_const::<12>();")]
-            #[doc = concat!("let b = ", stringify!($ty), "::<6, 12>::new_const::<6>();")]
-            #[doc = concat!("let output = ", stringify!($ty), "::<6, 24>::new_const::<12>();")]
+            #[doc = concat!("let a = ", stringify!($ty), "::<4, 24>::new::<12>();")]
+            #[doc = concat!("let b = ", stringify!($ty), "::<6, 12>::new::<6>();")]
+            #[doc = concat!("let output = ", stringify!($ty), "::<6, 24>::new::<12>();")]
             ///
             /// assert_eq!(a.max(b), output);
             /// ```
@@ -92,10 +92,10 @@ macro_rules! const_ord {
             ///
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($ty), ";")]
-            #[doc = concat!("let a = ", stringify!($ty), "::<6, 24>::new_const::<12>();")]
-            #[doc = concat!("let min = ", stringify!($ty), "::<4, 12>::new_const::<8>();")]
-            #[doc = concat!("let max = ", stringify!($ty), "::<8, 16>::new_const::<10>();")]
-            #[doc = concat!("let output = ", stringify!($ty), "::<6, 16>::new_const::<10>();")]
+            #[doc = concat!("let a = ", stringify!($ty), "::<6, 24>::new::<12>();")]
+            #[doc = concat!("let min = ", stringify!($ty), "::<4, 12>::new::<8>();")]
+            #[doc = concat!("let max = ", stringify!($ty), "::<8, 16>::new::<10>();")]
+            #[doc = concat!("let output = ", stringify!($ty), "::<6, 16>::new::<10>();")]
             ///
             /// assert_eq!(a.clamp(min, max), output);
             /// ```

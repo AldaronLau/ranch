@@ -36,11 +36,11 @@ impl Error {
     /// # use ranch::{RangedU8, Error};
     /// assert_eq!(
     ///     RangedU8::<1, 3>::with_u8(0).unwrap_or_else(Error::saturate),
-    ///     RangedU8::<1, 3>::new_const::<1>(),
+    ///     RangedU8::<1, 3>::new::<1>(),
     /// );
     /// assert_eq!(
     ///     RangedU8::<1, 3>::with_u8(4).unwrap_or_else(Error::saturate),
-    ///     RangedU8::<1, 3>::new_const::<3>(),
+    ///     RangedU8::<1, 3>::new::<3>(),
     /// );
     /// ```
     #[must_use]

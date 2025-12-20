@@ -150,7 +150,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8};
-    /// let ranged_u8 = RangedU8::<0, 2>::new_const::<1>();
+    /// let ranged_u8 = RangedU8::<0, 2>::new::<1>();
     /// let expanded_u8: RangedU8<0, 4> = ranged_u8.to_ranged_u8();
     ///
     /// assert_eq!(expanded_u8.get(), ranged_u8.get().into());
@@ -175,7 +175,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, RangedU16};
-    /// let ranged_u8 = RangedU8::<0, 2>::new_const::<1>();
+    /// let ranged_u8 = RangedU8::<0, 2>::new::<1>();
     /// let ranged_u16: RangedU16<0, 2> = ranged_u8.to_ranged_u16();
     ///
     /// assert_eq!(ranged_u16.get(), ranged_u8.get().into());
@@ -200,7 +200,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, RangedU32};
-    /// let ranged_u8 = RangedU8::<0, 2>::new_const::<1>();
+    /// let ranged_u8 = RangedU8::<0, 2>::new::<1>();
     /// let ranged_u32: RangedU32<0, 2> = ranged_u8.to_ranged_u32();
     ///
     /// assert_eq!(ranged_u32.get(), ranged_u8.get().into());
@@ -225,7 +225,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, RangedU64};
-    /// let ranged_u8 = RangedU8::<0, 2>::new_const::<1>();
+    /// let ranged_u8 = RangedU8::<0, 2>::new::<1>();
     /// let ranged_u64: RangedU64<0, 2> = ranged_u8.to_ranged_u64();
     ///
     /// assert_eq!(ranged_u64.get(), ranged_u8.get().into());
@@ -250,7 +250,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, RangedU128};
-    /// let ranged_u8 = RangedU8::<0, 2>::new_const::<1>();
+    /// let ranged_u8 = RangedU8::<0, 2>::new::<1>();
     /// let ranged_u128: RangedU128<0, 2> = ranged_u8.to_ranged_u128();
     ///
     /// assert_eq!(ranged_u128.get(), ranged_u8.get().into());
@@ -277,7 +277,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, RangedU16};
-    /// let ranged_u16 = RangedU16::<0, 2>::new_const::<1>();
+    /// let ranged_u16 = RangedU16::<0, 2>::new::<1>();
     /// let ranged_u8: RangedU8<0, 2> = ranged_u16.to_ranged_u8();
     ///
     /// assert_eq!(ranged_u16.get(), ranged_u8.get().into());
@@ -302,7 +302,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU16};
-    /// let ranged_u16 = RangedU16::<0, 2>::new_const::<1>();
+    /// let ranged_u16 = RangedU16::<0, 2>::new::<1>();
     /// let expanded_u16: RangedU16<0, 4> = ranged_u16.to_ranged_u16();
     ///
     /// assert_eq!(expanded_u16.get(), ranged_u16.get().into());
@@ -327,7 +327,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU16, RangedU32};
-    /// let ranged_u16 = RangedU16::<0, 2>::new_const::<1>();
+    /// let ranged_u16 = RangedU16::<0, 2>::new::<1>();
     /// let ranged_u32: RangedU32<0, 2> = ranged_u16.to_ranged_u32();
     ///
     /// assert_eq!(ranged_u32.get(), ranged_u16.get().into());
@@ -352,7 +352,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU16, RangedU64};
-    /// let ranged_u16 = RangedU16::<0, 2>::new_const::<1>();
+    /// let ranged_u16 = RangedU16::<0, 2>::new::<1>();
     /// let ranged_u64: RangedU64<0, 2> = ranged_u16.to_ranged_u64();
     ///
     /// assert_eq!(ranged_u64.get(), ranged_u16.get().into());
@@ -377,7 +377,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU16, RangedU128};
-    /// let ranged_u16 = RangedU16::<0, 2>::new_const::<1>();
+    /// let ranged_u16 = RangedU16::<0, 2>::new::<1>();
     /// let ranged_u128: RangedU128<0, 2> = ranged_u16.to_ranged_u128();
     ///
     /// assert_eq!(ranged_u128.get(), ranged_u16.get().into());
@@ -404,7 +404,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, RangedU32};
-    /// let ranged_u32 = RangedU32::<0, 2>::new_const::<1>();
+    /// let ranged_u32 = RangedU32::<0, 2>::new::<1>();
     /// let ranged_u8: RangedU8<0, 2> = ranged_u32.to_ranged_u8();
     ///
     /// assert_eq!(ranged_u32.get(), ranged_u8.get().into());
@@ -429,7 +429,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU16, RangedU32};
-    /// let ranged_u32 = RangedU32::<0, 2>::new_const::<1>();
+    /// let ranged_u32 = RangedU32::<0, 2>::new::<1>();
     /// let ranged_u16: RangedU16<0, 2> = ranged_u32.to_ranged_u16();
     ///
     /// assert_eq!(ranged_u32.get(), ranged_u16.get().into());
@@ -454,7 +454,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU32};
-    /// let ranged_u32 = RangedU32::<0, 2>::new_const::<1>();
+    /// let ranged_u32 = RangedU32::<0, 2>::new::<1>();
     /// let expanded_u32: RangedU32<0, 4> = ranged_u32.to_ranged_u32();
     ///
     /// assert_eq!(expanded_u32.get(), ranged_u32.get().into());
@@ -479,7 +479,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU32, RangedU64};
-    /// let ranged_u32 = RangedU32::<0, 2>::new_const::<1>();
+    /// let ranged_u32 = RangedU32::<0, 2>::new::<1>();
     /// let ranged_u64: RangedU64<0, 2> = ranged_u32.to_ranged_u64();
     ///
     /// assert_eq!(ranged_u64.get(), ranged_u32.get().into());
@@ -504,7 +504,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU32, RangedU128};
-    /// let ranged_u32 = RangedU32::<0, 2>::new_const::<1>();
+    /// let ranged_u32 = RangedU32::<0, 2>::new::<1>();
     /// let ranged_u128: RangedU128<0, 2> = ranged_u32.to_ranged_u128();
     ///
     /// assert_eq!(ranged_u128.get(), ranged_u32.get().into());
@@ -531,7 +531,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, RangedU64};
-    /// let ranged_u64 = RangedU64::<0, 2>::new_const::<1>();
+    /// let ranged_u64 = RangedU64::<0, 2>::new::<1>();
     /// let ranged_u8: RangedU8<0, 2> = ranged_u64.to_ranged_u8();
     ///
     /// assert_eq!(ranged_u64.get(), ranged_u8.get().into());
@@ -556,7 +556,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU16, RangedU64};
-    /// let ranged_u64 = RangedU64::<0, 2>::new_const::<1>();
+    /// let ranged_u64 = RangedU64::<0, 2>::new::<1>();
     /// let ranged_u16: RangedU16<0, 2> = ranged_u64.to_ranged_u16();
     ///
     /// assert_eq!(ranged_u64.get(), ranged_u16.get().into());
@@ -581,7 +581,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU32, RangedU64};
-    /// let ranged_u64 = RangedU64::<0, 2>::new_const::<1>();
+    /// let ranged_u64 = RangedU64::<0, 2>::new::<1>();
     /// let ranged_u32: RangedU32<0, 2> = ranged_u64.to_ranged_u32();
     ///
     /// assert_eq!(ranged_u64.get(), ranged_u32.get().into());
@@ -606,7 +606,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU64};
-    /// let ranged_u64 = RangedU64::<0, 2>::new_const::<1>();
+    /// let ranged_u64 = RangedU64::<0, 2>::new::<1>();
     /// let expanded_u64: RangedU64<0, 4> = ranged_u64.to_ranged_u64();
     ///
     /// assert_eq!(expanded_u64.get(), ranged_u64.get().into());
@@ -631,7 +631,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU64, RangedU128};
-    /// let ranged_u64 = RangedU64::<0, 2>::new_const::<1>();
+    /// let ranged_u64 = RangedU64::<0, 2>::new::<1>();
     /// let ranged_u128: RangedU128<0, 2> = ranged_u64.to_ranged_u128();
     ///
     /// assert_eq!(ranged_u128.get(), ranged_u64.get().into());
@@ -658,7 +658,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, RangedU128};
-    /// let ranged_u128 = RangedU128::<0, 2>::new_const::<1>();
+    /// let ranged_u128 = RangedU128::<0, 2>::new::<1>();
     /// let ranged_u8: RangedU8<0, 2> = ranged_u128.to_ranged_u8();
     ///
     /// assert_eq!(ranged_u128.get(), ranged_u8.get().into());
@@ -683,7 +683,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU16, RangedU128};
-    /// let ranged_u128 = RangedU128::<0, 2>::new_const::<1>();
+    /// let ranged_u128 = RangedU128::<0, 2>::new::<1>();
     /// let ranged_u16: RangedU16<0, 2> = ranged_u128.to_ranged_u16();
     ///
     /// assert_eq!(ranged_u128.get(), ranged_u16.get().into());
@@ -708,7 +708,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU32, RangedU128};
-    /// let ranged_u128 = RangedU128::<0, 2>::new_const::<1>();
+    /// let ranged_u128 = RangedU128::<0, 2>::new::<1>();
     /// let ranged_u32: RangedU32<0, 2> = ranged_u128.to_ranged_u32();
     ///
     /// assert_eq!(ranged_u128.get(), ranged_u32.get().into());
@@ -733,7 +733,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU64, RangedU128};
-    /// let ranged_u128 = RangedU128::<0, 2>::new_const::<1>();
+    /// let ranged_u128 = RangedU128::<0, 2>::new::<1>();
     /// let ranged_u64: RangedU64<0, 2> = ranged_u128.to_ranged_u64();
     ///
     /// assert_eq!(ranged_u128.get(), ranged_u64.get().into());
@@ -758,7 +758,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU128};
-    /// let ranged_u128 = RangedU128::<0, 2>::new_const::<1>();
+    /// let ranged_u128 = RangedU128::<0, 2>::new::<1>();
     /// let expanded_u128: RangedU128<0, 4> = ranged_u128.to_ranged_u128();
     ///
     /// assert_eq!(expanded_u128.get(), ranged_u128.get().into());
@@ -785,7 +785,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8};
-    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i8 = RangedI8::<0, 2>::new::<1>();
     /// let expanded_i8: RangedI8<0, 4> = ranged_i8.to_ranged_i8();
     ///
     /// assert_eq!(expanded_i8.get(), ranged_i8.get().into());
@@ -810,7 +810,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8, RangedI16};
-    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i8 = RangedI8::<0, 2>::new::<1>();
     /// let ranged_i16: RangedI16<0, 2> = ranged_i8.to_ranged_i16();
     ///
     /// assert_eq!(ranged_i16.get(), ranged_i8.get().into());
@@ -835,7 +835,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8, RangedI32};
-    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i8 = RangedI8::<0, 2>::new::<1>();
     /// let ranged_i32: RangedI32<0, 2> = ranged_i8.to_ranged_i32();
     ///
     /// assert_eq!(ranged_i32.get(), ranged_i8.get().into());
@@ -860,7 +860,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8, RangedI64};
-    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i8 = RangedI8::<0, 2>::new::<1>();
     /// let ranged_i64: RangedI64<0, 2> = ranged_i8.to_ranged_i64();
     ///
     /// assert_eq!(ranged_i64.get(), ranged_i8.get().into());
@@ -885,7 +885,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8, RangedI128};
-    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i8 = RangedI8::<0, 2>::new::<1>();
     /// let ranged_i128: RangedI128<0, 2> = ranged_i8.to_ranged_i128();
     ///
     /// assert_eq!(ranged_i128.get(), ranged_i8.get().into());
@@ -912,7 +912,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8, RangedI16};
-    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i16 = RangedI16::<0, 2>::new::<1>();
     /// let ranged_i8: RangedI8<0, 2> = ranged_i16.to_ranged_i8();
     ///
     /// assert_eq!(ranged_i16.get(), ranged_i8.get().into());
@@ -937,7 +937,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI16};
-    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i16 = RangedI16::<0, 2>::new::<1>();
     /// let expanded_i16: RangedI16<0, 4> = ranged_i16.to_ranged_i16();
     ///
     /// assert_eq!(expanded_i16.get(), ranged_i16.get().into());
@@ -962,7 +962,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI16, RangedI32};
-    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i16 = RangedI16::<0, 2>::new::<1>();
     /// let ranged_i32: RangedI32<0, 2> = ranged_i16.to_ranged_i32();
     ///
     /// assert_eq!(ranged_i32.get(), ranged_i16.get().into());
@@ -987,7 +987,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI16, RangedI64};
-    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i16 = RangedI16::<0, 2>::new::<1>();
     /// let ranged_i64: RangedI64<0, 2> = ranged_i16.to_ranged_i64();
     ///
     /// assert_eq!(ranged_i64.get(), ranged_i16.get().into());
@@ -1012,7 +1012,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI16, RangedI128};
-    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i16 = RangedI16::<0, 2>::new::<1>();
     /// let ranged_i128: RangedI128<0, 2> = ranged_i16.to_ranged_i128();
     ///
     /// assert_eq!(ranged_i128.get(), ranged_i16.get().into());
@@ -1039,7 +1039,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8, RangedI32};
-    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i32 = RangedI32::<0, 2>::new::<1>();
     /// let ranged_i8: RangedI8<0, 2> = ranged_i32.to_ranged_i8();
     ///
     /// assert_eq!(ranged_i32.get(), ranged_i8.get().into());
@@ -1064,7 +1064,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI16, RangedI32};
-    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i32 = RangedI32::<0, 2>::new::<1>();
     /// let ranged_i16: RangedI16<0, 2> = ranged_i32.to_ranged_i16();
     ///
     /// assert_eq!(ranged_i32.get(), ranged_i16.get().into());
@@ -1089,7 +1089,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI32};
-    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i32 = RangedI32::<0, 2>::new::<1>();
     /// let expanded_i32: RangedI32<0, 4> = ranged_i32.to_ranged_i32();
     ///
     /// assert_eq!(expanded_i32.get(), ranged_i32.get().into());
@@ -1114,7 +1114,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI32, RangedI64};
-    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i32 = RangedI32::<0, 2>::new::<1>();
     /// let ranged_i64: RangedI64<0, 2> = ranged_i32.to_ranged_i64();
     ///
     /// assert_eq!(ranged_i64.get(), ranged_i32.get().into());
@@ -1139,7 +1139,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI32, RangedI128};
-    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i32 = RangedI32::<0, 2>::new::<1>();
     /// let ranged_i128: RangedI128<0, 2> = ranged_i32.to_ranged_i128();
     ///
     /// assert_eq!(ranged_i128.get(), ranged_i32.get().into());
@@ -1166,7 +1166,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8, RangedI64};
-    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i64 = RangedI64::<0, 2>::new::<1>();
     /// let ranged_i8: RangedI8<0, 2> = ranged_i64.to_ranged_i8();
     ///
     /// assert_eq!(ranged_i64.get(), ranged_i8.get().into());
@@ -1191,7 +1191,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI16, RangedI64};
-    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i64 = RangedI64::<0, 2>::new::<1>();
     /// let ranged_i16: RangedI16<0, 2> = ranged_i64.to_ranged_i16();
     ///
     /// assert_eq!(ranged_i64.get(), ranged_i16.get().into());
@@ -1216,7 +1216,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI32, RangedI64};
-    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i64 = RangedI64::<0, 2>::new::<1>();
     /// let ranged_i32: RangedI32<0, 2> = ranged_i64.to_ranged_i32();
     ///
     /// assert_eq!(ranged_i64.get(), ranged_i32.get().into());
@@ -1241,7 +1241,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI64};
-    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i64 = RangedI64::<0, 2>::new::<1>();
     /// let expanded_i64: RangedI64<0, 4> = ranged_i64.to_ranged_i64();
     ///
     /// assert_eq!(expanded_i64.get(), ranged_i64.get().into());
@@ -1266,7 +1266,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI64, RangedI128};
-    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i64 = RangedI64::<0, 2>::new::<1>();
     /// let ranged_i128: RangedI128<0, 2> = ranged_i64.to_ranged_i128();
     ///
     /// assert_eq!(ranged_i128.get(), ranged_i64.get().into());
@@ -1293,7 +1293,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8, RangedI128};
-    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i128 = RangedI128::<0, 2>::new::<1>();
     /// let ranged_i8: RangedI8<0, 2> = ranged_i128.to_ranged_i8();
     ///
     /// assert_eq!(ranged_i128.get(), ranged_i8.get().into());
@@ -1318,7 +1318,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI16, RangedI128};
-    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i128 = RangedI128::<0, 2>::new::<1>();
     /// let ranged_i16: RangedI16<0, 2> = ranged_i128.to_ranged_i16();
     ///
     /// assert_eq!(ranged_i128.get(), ranged_i16.get().into());
@@ -1343,7 +1343,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI32, RangedI128};
-    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i128 = RangedI128::<0, 2>::new::<1>();
     /// let ranged_i32: RangedI32<0, 2> = ranged_i128.to_ranged_i32();
     ///
     /// assert_eq!(ranged_i128.get(), ranged_i32.get().into());
@@ -1368,7 +1368,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI64, RangedI128};
-    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i128 = RangedI128::<0, 2>::new::<1>();
     /// let ranged_i64: RangedI64<0, 2> = ranged_i128.to_ranged_i64();
     ///
     /// assert_eq!(ranged_i128.get(), ranged_i64.get().into());
@@ -1393,7 +1393,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI128};
-    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i128 = RangedI128::<0, 2>::new::<1>();
     /// let expanded_i128: RangedI128<0, 4> = ranged_i128.to_ranged_i128();
     ///
     /// assert_eq!(expanded_i128.get(), ranged_i128.get().into());
@@ -1420,7 +1420,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, RangedI8};
-    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i8 = RangedI8::<0, 2>::new::<1>();
     /// let expanded_u8: RangedU8<0, 4> = ranged_i8.to_ranged_u8();
     ///
     /// assert_eq!(Ok(expanded_u8.get()), ranged_i8.get().try_into());
@@ -1445,7 +1445,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU16, RangedI8};
-    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i8 = RangedI8::<0, 2>::new::<1>();
     /// let expanded_u16: RangedU16<0, 4> = ranged_i8.to_ranged_u16();
     ///
     /// assert_eq!(Ok(expanded_u16.get()), ranged_i8.get().try_into());
@@ -1472,7 +1472,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU32, RangedI8};
-    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i8 = RangedI8::<0, 2>::new::<1>();
     /// let expanded_u32: RangedU32<0, 4> = ranged_i8.to_ranged_u32();
     ///
     /// assert_eq!(Ok(expanded_u32.get()), ranged_i8.get().try_into());
@@ -1499,7 +1499,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU64, RangedI8};
-    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i8 = RangedI8::<0, 2>::new::<1>();
     /// let expanded_u64: RangedU64<0, 4> = ranged_i8.to_ranged_u64();
     ///
     /// assert_eq!(Ok(expanded_u64.get()), ranged_i8.get().try_into());
@@ -1526,7 +1526,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU128, RangedI8};
-    /// let ranged_i8 = RangedI8::<0, 2>::new_const::<1>();
+    /// let ranged_i8 = RangedI8::<0, 2>::new::<1>();
     /// let expanded_u128: RangedU128<0, 4> = ranged_i8.to_ranged_u128();
     ///
     /// assert_eq!(Ok(expanded_u128.get()), ranged_i8.get().try_into());
@@ -1555,7 +1555,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, RangedI16};
-    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i16 = RangedI16::<0, 2>::new::<1>();
     /// let expanded_u8: RangedU8<0, 4> = ranged_i16.to_ranged_u8();
     ///
     /// assert_eq!(Ok(expanded_u8.get()), ranged_i16.get().try_into());
@@ -1580,7 +1580,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU16, RangedI16};
-    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i16 = RangedI16::<0, 2>::new::<1>();
     /// let expanded_u16: RangedU16<0, 4> = ranged_i16.to_ranged_u16();
     ///
     /// assert_eq!(Ok(expanded_u16.get()), ranged_i16.get().try_into());
@@ -1605,7 +1605,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU32, RangedI16};
-    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i16 = RangedI16::<0, 2>::new::<1>();
     /// let expanded_u32: RangedU32<0, 4> = ranged_i16.to_ranged_u32();
     ///
     /// assert_eq!(Ok(expanded_u32.get()), ranged_i16.get().try_into());
@@ -1632,7 +1632,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU64, RangedI16};
-    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i16 = RangedI16::<0, 2>::new::<1>();
     /// let expanded_u64: RangedU64<0, 4> = ranged_i16.to_ranged_u64();
     ///
     /// assert_eq!(Ok(expanded_u64.get()), ranged_i16.get().try_into());
@@ -1659,7 +1659,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU128, RangedI16};
-    /// let ranged_i16 = RangedI16::<0, 2>::new_const::<1>();
+    /// let ranged_i16 = RangedI16::<0, 2>::new::<1>();
     /// let expanded_u128: RangedU128<0, 4> = ranged_i16.to_ranged_u128();
     ///
     /// assert_eq!(Ok(expanded_u128.get()), ranged_i16.get().try_into());
@@ -1688,7 +1688,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, RangedI32};
-    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i32 = RangedI32::<0, 2>::new::<1>();
     /// let expanded_u8: RangedU8<0, 4> = ranged_i32.to_ranged_u8();
     ///
     /// assert_eq!(Ok(expanded_u8.get()), ranged_i32.get().try_into());
@@ -1713,7 +1713,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU16, RangedI32};
-    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i32 = RangedI32::<0, 2>::new::<1>();
     /// let expanded_u16: RangedU16<0, 4> = ranged_i32.to_ranged_u16();
     ///
     /// assert_eq!(Ok(expanded_u16.get()), ranged_i32.get().try_into());
@@ -1738,7 +1738,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU32, RangedI32};
-    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i32 = RangedI32::<0, 2>::new::<1>();
     /// let expanded_u32: RangedU32<0, 4> = ranged_i32.to_ranged_u32();
     ///
     /// assert_eq!(Ok(expanded_u32.get()), ranged_i32.get().try_into());
@@ -1763,7 +1763,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU64, RangedI32};
-    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i32 = RangedI32::<0, 2>::new::<1>();
     /// let expanded_u64: RangedU64<0, 4> = ranged_i32.to_ranged_u64();
     ///
     /// assert_eq!(Ok(expanded_u64.get()), ranged_i32.get().try_into());
@@ -1790,7 +1790,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU128, RangedI32};
-    /// let ranged_i32 = RangedI32::<0, 2>::new_const::<1>();
+    /// let ranged_i32 = RangedI32::<0, 2>::new::<1>();
     /// let expanded_u128: RangedU128<0, 4> = ranged_i32.to_ranged_u128();
     ///
     /// assert_eq!(Ok(expanded_u128.get()), ranged_i32.get().try_into());
@@ -1819,7 +1819,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, RangedI64};
-    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i64 = RangedI64::<0, 2>::new::<1>();
     /// let expanded_u8: RangedU8<0, 4> = ranged_i64.to_ranged_u8();
     ///
     /// assert_eq!(Ok(expanded_u8.get()), ranged_i64.get().try_into());
@@ -1844,7 +1844,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU16, RangedI64};
-    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i64 = RangedI64::<0, 2>::new::<1>();
     /// let expanded_u16: RangedU16<0, 4> = ranged_i64.to_ranged_u16();
     ///
     /// assert_eq!(Ok(expanded_u16.get()), ranged_i64.get().try_into());
@@ -1869,7 +1869,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU32, RangedI64};
-    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i64 = RangedI64::<0, 2>::new::<1>();
     /// let expanded_u32: RangedU32<0, 4> = ranged_i64.to_ranged_u32();
     ///
     /// assert_eq!(Ok(expanded_u32.get()), ranged_i64.get().try_into());
@@ -1894,7 +1894,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU64, RangedI64};
-    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i64 = RangedI64::<0, 2>::new::<1>();
     /// let expanded_u64: RangedU64<0, 4> = ranged_i64.to_ranged_u64();
     ///
     /// assert_eq!(Ok(expanded_u64.get()), ranged_i64.get().try_into());
@@ -1919,7 +1919,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU128, RangedI64};
-    /// let ranged_i64 = RangedI64::<0, 2>::new_const::<1>();
+    /// let ranged_i64 = RangedI64::<0, 2>::new::<1>();
     /// let expanded_u128: RangedU128<0, 4> = ranged_i64.to_ranged_u128();
     ///
     /// assert_eq!(Ok(expanded_u128.get()), ranged_i64.get().try_into());
@@ -1948,7 +1948,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, RangedI128};
-    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i128 = RangedI128::<0, 2>::new::<1>();
     /// let expanded_u8: RangedU8<0, 4> = ranged_i128.to_ranged_u8();
     ///
     /// assert_eq!(Ok(expanded_u8.get()), ranged_i128.get().try_into());
@@ -1973,7 +1973,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU16, RangedI128};
-    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i128 = RangedI128::<0, 2>::new::<1>();
     /// let expanded_u16: RangedU16<0, 4> = ranged_i128.to_ranged_u16();
     ///
     /// assert_eq!(Ok(expanded_u16.get()), ranged_i128.get().try_into());
@@ -1998,7 +1998,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU32, RangedI128};
-    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i128 = RangedI128::<0, 2>::new::<1>();
     /// let expanded_u32: RangedU32<0, 4> = ranged_i128.to_ranged_u32();
     ///
     /// assert_eq!(Ok(expanded_u32.get()), ranged_i128.get().try_into());
@@ -2023,7 +2023,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU64, RangedI128};
-    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i128 = RangedI128::<0, 2>::new::<1>();
     /// let expanded_u64: RangedU64<0, 4> = ranged_i128.to_ranged_u64();
     ///
     /// assert_eq!(Ok(expanded_u64.get()), ranged_i128.get().try_into());
@@ -2048,7 +2048,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedU128, RangedI128};
-    /// let ranged_i128 = RangedI128::<0, 2>::new_const::<1>();
+    /// let ranged_i128 = RangedI128::<0, 2>::new::<1>();
     /// let expanded_u128: RangedU128<0, 4> = ranged_i128.to_ranged_u128();
     ///
     /// assert_eq!(Ok(expanded_u128.get()), ranged_i128.get().try_into());
@@ -2075,7 +2075,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8, RangedU8};
-    /// let ranged_u8 = RangedU8::<0, 2>::new_const::<1>();
+    /// let ranged_u8 = RangedU8::<0, 2>::new::<1>();
     /// let expanded_i8: RangedI8<0, 4> = ranged_u8.to_ranged_i8();
     ///
     /// assert_eq!(Ok(expanded_i8.get()), ranged_u8.get().try_into());
@@ -2100,7 +2100,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI16, RangedU8};
-    /// let ranged_u8 = RangedU8::<0, 2>::new_const::<1>();
+    /// let ranged_u8 = RangedU8::<0, 2>::new::<1>();
     /// let expanded_i16: RangedI16<0, 4> = ranged_u8.to_ranged_i16();
     ///
     /// assert_eq!(Ok(expanded_i16.get()), ranged_u8.get().try_into());
@@ -2127,7 +2127,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI32, RangedU8};
-    /// let ranged_u8 = RangedU8::<0, 2>::new_const::<1>();
+    /// let ranged_u8 = RangedU8::<0, 2>::new::<1>();
     /// let expanded_i32: RangedI32<0, 4> = ranged_u8.to_ranged_i32();
     ///
     /// assert_eq!(Ok(expanded_i32.get()), ranged_u8.get().try_into());
@@ -2154,7 +2154,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI64, RangedU8};
-    /// let ranged_u8 = RangedU8::<0, 2>::new_const::<1>();
+    /// let ranged_u8 = RangedU8::<0, 2>::new::<1>();
     /// let expanded_i64: RangedI64<0, 4> = ranged_u8.to_ranged_i64();
     ///
     /// assert_eq!(Ok(expanded_i64.get()), ranged_u8.get().try_into());
@@ -2181,7 +2181,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI128, RangedU8};
-    /// let ranged_u8 = RangedU8::<0, 2>::new_const::<1>();
+    /// let ranged_u8 = RangedU8::<0, 2>::new::<1>();
     /// let expanded_i128: RangedI128<0, 4> = ranged_u8.to_ranged_i128();
     ///
     /// assert_eq!(Ok(expanded_i128.get()), ranged_u8.get().try_into());
@@ -2210,7 +2210,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8, RangedU16};
-    /// let ranged_u16 = RangedU16::<0, 2>::new_const::<1>();
+    /// let ranged_u16 = RangedU16::<0, 2>::new::<1>();
     /// let expanded_i8: RangedI8<0, 4> = ranged_u16.to_ranged_i8();
     ///
     /// assert_eq!(Ok(expanded_i8.get()), ranged_u16.get().try_into());
@@ -2235,7 +2235,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI16, RangedU16};
-    /// let ranged_u16 = RangedU16::<0, 2>::new_const::<1>();
+    /// let ranged_u16 = RangedU16::<0, 2>::new::<1>();
     /// let expanded_i16: RangedI16<0, 4> = ranged_u16.to_ranged_i16();
     ///
     /// assert_eq!(Ok(expanded_i16.get()), ranged_u16.get().try_into());
@@ -2260,7 +2260,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI32, RangedU16};
-    /// let ranged_u16 = RangedU16::<0, 2>::new_const::<1>();
+    /// let ranged_u16 = RangedU16::<0, 2>::new::<1>();
     /// let expanded_i32: RangedI32<0, 4> = ranged_u16.to_ranged_i32();
     ///
     /// assert_eq!(Ok(expanded_i32.get()), ranged_u16.get().try_into());
@@ -2287,7 +2287,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI64, RangedU16};
-    /// let ranged_u16 = RangedU16::<0, 2>::new_const::<1>();
+    /// let ranged_u16 = RangedU16::<0, 2>::new::<1>();
     /// let expanded_i64: RangedI64<0, 4> = ranged_u16.to_ranged_i64();
     ///
     /// assert_eq!(Ok(expanded_i64.get()), ranged_u16.get().try_into());
@@ -2314,7 +2314,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI128, RangedU16};
-    /// let ranged_u16 = RangedU16::<0, 2>::new_const::<1>();
+    /// let ranged_u16 = RangedU16::<0, 2>::new::<1>();
     /// let expanded_i128: RangedI128<0, 4> = ranged_u16.to_ranged_i128();
     ///
     /// assert_eq!(Ok(expanded_i128.get()), ranged_u16.get().try_into());
@@ -2343,7 +2343,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8, RangedU32};
-    /// let ranged_u32 = RangedU32::<0, 2>::new_const::<1>();
+    /// let ranged_u32 = RangedU32::<0, 2>::new::<1>();
     /// let expanded_i8: RangedI8<0, 4> = ranged_u32.to_ranged_i8();
     ///
     /// assert_eq!(Ok(expanded_i8.get()), ranged_u32.get().try_into());
@@ -2368,7 +2368,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI16, RangedU32};
-    /// let ranged_u32 = RangedU32::<0, 2>::new_const::<1>();
+    /// let ranged_u32 = RangedU32::<0, 2>::new::<1>();
     /// let expanded_i16: RangedI16<0, 4> = ranged_u32.to_ranged_i16();
     ///
     /// assert_eq!(Ok(expanded_i16.get()), ranged_u32.get().try_into());
@@ -2393,7 +2393,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI32, RangedU32};
-    /// let ranged_u32 = RangedU32::<0, 2>::new_const::<1>();
+    /// let ranged_u32 = RangedU32::<0, 2>::new::<1>();
     /// let expanded_i32: RangedI32<0, 4> = ranged_u32.to_ranged_i32();
     ///
     /// assert_eq!(Ok(expanded_i32.get()), ranged_u32.get().try_into());
@@ -2418,7 +2418,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI64, RangedU32};
-    /// let ranged_u32 = RangedU32::<0, 2>::new_const::<1>();
+    /// let ranged_u32 = RangedU32::<0, 2>::new::<1>();
     /// let expanded_i64: RangedI64<0, 4> = ranged_u32.to_ranged_i64();
     ///
     /// assert_eq!(Ok(expanded_i64.get()), ranged_u32.get().try_into());
@@ -2445,7 +2445,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI128, RangedU32};
-    /// let ranged_u32 = RangedU32::<0, 2>::new_const::<1>();
+    /// let ranged_u32 = RangedU32::<0, 2>::new::<1>();
     /// let expanded_i128: RangedI128<0, 4> = ranged_u32.to_ranged_i128();
     ///
     /// assert_eq!(Ok(expanded_i128.get()), ranged_u32.get().try_into());
@@ -2474,7 +2474,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8, RangedU64};
-    /// let ranged_u64 = RangedU64::<0, 2>::new_const::<1>();
+    /// let ranged_u64 = RangedU64::<0, 2>::new::<1>();
     /// let expanded_i8: RangedI8<0, 4> = ranged_u64.to_ranged_i8();
     ///
     /// assert_eq!(Ok(expanded_i8.get()), ranged_u64.get().try_into());
@@ -2499,7 +2499,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI16, RangedU64};
-    /// let ranged_u64 = RangedU64::<0, 2>::new_const::<1>();
+    /// let ranged_u64 = RangedU64::<0, 2>::new::<1>();
     /// let expanded_i16: RangedI16<0, 4> = ranged_u64.to_ranged_i16();
     ///
     /// assert_eq!(Ok(expanded_i16.get()), ranged_u64.get().try_into());
@@ -2524,7 +2524,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI32, RangedU64};
-    /// let ranged_u64 = RangedU64::<0, 2>::new_const::<1>();
+    /// let ranged_u64 = RangedU64::<0, 2>::new::<1>();
     /// let expanded_i32: RangedI32<0, 4> = ranged_u64.to_ranged_i32();
     ///
     /// assert_eq!(Ok(expanded_i32.get()), ranged_u64.get().try_into());
@@ -2549,7 +2549,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI64, RangedU64};
-    /// let ranged_u64 = RangedU64::<0, 2>::new_const::<1>();
+    /// let ranged_u64 = RangedU64::<0, 2>::new::<1>();
     /// let expanded_i64: RangedI64<0, 4> = ranged_u64.to_ranged_i64();
     ///
     /// assert_eq!(Ok(expanded_i64.get()), ranged_u64.get().try_into());
@@ -2574,7 +2574,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI128, RangedU64};
-    /// let ranged_u64 = RangedU64::<0, 2>::new_const::<1>();
+    /// let ranged_u64 = RangedU64::<0, 2>::new::<1>();
     /// let expanded_i128: RangedI128<0, 4> = ranged_u64.to_ranged_i128();
     ///
     /// assert_eq!(Ok(expanded_i128.get()), ranged_u64.get().try_into());
@@ -2603,7 +2603,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI8, RangedU128};
-    /// let ranged_u128 = RangedU128::<0, 2>::new_const::<1>();
+    /// let ranged_u128 = RangedU128::<0, 2>::new::<1>();
     /// let expanded_i8: RangedI8<0, 4> = ranged_u128.to_ranged_i8();
     ///
     /// assert_eq!(Ok(expanded_i8.get()), ranged_u128.get().try_into());
@@ -2628,7 +2628,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI16, RangedU128};
-    /// let ranged_u128 = RangedU128::<0, 2>::new_const::<1>();
+    /// let ranged_u128 = RangedU128::<0, 2>::new::<1>();
     /// let expanded_i16: RangedI16<0, 4> = ranged_u128.to_ranged_i16();
     ///
     /// assert_eq!(Ok(expanded_i16.get()), ranged_u128.get().try_into());
@@ -2653,7 +2653,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI32, RangedU128};
-    /// let ranged_u128 = RangedU128::<0, 2>::new_const::<1>();
+    /// let ranged_u128 = RangedU128::<0, 2>::new::<1>();
     /// let expanded_i32: RangedI32<0, 4> = ranged_u128.to_ranged_i32();
     ///
     /// assert_eq!(Ok(expanded_i32.get()), ranged_u128.get().try_into());
@@ -2678,7 +2678,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI64, RangedU128};
-    /// let ranged_u128 = RangedU128::<0, 2>::new_const::<1>();
+    /// let ranged_u128 = RangedU128::<0, 2>::new::<1>();
     /// let expanded_i64: RangedI64<0, 4> = ranged_u128.to_ranged_i64();
     ///
     /// assert_eq!(Ok(expanded_i64.get()), ranged_u128.get().try_into());
@@ -2703,7 +2703,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     ///
     /// ```rust
     /// # use ranch::{RangedI128, RangedU128};
-    /// let ranged_u128 = RangedU128::<0, 2>::new_const::<1>();
+    /// let ranged_u128 = RangedU128::<0, 2>::new::<1>();
     /// let expanded_i128: RangedI128<0, 4> = ranged_u128.to_ranged_i128();
     ///
     /// assert_eq!(Ok(expanded_i128.get()), ranged_u128.get().try_into());
