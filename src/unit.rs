@@ -56,3 +56,9 @@ impl_default!(UnitI16, i16);
 impl_default!(UnitI32, i32);
 impl_default!(UnitI64, i64);
 impl_default!(UnitI128, i128);
+
+impl_default!(UnitU8, u8);
+impl_default!(UnitU16, u16);
+impl_default!(UnitU32, u32);
+impl_default!(UnitU64, u64);
+impl_default!(UnitU128, u128);

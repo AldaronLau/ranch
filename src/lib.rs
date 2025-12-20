@@ -39,6 +39,7 @@ mod convert;
 mod error;
 mod format;
 mod ops;
+mod ord;
 pub mod parsing;
 mod quotient;
 mod ranged {
