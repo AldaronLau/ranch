@@ -503,7 +503,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// # use ranch::RangedI8;
     /// let a = RangedI8::<1, 3>::new::<1>();
     /// let b = RangedI8::<-1, 3>::new::<2>();
-    /// let output: RangedI8::<0, 6> = a.add(b);
+    /// let output: RangedI8::<0, 6> = a.ranged_add(b);
     ///
     /// assert_eq!(output.get(), 3);
     /// ```
@@ -514,13 +514,13 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// # use ranch::RangedI8;
     /// let a = RangedI8::<1, 3>::new::<1>();
     /// let b = RangedI8::<-1, 3>::new::<2>();
-    /// let output: RangedI8::<1, 6> = a.add(b);
+    /// let output: RangedI8::<1, 6> = a.ranged_add(b);
     ///
     /// assert_eq!(output.get(), 3);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn add<
+    pub const fn ranged_add<
         const RHS_MIN: i8,
         const RHS_MAX: i8,
         const OUTPUT_MIN: i8,
@@ -548,7 +548,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// # use ranch::RangedI8;
     /// let a = RangedI8::<2, 5>::new::<3>();
     /// let b = RangedI8::<-1, 3>::new::<1>();
-    /// let output: RangedI8::<-1, 6> = a.sub(b);
+    /// let output: RangedI8::<-1, 6> = a.ranged_sub(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
@@ -559,13 +559,13 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// # use ranch::RangedI8;
     /// let a = RangedI8::<2, 5>::new::<3>();
     /// let b = RangedI8::<-1, 3>::new::<1>();
-    /// let output: RangedI8::<0, 6> = a.sub(b);
+    /// let output: RangedI8::<0, 6> = a.ranged_sub(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn sub<
+    pub const fn ranged_sub<
         const RHS_MIN: i8,
         const RHS_MAX: i8,
         const OUTPUT_MIN: i8,
@@ -593,7 +593,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// # use ranch::RangedI8;
     /// let a = RangedI8::<-2, 3>::new::<1>();
     /// let b = RangedI8::<0, 3>::new::<2>();
-    /// let output: RangedI8::<-6, 9> = a.mul(b);
+    /// let output: RangedI8::<-6, 9> = a.ranged_mul(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
@@ -604,13 +604,13 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// # use ranch::RangedI8;
     /// let a = RangedI8::<-2, 3>::new::<1>();
     /// let b = RangedI8::<0, 3>::new::<2>();
-    /// let output: RangedI8::<0, 9> = a.mul(b);
+    /// let output: RangedI8::<0, 9> = a.ranged_mul(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn mul<
+    pub const fn ranged_mul<
         const RHS_MIN: i8,
         const RHS_MAX: i8,
         const OUTPUT_MIN: i8,
@@ -643,7 +643,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// # use ranch::RangedI8;
     /// let a = RangedI8::<2, 5>::new::<3>();
     /// let b = RangedI8::<1, 2>::new::<2>();
-    /// let output: RangedI8::<1, 2> = a.div(b);
+    /// let output: RangedI8::<1, 2> = a.ranged_div(b);
     ///
     /// assert_eq!(output.get(), 1);
     /// ```
@@ -654,13 +654,13 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// # use ranch::RangedI8;
     /// let a = RangedI8::<2, 5>::new::<3>();
     /// let b = RangedI8::<1, 2>::new::<1>();
-    /// let output: RangedI8::<0, 2> = a.div(b);
+    /// let output: RangedI8::<0, 2> = a.ranged_div(b);
     ///
     /// assert_eq!(output.get(), 1);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn div<
+    pub const fn ranged_div<
         const RHS_MIN: i8,
         const RHS_MAX: i8,
         const OUTPUT_MIN: i8,
@@ -701,7 +701,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// # use ranch::{RangedI8, RangedU32};
     /// let a = RangedI8::<-1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedI8::<-1, 27> = a.pow(b);
+    /// let output: RangedI8::<-1, 27> = a.ranged_pow(b);
     ///
     /// assert_eq!(output.get(), 4);
     /// ```
@@ -712,13 +712,13 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     /// # use ranch::{RangedI8, RangedU32};
     /// let a = RangedI8::<1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedI8::<0, 27> = a.pow(b);
+    /// let output: RangedI8::<0, 27> = a.ranged_pow(b);
     ///
     /// assert_eq!(output.get(), 4);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn pow<
+    pub const fn ranged_pow<
         const RHS_MIN: u32,
         const RHS_MAX: u32,
         const OUTPUT_MIN: i8,

@@ -485,7 +485,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     /// # use ranch::RangedU64;
     /// let a = RangedU64::<1, 3>::new::<1>();
     /// let b = RangedU64::<1, 3>::new::<2>();
-    /// let output: RangedU64::<2, 6> = a.add(b);
+    /// let output: RangedU64::<2, 6> = a.ranged_add(b);
     ///
     /// assert_eq!(output.get(), 3);
     /// ```
@@ -496,13 +496,13 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     /// # use ranch::RangedU64;
     /// let a = RangedU64::<1, 3>::new::<1>();
     /// let b = RangedU64::<1, 3>::new::<2>();
-    /// let output: RangedU64::<1, 6> = a.add(b);
+    /// let output: RangedU64::<1, 6> = a.ranged_add(b);
     ///
     /// assert_eq!(output.get(), 3);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn add<
+    pub const fn ranged_add<
         const RHS_MIN: u64,
         const RHS_MAX: u64,
         const OUTPUT_MIN: u64,
@@ -530,7 +530,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     /// # use ranch::RangedU64;
     /// let a = RangedU64::<2, 5>::new::<3>();
     /// let b = RangedU64::<1, 2>::new::<1>();
-    /// let output: RangedU64::<0, 4> = a.sub(b);
+    /// let output: RangedU64::<0, 4> = a.ranged_sub(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
@@ -541,13 +541,13 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     /// # use ranch::RangedU64;
     /// let a = RangedU64::<2, 5>::new::<3>();
     /// let b = RangedU64::<1, 2>::new::<1>();
-    /// let output: RangedU64::<0, 3> = a.sub(b);
+    /// let output: RangedU64::<0, 3> = a.ranged_sub(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn sub<
+    pub const fn ranged_sub<
         const RHS_MIN: u64,
         const RHS_MAX: u64,
         const OUTPUT_MIN: u64,
@@ -575,7 +575,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     /// # use ranch::RangedU64;
     /// let a = RangedU64::<1, 3>::new::<1>();
     /// let b = RangedU64::<2, 3>::new::<2>();
-    /// let output: RangedU64::<2, 9> = a.mul(b);
+    /// let output: RangedU64::<2, 9> = a.ranged_mul(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
@@ -586,13 +586,13 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     /// # use ranch::RangedU64;
     /// let a = RangedU64::<1, 3>::new::<1>();
     /// let b = RangedU64::<2, 3>::new::<2>();
-    /// let output: RangedU64::<1, 9> = a.mul(b);
+    /// let output: RangedU64::<1, 9> = a.ranged_mul(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn mul<
+    pub const fn ranged_mul<
         const RHS_MIN: u64,
         const RHS_MAX: u64,
         const OUTPUT_MIN: u64,
@@ -620,7 +620,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     /// # use ranch::RangedU64;
     /// let a = RangedU64::<2, 5>::new::<3>();
     /// let b = RangedU64::<1, 2>::new::<2>();
-    /// let output: RangedU64::<1, 2> = a.div(b);
+    /// let output: RangedU64::<1, 2> = a.ranged_div(b);
     ///
     /// assert_eq!(output.get(), 1);
     /// ```
@@ -631,13 +631,13 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     /// # use ranch::RangedU64;
     /// let a = RangedU64::<2, 5>::new::<3>();
     /// let b = RangedU64::<1, 2>::new::<1>();
-    /// let output: RangedU64::<0, 2> = a.div(b);
+    /// let output: RangedU64::<0, 2> = a.ranged_div(b);
     ///
     /// assert_eq!(output.get(), 1);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn div<
+    pub const fn ranged_div<
         const RHS_MIN: u64,
         const RHS_MAX: u64,
         const OUTPUT_MIN: u64,
@@ -669,7 +669,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     /// # use ranch::{RangedU64, RangedU32};
     /// let a = RangedU64::<1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedU64::<1, 27> = a.pow(b);
+    /// let output: RangedU64::<1, 27> = a.ranged_pow(b);
     ///
     /// assert_eq!(output.get(), 4);
     /// ```
@@ -680,13 +680,13 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
     /// # use ranch::{RangedU64, RangedU32};
     /// let a = RangedU64::<1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedU64::<0, 27> = a.pow(b);
+    /// let output: RangedU64::<0, 27> = a.ranged_pow(b);
     ///
     /// assert_eq!(output.get(), 4);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn pow<
+    pub const fn ranged_pow<
         const RHS_MIN: u32,
         const RHS_MAX: u32,
         const OUTPUT_MIN: u64,

@@ -14,9 +14,9 @@ macro_rules! const_ord {
             #[doc = concat!("let b = ", stringify!($ty), "::<6, 12>::new::<6>();")]
             #[doc = concat!("let output = ", stringify!($ty), "::<4, 12>::new::<6>();")]
             ///
-            /// assert_eq!(a.min(b), output);
+            /// assert_eq!(a.ranged_min(b), output);
             /// ```
-            pub const fn min<
+            pub const fn ranged_min<
                 const OTHER_MIN: $p,
                 const OTHER_MAX: $p,
                 const OUTPUT_MIN: $p,
@@ -53,9 +53,9 @@ macro_rules! const_ord {
             #[doc = concat!("let b = ", stringify!($ty), "::<6, 12>::new::<6>();")]
             #[doc = concat!("let output = ", stringify!($ty), "::<6, 24>::new::<12>();")]
             ///
-            /// assert_eq!(a.max(b), output);
+            /// assert_eq!(a.ranged_max(b), output);
             /// ```
-            pub const fn max<
+            pub const fn ranged_max<
                 const OTHER_MIN: $p,
                 const OTHER_MAX: $p,
                 const OUTPUT_MIN: $p,
@@ -97,9 +97,9 @@ macro_rules! const_ord {
             #[doc = concat!("let max = ", stringify!($ty), "::<8, 16>::new::<10>();")]
             #[doc = concat!("let output = ", stringify!($ty), "::<6, 16>::new::<10>();")]
             ///
-            /// assert_eq!(a.clamp(min, max), output);
+            /// assert_eq!(a.ranged_clamp(min, max), output);
             /// ```
-            pub const fn clamp<
+            pub const fn ranged_clamp<
                 const MIN_MIN: $p,
                 const MIN_MAX: $p,
                 const MAX_MIN: $p,
