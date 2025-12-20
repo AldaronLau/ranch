@@ -515,3 +515,45 @@ pub type I126 = RangedI32<{ -2i32.pow(125) }, { 2i32.pow(125) - 1 }>;
 pub type I127 = RangedI32<{ -2i32.pow(126) }, { 2i32.pow(126) - 1 }>;
 /// 128-bit signed integer
 pub type I128 = RangedI128<{ i128::MIN }, { i128::MAX }>;
+
+macro_rules! from_primitive {
+    ($ranged:ty, $primitive:ty, $name:ident, $with:ident) => {
+        impl $ranged {
+            /// Create a new ranged integer.
+            ///
+            /// Uses the full range, so it will never be out of bounds.
+            ///
+            /// # See Also
+            ///
+            ///  - [`Self::new()`] - compile-time bounds checking constructor
+            #[doc = concat!(" - [`Self::", stringify!($with), "()`] - run-time bounds checking constructor")]
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::bitwise::", stringify!($ranged), ";")]
+            #[doc = concat!(
+                "assert_eq!(",
+                stringify!($ranged),
+                "::",
+                stringify!($name),
+                "(42).get(), 42);",
+            )]
+            /// ```
+            #[must_use]
+            pub fn $name(value: $primitive) -> Self {
+                Self(value)
+            }
+        }
+    }
+}
+
+from_primitive!(U8, u8, from_u8, with_u8);
+from_primitive!(U16, u16, from_u16, with_u16);
+from_primitive!(U32, u32, from_u32, with_u32);
+from_primitive!(U64, u64, from_u64, with_u64);
+from_primitive!(U128, u128, from_u128, with_u128);
+
+from_primitive!(I8, i8, from_i8, with_i8);
+from_primitive!(I16, i16, from_i16, with_i16);
+from_primitive!(I32, i32, from_i32, with_i32);
+from_primitive!(I64, i64, from_i64, with_i64);
+from_primitive!(I128, i128, from_i128, with_i128);
