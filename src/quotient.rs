@@ -36,7 +36,7 @@ where
         Some(number)
     }
 
-    /// Convert from `Quotient<T>` to `Option<T>`.
+    /// Convert from `&mut Quotient<T>` to `Option<&mut T>`.
     pub const fn number_mut(&mut self) -> Option<&mut T> {
         let Self::Number(number) = self else {
             return None;
