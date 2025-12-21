@@ -125,6 +125,176 @@ macro_rules! impl_ops {
                 }
             }
         }
+
+        impl<const MIN: $p, const MAX: $p> $type<MIN, MAX> {
+            /// Add a number to `self`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<15, 85>::new::<16>();")]
+            #[doc = concat!("let output = ", stringify!($type), "::<38, 108>::new::<39>();")]
+            /// assert_eq!(a.add::<23, _, _>(), output);
+            /// ```
+            #[must_use]
+            pub const fn add<
+                const RHS: $p,
+                const OUTPUT_MIN: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+                let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
+
+                self.ranged_add(rhs)
+            }
+
+            /// Subtract a number from `self`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<38, 108>::new::<39>();")]
+            #[doc = concat!("let output = ", stringify!($type), "::<15, 85>::new::<16>();")]
+            /// assert_eq!(a.sub::<23, _, _>(), output);
+            /// ```
+            #[must_use]
+            pub const fn sub<
+                const RHS: $p,
+                const OUTPUT_MIN: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+                let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
+
+                self.ranged_sub(rhs)
+            }
+
+            /// Multiply a number to `self`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<23, 42>::new::<30>();")]
+            #[doc = concat!("let output = ", stringify!($type), "::<46, 84>::new::<60>();")]
+            /// assert_eq!(a.mul::<2, _, _>(), output);
+            /// ```
+            #[must_use]
+            pub const fn mul<
+                const RHS: $p,
+                const OUTPUT_MIN: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+                let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
+
+                self.ranged_mul(rhs)
+            }
+
+            /// Divide `self` by a number.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<60>();")]
+            #[doc = concat!("let output = ", stringify!($type), "::<23, 42>::new::<30>();")]
+            /// assert_eq!(a.div::<2, _, _>(), output);
+            /// ```
+            #[must_use]
+            pub const fn div<
+                const RHS: $p,
+                const OUTPUT_MIN: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+                let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
+
+                self.ranged_div(rhs)
+            }
+
+            /// Raise `self` to a power.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<7, 9>::new::<8>();")]
+            #[doc = concat!("let output = ", stringify!($type), "::<49, 81>::new::<64>();")]
+            /// assert_eq!(a.pow::<2, _, _>(), output);
+            /// ```
+            #[must_use]
+            pub const fn pow<
+                const RHS: u32,
+                const OUTPUT_MIN: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+                let rhs = const { RangedU32::<RHS, RHS>::new::<RHS>() };
+
+                self.ranged_pow(rhs)
+            }
+
+            /// Compare and return the minimum of two values.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<7, 10>::new::<9>();")]
+            #[doc = concat!("let output = ", stringify!($type), "::<7, 8>::new::<8>();")]
+            /// assert_eq!(a.min::<8, _, _>(), output);
+            /// ```
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<7, 12>::new::<9>();")]
+            #[doc = concat!("let output = ", stringify!($type), "::<7, 10>::new::<9>();")]
+            /// assert_eq!(a.min::<10, _, _>(), output);
+            /// ```
+            pub const fn min<const OTHER: $p, const OUTPUT_MIN: $p, const OUTPUT_MAX: $p>(self) -> $type<OUTPUT_MIN, OUTPUT_MAX>
+            {
+                self.ranged_min($type::<OTHER, OTHER>::new::<OTHER>())
+            }
+
+            /// Compare and return the maximum of two values.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<7, 10>::new::<9>();")]
+            #[doc = concat!("let output = ", stringify!($type), "::<8, 10>::new::<9>();")]
+            /// assert_eq!(a.max::<8, _, _>(), output);
+            /// ```
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<7, 12>::new::<9>();")]
+            #[doc = concat!("let output = ", stringify!($type), "::<10, 12>::new::<10>();")]
+            /// assert_eq!(a.max::<10, _, _>(), output);
+            /// ```
+            pub const fn max<const OTHER: $p, const OUTPUT_MIN: $p, const OUTPUT_MAX: $p>(self) -> $type<OUTPUT_MIN, OUTPUT_MAX>
+            {
+                self.ranged_max($type::<OTHER, OTHER>::new::<OTHER>())
+            }
+
+            /// Restrict a value to a certain interval.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<5, 10>::new::<7>();")]
+            #[doc = concat!("let output = ", stringify!($type), "::<8, 10>::new::<8>();")]
+            /// assert_eq!(a.clamp::<8, 12, _, _>(), output);
+            /// ```
+            pub const fn clamp<
+                const TO_MIN: $p,
+                const TO_MAX: $p,
+                const OUTPUT_MIN: $p,
+                const OUTPUT_MAX: $p
+            >(
+                self
+            ) -> $type<OUTPUT_MIN, OUTPUT_MAX>
+            {
+                self.ranged_clamp(
+                    $type::<TO_MIN, TO_MIN>::new::<TO_MIN>(),
+                    $type::<TO_MAX, TO_MAX>::new::<TO_MAX>(),
+                )
+            }
+        }
     };
 }
 
