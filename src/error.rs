@@ -30,23 +30,23 @@ impl fmt::Display for Error {
 }
 
 impl Error {
-    /// Saturate out of bounds values.
+    /// Clamp out of bounds values into the requested range.
     ///
     /// ```rust
     /// # use ranch::{RangedU8, Error};
     /// assert_eq!(
-    ///     RangedU8::<1, 3>::with_u8(0).unwrap_or_else(Error::saturate),
+    ///     RangedU8::<1, 3>::with_u8(0).unwrap_or_else(Error::clamp),
     ///     RangedU8::<1, 3>::new::<1>(),
     /// );
     /// assert_eq!(
-    ///     RangedU8::<1, 3>::with_u8(4).unwrap_or_else(Error::saturate),
+    ///     RangedU8::<1, 3>::with_u8(4).unwrap_or_else(Error::clamp),
     ///     RangedU8::<1, 3>::new::<3>(),
     /// );
     /// ```
     #[must_use]
-    pub const fn saturate<T>(self) -> T
+    pub const fn clamp<T>(self) -> T
     where
-        T: Saturate,
+        T: Clamp,
     {
         match self {
             Self::PosOverflow => T::MAX,
@@ -55,7 +55,7 @@ impl Error {
     }
 }
 
-pub trait Saturate {
+pub trait Clamp {
     const MIN: Self;
     const MAX: Self;
 }

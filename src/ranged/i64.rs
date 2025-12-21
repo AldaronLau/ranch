@@ -777,7 +777,7 @@ impl<const MIN: i64, const MAX: i64> core::str::FromStr
     }
 }
 
-impl<const MIN: i64, const MAX: i64> crate::error::Saturate
+impl<const MIN: i64, const MAX: i64> crate::error::Clamp
     for RangedI64<MIN, MAX>
 {
     const MAX: Self = Self::MAX;

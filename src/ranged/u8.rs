@@ -715,7 +715,7 @@ impl<const MIN: u8, const MAX: u8> core::str::FromStr for RangedU8<MIN, MAX> {
     }
 }
 
-impl<const MIN: u8, const MAX: u8> crate::error::Saturate
+impl<const MIN: u8, const MAX: u8> crate::error::Clamp
     for RangedU8<MIN, MAX>
 {
     const MAX: Self = Self::MAX;

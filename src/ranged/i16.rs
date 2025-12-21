@@ -777,7 +777,7 @@ impl<const MIN: i16, const MAX: i16> core::str::FromStr
     }
 }
 
-impl<const MIN: i16, const MAX: i16> crate::error::Saturate
+impl<const MIN: i16, const MAX: i16> crate::error::Clamp
     for RangedI16<MIN, MAX>
 {
     const MAX: Self = Self::MAX;
