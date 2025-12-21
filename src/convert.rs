@@ -4,9 +4,11 @@ use super::*;
 
 macro_rules! impl_ranged_conversion {
     ($type:ident, $p:ty $(,)?) => {
-        impl From<$p> for $type<{ <$p>::MIN }, { <$p>::MAX }> {
-            fn from(primitive: $p) -> Self {
-                Self(primitive)
+        impl<const MIN: $p, const MAX: $p> TryFrom<$p> for $type<MIN, MAX> {
+            type Error = Error;
+
+            fn try_from(primitive: $p) -> Result<Self, Self::Error> {
+                Self::with_primitive(primitive)
             }
         }
 
@@ -46,51 +48,6 @@ macro_rules! impl_signed_nonzero_conversion {
     };
 }
 
-macro_rules! impl_try_from {
-    (($type:ident, $p:ty), $(($t:ident, $q:ty)),* $(,)?) => {
-        $(
-            impl<
-                const IN_MIN: $p,
-                const IN_MAX: $p,
-                const OUT_MIN: $q,
-                const OUT_MAX: $q,
-            >
-                TryFrom<$type::<IN_MIN, IN_MAX>> for $t::<OUT_MIN, OUT_MAX>
-            {
-                type Error = Error;
-
-                fn try_from(ranged: $type<IN_MIN, IN_MAX>) -> Result<Self> {
-                    Self::with_primitive(<$q>::from(ranged.get()))
-                }
-            }
-
-            impl<
-                const IN_MIN: $q,
-                const IN_MAX: $q,
-                const OUT_MIN: $p,
-                const OUT_MAX: $p,
-            >
-                TryFrom<$t::<IN_MIN, IN_MAX>> for $type::<OUT_MIN, OUT_MAX>
-            {
-                type Error = Error;
-
-                #[allow(unused_comparisons)]
-                fn try_from(ranged: $t<IN_MIN, IN_MAX>) -> Result<Self> {
-                    let value = ranged.get();
-
-                    Self::with_primitive(<$p>::try_from(value).map_err(|_| {
-                        if value < 0 {
-                            Error::NegOverflow
-                        } else {
-                            Error::PosOverflow
-                        }
-                    })?)
-                }
-            }
-        )*
-    };
-}
-
 impl_ranged_conversion!(RangedI8, i8);
 impl_ranged_conversion!(RangedI16, i16);
 impl_ranged_conversion!(RangedI32, i32);
@@ -112,38 +69,6 @@ impl_unsigned_nonzero_conversion!(RangedU16, u16);
 impl_unsigned_nonzero_conversion!(RangedU32, u32);
 impl_unsigned_nonzero_conversion!(RangedU64, u64);
 impl_unsigned_nonzero_conversion!(RangedU128, u128);
-
-impl_try_from!(
-    (RangedU8, u8),
-    (RangedU16, u16),
-    (RangedU32, u32),
-    (RangedU64, u64),
-    (RangedU128, u128),
-);
-impl_try_from!(
-    (RangedU16, u16),
-    (RangedU32, u32),
-    (RangedU64, u64),
-    (RangedU128, u128),
-);
-impl_try_from!((RangedU32, u32), (RangedU64, u64), (RangedU128, u128));
-impl_try_from!((RangedU64, u64), (RangedU128, u128));
-
-impl_try_from!(
-    (RangedI8, i8),
-    (RangedI16, i16),
-    (RangedI32, i32),
-    (RangedI64, i64),
-    (RangedI128, i128),
-);
-impl_try_from!(
-    (RangedI16, i16),
-    (RangedI32, i32),
-    (RangedI64, i64),
-    (RangedI128, i128),
-);
-impl_try_from!((RangedI32, i32), (RangedI64, i64), (RangedI128, i128));
-impl_try_from!((RangedI64, i64), (RangedI128, i128));
 
 impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     /// Convert to [`RangedU8`].
