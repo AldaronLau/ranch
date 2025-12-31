@@ -95,11 +95,11 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     /// # use ranch::RangedU8;
     /// let n = RangedU8::<{ u8::MIN }, { u8::MAX }>::MAX;
     ///
-    /// assert_eq!(n.leading_zeros(), 0);
+    /// assert_eq!(n.leading_zeros().get(), 0);
     /// ```
     #[must_use]
-    pub const fn leading_zeros(self) -> u32 {
-        self.get().leading_zeros()
+    pub const fn leading_zeros(self) -> RangedU32<0, { u8::BITS }> {
+        RangedU32(self.get().leading_zeros())
     }
 
     /// Return the number of trailing zeros in the binary representation of
@@ -109,11 +109,11 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     /// # use ranch::RangedU8;
     /// let n = RangedU8::<0, 255>::new::<0b0101000>();
     ///
-    /// assert_eq!(n.trailing_zeros(), 3);
+    /// assert_eq!(n.trailing_zeros().get(), 3);
     /// ```
     #[must_use]
-    pub const fn trailing_zeros(self) -> u32 {
-        self.get().trailing_zeros()
+    pub const fn trailing_zeros(self) -> RangedU32<0, { u8::BITS }> {
+        RangedU32(self.get().trailing_zeros())
     }
 
     /// Return the number of ones in the binary representation of `self`.
@@ -123,12 +123,12 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     /// let a = RangedU8::<0, 255>::new::<0b100_0000>();
     /// let b = RangedU8::<0, 255>::new::<0b100_0011>();
     ///
-    /// assert_eq!(a.count_ones(), 1);
-    /// assert_eq!(b.count_ones(), 3);
+    /// assert_eq!(a.count_ones().get(), 1);
+    /// assert_eq!(b.count_ones().get(), 3);
     /// ```
     #[must_use]
-    pub const fn count_ones(self) -> u32 {
-        self.get().count_ones()
+    pub const fn count_ones(self) -> RangedU32<0, { u8::BITS }> {
+        RangedU32(self.get().count_ones())
     }
 
     /// Add two ranged integers together.
