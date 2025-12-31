@@ -558,6 +558,46 @@ from_primitive!(I32, i32, from_i32, with_i32);
 from_primitive!(I64, i64, from_i64, with_i64);
 from_primitive!(I128, i128, from_i128, with_i128);
 
+/*
+macro_rules! from_nonzero {
+    ($nonzero:ty, $primitive:ty, $ranged:ident) => {
+        impl $nonzero {
+            /// Convert from [`NonZero`].
+            ///
+            /// ```rust
+            /// # use std::num::NonZero;
+            #[doc = concat!("# use ranch::bitwise::", stringify!($nonzero), ";")]
+            /// assert_eq!(
+            #[doc = concat!("    ", stringify!($nonzero), "::from_nonzero(NonZero::new(42).unwrap()),")]
+            #[doc = concat!("    ", stringify!($nonzero), "::new::<42>(),")]
+            /// );
+            /// ```
+            pub const fn from_nonzero(nonzero: NonZero<$primitive>) -> Self {
+                Self(nonzero)
+            }
+
+            pub const fn from_ranged<
+                const IN_MIN: $primitive,
+                const IN_MAX: $primitive,
+            >(ranged: $ranged::<IN_MIN, IN_MAX>) -> Self
+            {
+                const {
+                    if IN_MIN <= 0 && IN_MAX >= 0 {
+                        panic!("input range can't contain zero")
+                    }
+                }
+
+                Self(NonZero::new(ranged.get()).unwrap())
+            }
+        }
+    }
+}
+
+from_nonzero!(NonZeroU8, u8);
+
+from_nonzero!(NonZeroI8, i8);
+*/
+
 const fn u8_two_pow(power: u32) -> u8 {
     1u8 << power
 }

@@ -122,3 +122,19 @@ impl_ranged_fmt!(
         Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
     ],
 );
+
+impl_ranged_fmt!(
+    RangedNonZeroU8,
+    u8,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedNonZeroI8,
+    i8,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);

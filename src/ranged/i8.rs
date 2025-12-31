@@ -54,7 +54,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
 
     /// Try to create a new ranged integer.
     ///
-    /// Returns `None` if out of bounds.
+    /// Returns `Err` if out of bounds.
     ///
     /// ```rust
     /// # use ranch::{RangedI8, Error};
@@ -772,9 +772,7 @@ impl<const MIN: i8, const MAX: i8> core::str::FromStr for RangedI8<MIN, MAX> {
     }
 }
 
-impl<const MIN: i8, const MAX: i8> crate::error::Clamp
-    for RangedI8<MIN, MAX>
-{
+impl<const MIN: i8, const MAX: i8> crate::error::Clamp for RangedI8<MIN, MAX> {
     const MAX: Self = Self::MAX;
     const MIN: Self = Self::MIN;
 }

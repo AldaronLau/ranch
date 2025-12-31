@@ -1,26 +1,32 @@
+use core::num::NonZero;
+
 use as_repr::AsRepr;
 
-use crate::{Error, ParsingError, ParsingResult, Quotient, RangedU32, Result};
+use crate::{
+    Error, ParsingError, ParsingResult, Quotient, RangedI8, RangedU32, Result,
+};
 
-/// [`i16`] with a specified minimum and maximum value
+/// [`i8`] not to equal zero with a specified minimum and maximum value
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 #[repr(transparent)]
-pub struct RangedI16<const MIN: i16, const MAX: i16>(pub(crate) i16);
+pub struct RangedNonZeroI8<const MIN: i8, const MAX: i8>(
+    pub(crate) NonZero<i8>,
+);
 
-// unsafe: `repr(transparent)` is `repr(i16)`
+// unsafe: `repr(transparent)` is `repr(NonZero<i8>)`
 #[expect(unsafe_code)]
-unsafe impl<const MIN: i16, const MAX: i16> AsRepr<i16>
-    for RangedI16<MIN, MAX>
+unsafe impl<const MIN: i8, const MAX: i8> AsRepr<NonZero<i8>>
+    for RangedNonZeroI8<MIN, MAX>
 {
 }
 
-impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
+impl<const MIN: i8, const MAX: i8> RangedNonZeroI8<MIN, MAX> {
     /// The size of this integer type in bits.
-    pub const BITS: u32 = i16::BITS;
+    pub const BITS: u32 = i8::BITS;
     /// The largest value that can be represented by this integer type.
-    pub const MAX: Self = Self(MAX);
+    pub const MAX: Self = Self::new::<MAX>();
     /// The smallest value that can be represented by this integer type.
-    pub const MIN: Self = Self(MIN);
+    pub const MIN: Self = Self::new::<MIN>();
 
     /// Create a new ranged integer.
     ///
@@ -29,74 +35,161 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Compiles:
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// RangedI16::<1, 3>::new::<1>();
-    /// RangedI16::<1, 3>::new::<2>();
-    /// RangedI16::<1, 3>::new::<3>();
+    /// # use ranch::RangedNonZeroI8;
+    /// RangedNonZeroI8::<-1, 3>::new::<1>();
+    /// RangedNonZeroI8::<-1, 3>::new::<2>();
+    /// RangedNonZeroI8::<-1, 3>::new::<3>();
     /// ```
     ///
     /// Does not compile:
     ///
     /// ```compile_fail
-    /// RangedI16::<1, 3>::new::<0>();
+    /// RangedNonZeroI8::<-1, 3>::new::<-2>();
     /// ```
     ///
     /// ```compile_fail
-    /// RangedI16::<1, 3>::new::<4>();
+    /// RangedNonZeroI8::<-1, 3>::new::<0>();
+    /// ```
+    ///
+    /// ```compile_fail
+    /// RangedNonZeroI8::<-1, 3>::new::<4>();
     /// ```
     #[must_use]
-    pub const fn new<const N: i16>() -> Self {
+    pub const fn new<const N: i8>() -> Self {
         const {
+            if MIN == 0 {
+                panic!("Minimum can't be zero");
+            }
+
+            if MAX == 0 {
+                panic!("Maximum can't be zero");
+            }
+
             if N < MIN || N > MAX {
                 panic!("Out of bounds");
             }
-        }
 
-        Self(N)
+            Self(NonZero::new(N).unwrap())
+        }
     }
 
     /// Try to create a new ranged integer.
     ///
-    /// Returns `Err` if out of bounds.
+    /// Returns `Err` if out of bounds, `Ok(None)` if zero.
     ///
     /// ```rust
-    /// # use ranch::{RangedI16, Error};
-    /// RangedI16::<1, 2>::with_i16(1).unwrap();
-    /// RangedI16::<1, 2>::with_i16(2).unwrap();
-    /// assert_eq!(RangedI16::<1, 2>::with_i16(0).unwrap_err(), Error::NegOverflow);
-    /// assert_eq!(RangedI16::<1, 2>::with_i16(3).unwrap_err(), Error::PosOverflow);
+    /// # use ranch::{RangedNonZeroI8, Error};
+    /// RangedNonZeroI8::<-1, 1>::with_i8(-1).unwrap().unwrap();
+    /// RangedNonZeroI8::<-1, 1>::with_i8(1).unwrap().unwrap();
+    /// assert_eq!(RangedNonZeroI8::<-1, 1>::with_i8(0), Ok(None));
+    /// assert_eq!(RangedNonZeroI8::<-1, 1>::with_i8(-2).unwrap_err(), Error::NegOverflow);
+    /// assert_eq!(RangedNonZeroI8::<-1, 1>::with_i8(2).unwrap_err(), Error::PosOverflow);
     /// ```
-    pub const fn with_i16(value: impl AsRepr<i16>) -> Result<Self> {
+    pub const fn with_i8(value: impl AsRepr<i8>) -> Result<Option<Self>> {
         let value = as_repr::as_repr(value);
+        let Some(value) = NonZero::new(value) else {
+            return Ok(None);
+        };
 
-        if value < MIN {
+        match Self::with_nonzero(value) {
+            Ok(v) => Ok(Some(v)),
+            Err(e) => Err(e),
+        }
+    }
+
+    /// Convert from [`NonZero`].
+    ///
+    /// ```rust
+    /// # use std::num::NonZero;
+    /// # use ranch::RangedNonZeroI8;
+    /// assert_eq!(
+    ///     RangedNonZeroI8::<1, 100>::with_nonzero(NonZero::new(42).unwrap()).unwrap(),
+    ///     RangedNonZeroI8::<1, 100>::new::<42>(),
+    /// );
+    /// ```
+    pub const fn with_nonzero(
+        nonzero: impl AsRepr<NonZero<i8>>,
+    ) -> Result<Self> {
+        let nonzero = as_repr::as_repr(nonzero);
+
+        if nonzero.get() < MIN {
             return Err(Error::NegOverflow);
         }
 
-        if value > MAX {
+        if nonzero.get() > MAX {
             return Err(Error::PosOverflow);
         }
 
-        Ok(Self(value))
+        Ok(Self(nonzero))
+    }
+
+    /// Convert from [`RangedI8`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedNonZeroI8, RangedI8};
+    /// assert_eq!(
+    ///     RangedNonZeroI8::<1, 100>::with_ranged(RangedI8::new::<42>()).unwrap(),
+    ///     RangedNonZeroI8::<1, 100>::new::<42>(),
+    /// );
+    /// assert!(
+    ///     RangedNonZeroI8::<0, 100>::with_ranged(RangedI8::new::<0>())
+    ///         .is_none(),
+    /// );
+    /// ```
+    pub const fn with_ranged(ranged: RangedI8<MIN, MAX>) -> Option<Self> {
+        let Some(nonzero) = NonZero::new(ranged.get()) else {
+            return None;
+        };
+
+        Some(Self(nonzero))
     }
 
     /// Return the contained value as a primitive type.
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// assert_eq!(42, RangedI16::<1, 100>::new::<42>().get());
+    /// # use ranch::RangedNonZeroI8;
+    /// assert_eq!(42, RangedNonZeroI8::<1, 100>::new::<42>().get());
     /// ```
     #[must_use]
-    pub const fn get(self) -> i16 {
+    pub const fn get(self) -> i8 {
+        self.0.get()
+    }
+
+    /// Convert to [`NonZero`].
+    ///
+    /// ```rust
+    /// # use std::num::NonZero;
+    /// # use ranch::RangedNonZeroI8;
+    /// assert_eq!(
+    ///     NonZero::new(42).unwrap(),
+    ///     RangedNonZeroI8::<1, 100>::new::<42>().to_nonzero(),
+    /// );
+    /// ```
+    #[must_use]
+    pub const fn to_nonzero(self) -> NonZero<i8> {
         self.0
+    }
+
+    /// Convert to [`RangedI8`].
+    ///
+    /// ```rust
+    /// # use ranch::{RangedNonZeroI8, RangedI8};
+    /// assert_eq!(
+    ///     RangedI8::<1, 100>::new::<42>(),
+    ///     RangedNonZeroI8::<1, 100>::new::<42>().to_ranged(),
+    /// );
+    /// ```
+    #[must_use]
+    pub const fn to_ranged(self) -> RangedI8<MIN, MAX> {
+        RangedI8(self.get())
     }
 
     /// Return the number of leading zeros in the binary representation of
     /// `self`.
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// let n = RangedI16::<{ i16::MIN }, { i16::MAX }>::MAX;
+    /// # use ranch::RangedNonZeroI8;
+    /// let n = RangedNonZeroI8::<{ i8::MIN }, { i8::MAX }>::MAX;
     ///
     /// assert_eq!(n.leading_zeros(), 1);
     /// ```
@@ -109,8 +202,8 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// `self`.
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// let n = RangedI16::<-128, 127>::new::<0b0101000>();
+    /// # use ranch::RangedNonZeroI8;
+    /// let n = RangedNonZeroI8::<-128, 127>::new::<0b0101000>();
     ///
     /// assert_eq!(n.trailing_zeros(), 3);
     /// ```
@@ -122,9 +215,9 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Return the number of ones in the binary representation of `self`.
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<-128, 127>::new::<0b100_0000>();
-    /// let b = RangedI16::<-128, 127>::new::<0b100_0011>();
+    /// # use ranch::RangedNonZeroI8;
+    /// let a = RangedNonZeroI8::<-128, 127>::new::<0b100_0000>();
+    /// let b = RangedNonZeroI8::<-128, 127>::new::<0b100_0011>();
     ///
     /// assert_eq!(a.count_ones(), 1);
     /// assert_eq!(b.count_ones(), 3);
@@ -134,14 +227,15 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
         self.get().count_ones()
     }
 
+    /*
     /// Add two ranged integers together.
     ///
     /// Returns an [`Error`] on overflow.
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<1, 100>::new::<50>();
-    /// let b = RangedI16::<1, 100>::new::<5>();
+    /// # use ranch::RangedNonZeroI8;
+    /// let a = RangedNonZeroI8::<1, 100>::new::<50>();
+    /// let b = RangedNonZeroI8::<1, 100>::new::<5>();
     /// let c = a.checked_add(b).unwrap();
     ///
     /// assert!(c.checked_add(a).is_err());
@@ -150,7 +244,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn checked_add(self, other: impl AsRepr<i16>) -> Result<Self> {
+    pub const fn checked_add(self, other: impl AsRepr<i8>) -> Result<Self> {
         let other = as_repr::as_repr(other);
         let Some(value) = self.get().checked_add(other) else {
             return Err(
@@ -162,7 +256,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             );
         };
 
-        Self::with_i16(value)
+        Self::with_i8(value)
     }
 
     /// Add two ranged integers together.
@@ -171,11 +265,11 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// positive overflow.
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<-100, 100>::new::<50>();
-    /// let b = RangedI16::<-100, 100>::new::<5>();
+    /// # use ranch::RangedNonZeroI8;
+    /// let a = RangedNonZeroI8::<-100, 100>::new::<50>();
+    /// let b = RangedNonZeroI8::<-100, 100>::new::<5>();
     /// let c = a.saturating_add(b);
-    /// let d = RangedI16::<-100, 100>::new::<-75>();
+    /// let d = RangedNonZeroI8::<-100, 100>::new::<-75>();
     ///
     /// assert_eq!(c.saturating_add(a).get(), 100);
     /// assert_eq!(c.get(), 55);
@@ -184,10 +278,10 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn saturating_add(self, other: impl AsRepr<i16>) -> Self {
+    pub const fn saturating_add(self, other: impl AsRepr<i8>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::with_i16(self.get().saturating_add(other)) {
+        match Self::with_i8(self.get().saturating_add(other)) {
             Ok(value) => value,
             Err(Error::NegOverflow) => Self::MIN,
             Err(Error::PosOverflow) => Self::MAX,
@@ -199,10 +293,10 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Returns an [`Error`] on overflow.
     ///
     /// ```rust
-    /// # use ranch::{Error, RangedI16};
-    /// let a = RangedI16::<-100, 100>::new::<50>();
-    /// let b = RangedI16::<-100, 100>::new::<5>();
-    /// let c = RangedI16::<-100, 100>::new::<-75>();
+    /// # use ranch::{Error, RangedNonZeroI8};
+    /// let a = RangedNonZeroI8::<-100, 100>::new::<50>();
+    /// let b = RangedNonZeroI8::<-100, 100>::new::<5>();
+    /// let c = RangedNonZeroI8::<-100, 100>::new::<-75>();
     ///
     /// assert_eq!(b.checked_mul(b).unwrap().get(), 25);
     /// assert_eq!(a.checked_mul(c).unwrap_err(), Error::NegOverflow);
@@ -210,7 +304,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn checked_mul(self, other: impl AsRepr<i16>) -> Result<Self> {
+    pub const fn checked_mul(self, other: impl AsRepr<i8>) -> Result<Self> {
         let other = as_repr::as_repr(other);
         let Some(value) = self.get().checked_mul(other) else {
             return Err(if self.is_negative() ^ other.is_negative() {
@@ -220,7 +314,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             });
         };
 
-        Self::with_i16(value)
+        Self::with_i8(value)
     }
 
     /// Multiply two ranged integers together.
@@ -229,10 +323,10 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// positive overflow.
     ///
     /// ```rust
-    /// # use ranch::{Error, RangedI16};
-    /// let a = RangedI16::<-100, 100>::new::<50>();
-    /// let b = RangedI16::<-100, 100>::new::<5>();
-    /// let c = RangedI16::<-100, 100>::new::<-75>();
+    /// # use ranch::{Error, RangedNonZeroI8};
+    /// let a = RangedNonZeroI8::<-100, 100>::new::<50>();
+    /// let b = RangedNonZeroI8::<-100, 100>::new::<5>();
+    /// let c = RangedNonZeroI8::<-100, 100>::new::<-75>();
     ///
     /// assert_eq!(b.saturating_mul(b).get(), 25);
     /// assert_eq!(a.saturating_mul(c).get(), -100);
@@ -240,10 +334,10 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn saturating_mul(self, other: impl AsRepr<i16>) -> Self {
+    pub const fn saturating_mul(self, other: impl AsRepr<i8>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::with_i16(self.get().saturating_mul(other)) {
+        match Self::with_i8(self.get().saturating_mul(other)) {
             Ok(value) => value,
             Err(Error::NegOverflow) => Self::MIN,
             Err(Error::PosOverflow) => Self::MAX,
@@ -255,11 +349,11 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Returns an [`Error`] on overflow.
     ///
     /// ```rust
-    /// # use ranch::{Error, RangedI16};
-    /// let a = RangedI16::<-100, 100>::new::<50>();
-    /// let b = RangedI16::<-100, 100>::new::<5>();
-    /// let c = RangedI16::<-100, 100>::new::<-75>();
-    /// let d = RangedI16::<-100, 100>::new::<2>();
+    /// # use ranch::{Error, RangedNonZeroI8};
+    /// let a = RangedNonZeroI8::<-100, 100>::new::<50>();
+    /// let b = RangedNonZeroI8::<-100, 100>::new::<5>();
+    /// let c = RangedNonZeroI8::<-100, 100>::new::<-75>();
+    /// let d = RangedNonZeroI8::<-100, 100>::new::<2>();
     ///
     /// assert_eq!(a.checked_pow(2).unwrap_err(), Error::PosOverflow);
     /// assert_eq!(b.checked_pow(2).unwrap().get(), 25);
@@ -278,7 +372,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             });
         };
 
-        Self::with_i16(value)
+        Self::with_i8(value)
     }
 
     /// Raise to an integer power.
@@ -287,11 +381,11 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// positive overflow.
     ///
     /// ```rust
-    /// # use ranch::{Error, RangedI16};
-    /// let a = RangedI16::<-100, 100>::new::<50>();
-    /// let b = RangedI16::<-100, 100>::new::<5>();
-    /// let c = RangedI16::<-100, 100>::new::<-75>();
-    /// let d = RangedI16::<-100, 100>::new::<2>();
+    /// # use ranch::{Error, RangedNonZeroI8};
+    /// let a = RangedNonZeroI8::<-100, 100>::new::<50>();
+    /// let b = RangedNonZeroI8::<-100, 100>::new::<5>();
+    /// let c = RangedNonZeroI8::<-100, 100>::new::<-75>();
+    /// let d = RangedNonZeroI8::<-100, 100>::new::<2>();
     ///
     /// assert_eq!(a.saturating_pow(2).get(), 100);
     /// assert_eq!(b.saturating_pow(2).get(), 25);
@@ -303,7 +397,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     pub const fn saturating_pow(self, other: impl AsRepr<u32>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::with_i16(self.get().saturating_pow(other)) {
+        match Self::with_i8(self.get().saturating_pow(other)) {
             Ok(value) => value,
             Err(Error::NegOverflow) => Self::MIN,
             Err(Error::PosOverflow) => Self::MAX,
@@ -315,13 +409,13 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Returns an [`Error`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
     ///
     /// ```rust
-    /// # use ranch::{Error, RangedI16, Quotient};
-    /// let a = RangedI16::<-100, 10>::new::<-50>();
-    /// let b = RangedI16::<-10, 100>::new::<50>();
+    /// # use ranch::{Error, RangedNonZeroI8, Quotient};
+    /// let a = RangedNonZeroI8::<-100, 10>::new::<-50>();
+    /// let b = RangedNonZeroI8::<-10, 100>::new::<50>();
     ///
     /// assert_eq!(
     ///     a.checked_div(2),
-    ///     Ok(Quotient::Number(RangedI16::new::<-25>())),
+    ///     Ok(Quotient::Number(RangedNonZeroI8::new::<-25>())),
     /// );
     /// assert_eq!(a.checked_div(0), Ok(Quotient::Nan));
     /// assert_eq!(a.checked_div(-1), Err(Error::PosOverflow));
@@ -331,7 +425,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
                   without modifying the original"]
     pub const fn checked_div(
         self,
-        rhs: impl AsRepr<i16>,
+        rhs: impl AsRepr<i8>,
     ) -> Result<Quotient<Self>> {
         let rhs = as_repr::as_repr(rhs);
 
@@ -347,7 +441,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             });
         };
 
-        match Self::with_i16(value) {
+        match Self::with_i8(value) {
             Ok(v) => Ok(Quotient::Number(v)),
             Err(e) => Err(e),
         }
@@ -359,34 +453,34 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// overflow, and [`Quotient::Nan`] if `rhs` is 0.
     ///
     /// ```rust
-    /// # use ranch::{Error, RangedI16, Quotient};
-    /// let a = RangedI16::<-100, 10>::new::<-50>();
-    /// let b = RangedI16::<-10, 100>::new::<50>();
+    /// # use ranch::{Error, RangedNonZeroI8, Quotient};
+    /// let a = RangedNonZeroI8::<-100, 10>::new::<-50>();
+    /// let b = RangedNonZeroI8::<-10, 100>::new::<50>();
     ///
     /// assert_eq!(
     ///     a.saturating_div(2),
-    ///     Quotient::Number(RangedI16::new::<-25>()),
+    ///     Quotient::Number(RangedNonZeroI8::new::<-25>()),
     /// );
     /// assert_eq!(a.saturating_div(0), Quotient::Nan);
     /// assert_eq!(
     ///     a.saturating_div(-1),
-    ///     Quotient::Number(RangedI16::new::<10>()),
+    ///     Quotient::Number(RangedNonZeroI8::new::<10>()),
     /// );
     /// assert_eq!(
     ///     b.saturating_div(-2),
-    ///     Quotient::Number(RangedI16::new::<-10>()),
+    ///     Quotient::Number(RangedNonZeroI8::new::<-10>()),
     /// );
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn saturating_div(self, rhs: impl AsRepr<i16>) -> Quotient<Self> {
+    pub const fn saturating_div(self, rhs: impl AsRepr<i8>) -> Quotient<Self> {
         let rhs = as_repr::as_repr(rhs);
 
         if rhs == 0 {
             return Quotient::Nan;
         }
 
-        Quotient::Number(match Self::with_i16(self.get().saturating_div(rhs)) {
+        Quotient::Number(match Self::with_i8(self.get().saturating_div(rhs)) {
             Ok(value) => value,
             Err(Error::NegOverflow) => Self::MIN,
             Err(Error::PosOverflow) => Self::MAX,
@@ -398,8 +492,8 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Returns an [`Error`] on overflow.
     ///
     /// ```rust
-    /// # use ranch::{Error, RangedI16};
-    /// let a = RangedI16::<1, 100>::new::<50>();
+    /// # use ranch::{Error, RangedNonZeroI8};
+    /// let a = RangedNonZeroI8::<1, 100>::new::<50>();
     /// let b = a.checked_sub(5).unwrap();
     ///
     /// assert_eq!(a.checked_sub(-51), Err(Error::PosOverflow));
@@ -408,7 +502,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn checked_sub(self, other: impl AsRepr<i16>) -> Result<Self> {
+    pub const fn checked_sub(self, other: impl AsRepr<i8>) -> Result<Self> {
         let other = as_repr::as_repr(other);
         let Some(value) = self.get().checked_sub(other) else {
             return Err(if other.is_negative() {
@@ -418,7 +512,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             });
         };
 
-        Self::with_i16(value)
+        Self::with_i8(value)
     }
 
     /// Subtract a ranged integers from another.
@@ -427,8 +521,8 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// positive overflow.
     ///
     /// ```rust
-    /// # use ranch::{Error, RangedI16};
-    /// let a = RangedI16::<1, 100>::new::<50>();
+    /// # use ranch::{Error, RangedNonZeroI8};
+    /// let a = RangedNonZeroI8::<1, 100>::new::<50>();
     /// let b = a.saturating_sub(5);
     ///
     /// assert_eq!(a.saturating_sub(-51).get(), 100);
@@ -437,10 +531,10 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn saturating_sub(self, other: impl AsRepr<i16>) -> Self {
+    pub const fn saturating_sub(self, other: impl AsRepr<i8>) -> Self {
         let other = as_repr::as_repr(other);
 
-        match Self::with_i16(self.get().saturating_sub(other)) {
+        match Self::with_i8(self.get().saturating_sub(other)) {
             Ok(value) => value,
             Err(Error::NegOverflow) => Self::MIN,
             Err(Error::PosOverflow) => Self::MAX,
@@ -450,9 +544,9 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Return `true` if `self` is negative; `false` if zero or positive.
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// assert!(!RangedI16::<-100, 100>::new::<10>().is_negative());
-    /// assert!(RangedI16::<-100, 100>::new::<-10>().is_negative());
+    /// # use ranch::RangedNonZeroI8;
+    /// assert!(!RangedNonZeroI8::<-100, 100>::new::<10>().is_negative());
+    /// assert!(RangedNonZeroI8::<-100, 100>::new::<-10>().is_negative());
     /// ```
     #[must_use]
     pub const fn is_negative(self) -> bool {
@@ -462,9 +556,9 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Return `true` if `self` is positive; `false` if zero or negative.
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// assert!(RangedI16::<-100, 100>::new::<10>().is_positive());
-    /// assert!(!RangedI16::<-100, 100>::new::<-10>().is_positive());
+    /// # use ranch::RangedNonZeroI8;
+    /// assert!(RangedNonZeroI8::<-100, 100>::new::<10>().is_positive());
+    /// assert!(!RangedNonZeroI8::<-100, 100>::new::<-10>().is_positive());
     /// ```
     #[must_use]
     pub const fn is_positive(self) -> bool {
@@ -474,15 +568,15 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Calculate the midpoint (average) between `self` and `rhs`.
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<-8, 8>::new::<0>();
-    /// let b = RangedI16::<-8, 8>::new::<2>();
-    /// let c = RangedI16::<-8, 8>::new::<4>();
-    /// let d = RangedI16::<-8, 8>::new::<-1>();
-    /// let e = RangedI16::<-8, 8>::new::<-7>();
-    /// let f = RangedI16::<-8, 8>::new::<-3>();
-    /// let g = RangedI16::<-8, 8>::new::<3>();
-    /// let h = RangedI16::<-8, 8>::new::<7>();
+    /// # use ranch::RangedNonZeroI8;
+    /// let a = RangedNonZeroI8::<-8, 8>::new::<0>();
+    /// let b = RangedNonZeroI8::<-8, 8>::new::<2>();
+    /// let c = RangedNonZeroI8::<-8, 8>::new::<4>();
+    /// let d = RangedNonZeroI8::<-8, 8>::new::<-1>();
+    /// let e = RangedNonZeroI8::<-8, 8>::new::<-7>();
+    /// let f = RangedNonZeroI8::<-8, 8>::new::<-3>();
+    /// let g = RangedNonZeroI8::<-8, 8>::new::<3>();
+    /// let h = RangedNonZeroI8::<-8, 8>::new::<7>();
     ///
     /// assert_eq!(a.midpoint(c), b);
     /// assert_eq!(d.midpoint(b), a);
@@ -493,7 +587,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn midpoint(self, rhs: Self) -> Self {
-        let Ok(value) = Self::with_i16(midpoint(self.get(), rhs.get())) else {
+        let Ok(value) = Self::with_i8(midpoint(self.get(), rhs.get())) else {
             panic!("unexpected midpoint value")
         };
 
@@ -503,10 +597,10 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Add two numbers together.
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<1, 3>::new::<1>();
-    /// let b = RangedI16::<-1, 3>::new::<2>();
-    /// let output: RangedI16::<0, 6> = a.ranged_add(b);
+    /// # use ranch::RangedNonZeroI8;
+    /// let a = RangedNonZeroI8::<1, 3>::new::<1>();
+    /// let b = RangedNonZeroI8::<-1, 3>::new::<2>();
+    /// let output: RangedNonZeroI8::<0, 6> = a.ranged_add(b);
     ///
     /// assert_eq!(output.get(), 3);
     /// ```
@@ -514,24 +608,24 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Does not compile:
     ///
     /// ```compile_fail
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<1, 3>::new::<1>();
-    /// let b = RangedI16::<-1, 3>::new::<2>();
-    /// let output: RangedI16::<1, 6> = a.ranged_add(b);
+    /// # use ranch::RangedNonZeroI8;
+    /// let a = RangedNonZeroI8::<1, 3>::new::<1>();
+    /// let b = RangedNonZeroI8::<-1, 3>::new::<2>();
+    /// let output: RangedNonZeroI8::<1, 6> = a.ranged_add(b);
     ///
     /// assert_eq!(output.get(), 3);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn ranged_add<
-        const RHS_MIN: i16,
-        const RHS_MAX: i16,
-        const OUTPUT_MIN: i16,
-        const OUTPUT_MAX: i16,
+        const RHS_MIN: i8,
+        const RHS_MAX: i8,
+        const OUTPUT_MIN: i8,
+        const OUTPUT_MAX: i8,
     >(
         self,
-        rhs: RangedI16<RHS_MIN, RHS_MAX>,
-    ) -> RangedI16<OUTPUT_MIN, OUTPUT_MAX> {
+        rhs: RangedNonZeroI8<RHS_MIN, RHS_MAX>,
+    ) -> RangedNonZeroI8<OUTPUT_MIN, OUTPUT_MAX> {
         const {
             if MIN + RHS_MIN != OUTPUT_MIN {
                 panic!("Min mismatch");
@@ -542,16 +636,16 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() + rhs.get())
+        RangedNonZeroI8(self.get() + rhs.get())
     }
 
     /// Subtract a number from `self`.
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<2, 5>::new::<3>();
-    /// let b = RangedI16::<-1, 3>::new::<1>();
-    /// let output: RangedI16::<-1, 6> = a.ranged_sub(b);
+    /// # use ranch::RangedNonZeroI8;
+    /// let a = RangedNonZeroI8::<2, 5>::new::<3>();
+    /// let b = RangedNonZeroI8::<-1, 3>::new::<1>();
+    /// let output: RangedNonZeroI8::<-1, 6> = a.ranged_sub(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
@@ -559,24 +653,24 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Does not compile:
     ///
     /// ```compile_fail
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<2, 5>::new::<3>();
-    /// let b = RangedI16::<-1, 3>::new::<1>();
-    /// let output: RangedI16::<0, 6> = a.ranged_sub(b);
+    /// # use ranch::RangedNonZeroI8;
+    /// let a = RangedNonZeroI8::<2, 5>::new::<3>();
+    /// let b = RangedNonZeroI8::<-1, 3>::new::<1>();
+    /// let output: RangedNonZeroI8::<0, 6> = a.ranged_sub(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn ranged_sub<
-        const RHS_MIN: i16,
-        const RHS_MAX: i16,
-        const OUTPUT_MIN: i16,
-        const OUTPUT_MAX: i16,
+        const RHS_MIN: i8,
+        const RHS_MAX: i8,
+        const OUTPUT_MIN: i8,
+        const OUTPUT_MAX: i8,
     >(
         self,
-        rhs: RangedI16<RHS_MIN, RHS_MAX>,
-    ) -> RangedI16<OUTPUT_MIN, OUTPUT_MAX> {
+        rhs: RangedNonZeroI8<RHS_MIN, RHS_MAX>,
+    ) -> RangedNonZeroI8<OUTPUT_MIN, OUTPUT_MAX> {
         const {
             if MIN - RHS_MAX != OUTPUT_MIN {
                 panic!("Min mismatch");
@@ -587,16 +681,16 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() - rhs.get())
+        RangedNonZeroI8(self.get() - rhs.get())
     }
 
     /// Multiply two numbers together.
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<-2, 3>::new::<1>();
-    /// let b = RangedI16::<0, 3>::new::<2>();
-    /// let output: RangedI16::<-6, 9> = a.ranged_mul(b);
+    /// # use ranch::RangedNonZeroI8;
+    /// let a = RangedNonZeroI8::<-2, 3>::new::<1>();
+    /// let b = RangedNonZeroI8::<0, 3>::new::<2>();
+    /// let output: RangedNonZeroI8::<-6, 9> = a.ranged_mul(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
@@ -604,24 +698,24 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Does not compile:
     ///
     /// ```compile_fail
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<-2, 3>::new::<1>();
-    /// let b = RangedI16::<0, 3>::new::<2>();
-    /// let output: RangedI16::<0, 9> = a.ranged_mul(b);
+    /// # use ranch::RangedNonZeroI8;
+    /// let a = RangedNonZeroI8::<-2, 3>::new::<1>();
+    /// let b = RangedNonZeroI8::<0, 3>::new::<2>();
+    /// let output: RangedNonZeroI8::<0, 9> = a.ranged_mul(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn ranged_mul<
-        const RHS_MIN: i16,
-        const RHS_MAX: i16,
-        const OUTPUT_MIN: i16,
-        const OUTPUT_MAX: i16,
+        const RHS_MIN: i8,
+        const RHS_MAX: i8,
+        const OUTPUT_MIN: i8,
+        const OUTPUT_MAX: i8,
     >(
         self,
-        rhs: RangedI16<RHS_MIN, RHS_MAX>,
-    ) -> RangedI16<OUTPUT_MIN, OUTPUT_MAX> {
+        rhs: RangedNonZeroI8<RHS_MIN, RHS_MAX>,
+    ) -> RangedNonZeroI8<OUTPUT_MIN, OUTPUT_MAX> {
         const {
             let (min_min, min_max) = (MIN * RHS_MIN, MIN * RHS_MAX);
             let min = if min_min < min_max { min_min } else { min_max };
@@ -637,16 +731,16 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() * rhs.get())
+        RangedNonZeroI8(self.get() * rhs.get())
     }
 
     /// Divide `self` by a number.
     ///
     /// ```rust
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<2, 5>::new::<3>();
-    /// let b = RangedI16::<1, 2>::new::<2>();
-    /// let output: RangedI16::<1, 2> = a.ranged_div(b);
+    /// # use ranch::RangedNonZeroI8;
+    /// let a = RangedNonZeroI8::<2, 5>::new::<3>();
+    /// let b = RangedNonZeroI8::<1, 2>::new::<2>();
+    /// let output: RangedNonZeroI8::<1, 2> = a.ranged_div(b);
     ///
     /// assert_eq!(output.get(), 1);
     /// ```
@@ -654,24 +748,24 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Does not compile:
     //
     /// ```compile_fail
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<2, 5>::new::<3>();
-    /// let b = RangedI16::<1, 2>::new::<1>();
-    /// let output: RangedI16::<0, 2> = a.ranged_div(b);
+    /// # use ranch::RangedNonZeroI8;
+    /// let a = RangedNonZeroI8::<2, 5>::new::<3>();
+    /// let b = RangedNonZeroI8::<1, 2>::new::<1>();
+    /// let output: RangedNonZeroI8::<0, 2> = a.ranged_div(b);
     ///
     /// assert_eq!(output.get(), 1);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn ranged_div<
-        const RHS_MIN: i16,
-        const RHS_MAX: i16,
-        const OUTPUT_MIN: i16,
-        const OUTPUT_MAX: i16,
+        const RHS_MIN: i8,
+        const RHS_MAX: i8,
+        const OUTPUT_MIN: i8,
+        const OUTPUT_MAX: i8,
     >(
         self,
-        rhs: RangedI16<RHS_MIN, RHS_MAX>,
-    ) -> RangedI16<OUTPUT_MIN, OUTPUT_MAX> {
+        rhs: RangedNonZeroI8<RHS_MIN, RHS_MAX>,
+    ) -> RangedNonZeroI8<OUTPUT_MIN, OUTPUT_MAX> {
         const {
             if RHS_MIN == 0 || RHS_MAX == 0 {
                 panic!("Division by zero not allowed");
@@ -695,16 +789,16 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() / rhs.get())
+        RangedNonZeroI8(self.get() / rhs.get())
     }
 
     /// Raise to an integer power.
     ///
     /// ```rust
-    /// # use ranch::{RangedI16, RangedU32};
-    /// let a = RangedI16::<-1, 3>::new::<2>();
+    /// # use ranch::{RangedNonZeroI8, RangedU32};
+    /// let a = RangedNonZeroI8::<-1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedI16::<-1, 27> = a.ranged_pow(b);
+    /// let output: RangedNonZeroI8::<-1, 27> = a.ranged_pow(b);
     ///
     /// assert_eq!(output.get(), 4);
     /// ```
@@ -712,10 +806,10 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// Does not compile:
     ///
     /// ```compile_fail
-    /// # use ranch::{RangedI16, RangedU32};
-    /// let a = RangedI16::<1, 3>::new::<2>();
+    /// # use ranch::{RangedNonZeroI8, RangedU32};
+    /// let a = RangedNonZeroI8::<1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedI16::<0, 27> = a.ranged_pow(b);
+    /// let output: RangedNonZeroI8::<0, 27> = a.ranged_pow(b);
     ///
     /// assert_eq!(output.get(), 4);
     /// ```
@@ -724,12 +818,12 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     pub const fn ranged_pow<
         const RHS_MIN: u32,
         const RHS_MAX: u32,
-        const OUTPUT_MIN: i16,
-        const OUTPUT_MAX: i16,
+        const OUTPUT_MIN: i8,
+        const OUTPUT_MAX: i8,
     >(
         self,
         rhs: RangedU32<RHS_MIN, RHS_MAX>,
-    ) -> RangedI16<OUTPUT_MIN, OUTPUT_MAX> {
+    ) -> RangedNonZeroI8<OUTPUT_MIN, OUTPUT_MAX> {
         const {
             if MIN.is_negative() {
                 let min = MIN.pow(RHS_MIN);
@@ -761,31 +855,34 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get().pow(rhs.get()))
-    }
+        RangedNonZeroI8(self.get().pow(rhs.get()))
+    }*/
 }
 
-impl<const MIN: i16, const MAX: i16> core::str::FromStr
-    for RangedI16<MIN, MAX>
+impl<const MIN: i8, const MAX: i8> core::str::FromStr
+    for RangedNonZeroI8<MIN, MAX>
 {
     type Err = ParsingError;
 
     fn from_str(src: &str) -> ParsingResult<Self> {
-        let parsed = src.parse::<i16>()?;
+        let parsed = src.parse::<NonZero<i8>>()?;
 
-        Self::with_i16(parsed).map_err(From::from)
+        Self::with_i8(parsed.get())
+            .transpose()
+            .unwrap()
+            .map_err(From::from)
     }
 }
 
-impl<const MIN: i16, const MAX: i16> crate::error::Clamp
-    for RangedI16<MIN, MAX>
+impl<const MIN: i8, const MAX: i8> crate::error::Clamp
+    for RangedNonZeroI8<MIN, MAX>
 {
     const MAX: Self = Self::MAX;
     const MIN: Self = Self::MIN;
 }
 
 // polyfill for midpoint (Added in Rust 1.87.0, MSRV is Rust 1.85.0)
-const fn midpoint(a: i16, b: i16) -> i16 {
+const fn midpoint(a: i8, b: i8) -> i8 {
     let t = ((a ^ b) >> 1) + (a & b);
     t + (if t < 0 { 1 } else { 0 } & (a ^ b))
 }

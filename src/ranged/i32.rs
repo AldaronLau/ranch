@@ -57,7 +57,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
 
     /// Try to create a new ranged integer.
     ///
-    /// Returns `None` if out of bounds.
+    /// Returns `Err` if out of bounds.
     ///
     /// ```rust
     /// # use ranch::{RangedI32, Error};
