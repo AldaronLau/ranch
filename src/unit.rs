@@ -28,6 +28,28 @@ pub type UnitU64<const VAL: i64> = RangedU64<VAL, VAL>;
 /// [`u128`] that's guaranteed to be a specific value
 pub type UnitU128<const VAL: i128> = RangedU128<VAL, VAL>;
 
+/// [`i8`] that's guaranteed to be a specific non-zero value
+pub type UnitNonZeroI8<const VAL: i8> = RangedNonZeroI8<VAL, VAL>;
+/// [`i16`] that's guaranteed to be a specific non-zero value
+pub type UnitNonZeroI16<const VAL: i16> = RangedNonZeroI16<VAL, VAL>;
+/// [`i32`] that's guaranteed to be a specific non-zero value
+pub type UnitNonZeroI32<const VAL: i32> = RangedNonZeroI32<VAL, VAL>;
+/// [`i64`] that's guaranteed to be a specific non-zero value
+pub type UnitNonZeroI64<const VAL: i64> = RangedNonZeroI64<VAL, VAL>;
+/// [`i128`] that's guaranteed to be a specific non-zero value
+pub type UnitNonZeroI128<const VAL: i128> = RangedNonZeroI128<VAL, VAL>;
+
+/// [`u8`] that's guaranteed to be a specific non-zero value
+pub type UnitNonZeroU8<const VAL: i8> = RangedNonZeroU8<VAL, VAL>;
+/// [`u16`] that's guaranteed to be a specific non-zero value
+pub type UnitNonZeroU16<const VAL: i16> = RangedNonZeroU16<VAL, VAL>;
+/// [`u32`] that's guaranteed to be a specific non-zero value
+pub type UnitNonZeroU32<const VAL: i32> = RangedNonZeroU32<VAL, VAL>;
+/// [`u64`] that's guaranteed to be a specific non-zero value
+pub type UnitNonZeroU64<const VAL: i64> = RangedNonZeroU64<VAL, VAL>;
+/// [`u128`] that's guaranteed to be a specific non-zero value
+pub type UnitNonZeroU128<const VAL: i128> = RangedNonZeroU128<VAL, VAL>;
+
 macro_rules! impl_default {
     ($type:ident, $p:ty $(,)?) => {
         impl<const VAL: $p> Default for $type<VAL> {
@@ -48,6 +70,16 @@ macro_rules! impl_default {
                 Self::default()
             }
         }
+
+        impl<const VAL: $p> From<()> for $type<VAL> {
+            fn from((): ()) -> Self {
+                Self::default()
+            }
+        }
+
+        impl<const VAL: $p> From<$type<VAL>> for () {
+            fn from(_: $type<VAL>) {}
+        }
     };
 }
 
@@ -62,3 +94,15 @@ impl_default!(UnitU16, u16);
 impl_default!(UnitU32, u32);
 impl_default!(UnitU64, u64);
 impl_default!(UnitU128, u128);
+
+impl_default!(UnitNonZeroI8, i8);
+impl_default!(UnitNonZeroI16, i16);
+impl_default!(UnitNonZeroI32, i32);
+impl_default!(UnitNonZeroI64, i64);
+impl_default!(UnitNonZeroI128, i128);
+
+impl_default!(UnitNonZeroU8, u8);
+impl_default!(UnitNonZeroU16, u16);
+impl_default!(UnitNonZeroU32, u32);
+impl_default!(UnitNonZeroU64, u64);
+impl_default!(UnitNonZeroU128, u128);
