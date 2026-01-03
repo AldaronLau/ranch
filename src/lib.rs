@@ -38,6 +38,7 @@
     rustdoc::redundant_explicit_links
 )]
 
+pub mod ascii;
 pub mod bitwise;
 mod convert;
 mod error;
