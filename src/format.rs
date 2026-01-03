@@ -122,3 +122,83 @@ impl_ranged_fmt!(
         Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
     ],
 );
+
+impl_ranged_fmt!(
+    RangedNonZeroU8,
+    u8,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedNonZeroI8,
+    i8,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedNonZeroU16,
+    u16,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedNonZeroI16,
+    i16,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedNonZeroU32,
+    u32,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedNonZeroI32,
+    i32,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedNonZeroU64,
+    u64,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedNonZeroI64,
+    i64,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedNonZeroU128,
+    u128,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);
+
+impl_ranged_fmt!(
+    RangedNonZeroI128,
+    i128,
+    [
+        Debug, Display, Binary, Octal, LowerHex, UpperHex, LowerExp, UpperExp,
+    ],
+);

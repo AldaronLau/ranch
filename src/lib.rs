@@ -58,10 +58,28 @@ mod ranged {
     pub(super) mod u64;
     pub(super) mod u8;
 }
+mod nonzero {
+    pub(super) mod i128;
+    pub(super) mod i16;
+    pub(super) mod i32;
+    pub(super) mod i64;
+    pub(super) mod i8;
+    pub(super) mod u128;
+    pub(super) mod u16;
+    pub(super) mod u32;
+    pub(super) mod u64;
+    pub(super) mod u8;
+}
 pub mod unit;
 
 pub use self::{
     error::{Error, Result},
+    nonzero::{
+        i8::RangedNonZeroI8, i16::RangedNonZeroI16, i32::RangedNonZeroI32,
+        i64::RangedNonZeroI64, i128::RangedNonZeroI128, u8::RangedNonZeroU8,
+        u16::RangedNonZeroU16, u32::RangedNonZeroU32, u64::RangedNonZeroU64,
+        u128::RangedNonZeroU128,
+    },
     quotient::Quotient,
     ranged::{
         i8::RangedI8, i16::RangedI16, i32::RangedI32, i64::RangedI64,

@@ -11,6 +11,10 @@
 
 Ranged integer types and math for Rust
 
+This crate heavily leverages the type system to allow for powerful ranged
+integer mathematics, covering arbitrary i{N} / u{N} types, unit integers,
+non-zero divisions, and const operations.
+
 Check out the [documentation] for examples.
 
 ### Features
