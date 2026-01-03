@@ -278,243 +278,359 @@ pub type NonZeroI7 = RangedNonZeroI8<{ -i8_two_pow(6) }, { i8_two_pow(6) - 1 }>;
 /// 8-bit signed non-zero integer
 pub type NonZeroI8 = RangedNonZeroI8<{ i8::MIN }, { i8::MAX }>;
 /// 9-bit signed non-zero integer
-pub type NonZeroI9 = RangedNonZeroI16<{ -i16_two_pow(8) }, { i16_two_pow(8) - 1 }>;
+pub type NonZeroI9 =
+    RangedNonZeroI16<{ -i16_two_pow(8) }, { i16_two_pow(8) - 1 }>;
 /// 10-bit signed non-zero integer
-pub type NonZeroI10 = RangedNonZeroI16<{ -i16_two_pow(9) }, { i16_two_pow(9) - 1 }>;
+pub type NonZeroI10 =
+    RangedNonZeroI16<{ -i16_two_pow(9) }, { i16_two_pow(9) - 1 }>;
 /// 11-bit signed non-zero integer
-pub type NonZeroI11 = RangedNonZeroI16<{ -i16_two_pow(10) }, { i16_two_pow(10) - 1 }>;
+pub type NonZeroI11 =
+    RangedNonZeroI16<{ -i16_two_pow(10) }, { i16_two_pow(10) - 1 }>;
 /// 12-bit signed non-zero integer
-pub type NonZeroI12 = RangedNonZeroI16<{ -i16_two_pow(11) }, { i16_two_pow(11) - 1 }>;
+pub type NonZeroI12 =
+    RangedNonZeroI16<{ -i16_two_pow(11) }, { i16_two_pow(11) - 1 }>;
 /// 13-bit signed non-zero integer
-pub type NonZeroI13 = RangedNonZeroI16<{ -i16_two_pow(12) }, { i16_two_pow(12) - 1 }>;
+pub type NonZeroI13 =
+    RangedNonZeroI16<{ -i16_two_pow(12) }, { i16_two_pow(12) - 1 }>;
 /// 14-bit signed non-zero integer
-pub type NonZeroI14 = RangedNonZeroI16<{ -i16_two_pow(13) }, { i16_two_pow(13) - 1 }>;
+pub type NonZeroI14 =
+    RangedNonZeroI16<{ -i16_two_pow(13) }, { i16_two_pow(13) - 1 }>;
 /// 15-bit signed non-zero integer
-pub type NonZeroI15 = RangedNonZeroI16<{ -i16_two_pow(14) }, { i16_two_pow(14) - 1 }>;
+pub type NonZeroI15 =
+    RangedNonZeroI16<{ -i16_two_pow(14) }, { i16_two_pow(14) - 1 }>;
 /// 16-bit signed non-zero integer
 pub type NonZeroI16 = RangedNonZeroI16<{ i16::MIN }, { i16::MAX }>;
 /// 17-bit signed non-zero integer
-pub type NonZeroI17 = RangedNonZeroI32<{ -i32_two_pow(16) }, { i32_two_pow(16) - 1 }>;
+pub type NonZeroI17 =
+    RangedNonZeroI32<{ -i32_two_pow(16) }, { i32_two_pow(16) - 1 }>;
 /// 18-bit signed non-zero integer
-pub type NonZeroI18 = RangedNonZeroI32<{ -i32_two_pow(17) }, { i32_two_pow(17) - 1 }>;
+pub type NonZeroI18 =
+    RangedNonZeroI32<{ -i32_two_pow(17) }, { i32_two_pow(17) - 1 }>;
 /// 19-bit signed non-zero integer
-pub type NonZeroI19 = RangedNonZeroI32<{ -i32_two_pow(18) }, { i32_two_pow(18) - 1 }>;
+pub type NonZeroI19 =
+    RangedNonZeroI32<{ -i32_two_pow(18) }, { i32_two_pow(18) - 1 }>;
 /// 20-bit signed non-zero integer
-pub type NonZeroI20 = RangedNonZeroI32<{ -i32_two_pow(19) }, { i32_two_pow(19) - 1 }>;
+pub type NonZeroI20 =
+    RangedNonZeroI32<{ -i32_two_pow(19) }, { i32_two_pow(19) - 1 }>;
 /// 21-bit signed non-zero integer
-pub type NonZeroI21 = RangedNonZeroI32<{ -i32_two_pow(20) }, { i32_two_pow(20) - 1 }>;
+pub type NonZeroI21 =
+    RangedNonZeroI32<{ -i32_two_pow(20) }, { i32_two_pow(20) - 1 }>;
 /// 22-bit signed non-zero integer
-pub type NonZeroI22 = RangedNonZeroI32<{ -i32_two_pow(21) }, { i32_two_pow(21) - 1 }>;
+pub type NonZeroI22 =
+    RangedNonZeroI32<{ -i32_two_pow(21) }, { i32_two_pow(21) - 1 }>;
 /// 23-bit signed non-zero integer
-pub type NonZeroI23 = RangedNonZeroI32<{ -i32_two_pow(22) }, { i32_two_pow(22) - 1 }>;
+pub type NonZeroI23 =
+    RangedNonZeroI32<{ -i32_two_pow(22) }, { i32_two_pow(22) - 1 }>;
 /// 24-bit signed non-zero integer
-pub type NonZeroI24 = RangedNonZeroI32<{ -i32_two_pow(23) }, { i32_two_pow(23) - 1 }>;
+pub type NonZeroI24 =
+    RangedNonZeroI32<{ -i32_two_pow(23) }, { i32_two_pow(23) - 1 }>;
 /// 25-bit signed non-zero integer
-pub type NonZeroI25 = RangedNonZeroI32<{ -i32_two_pow(24) }, { i32_two_pow(24) - 1 }>;
+pub type NonZeroI25 =
+    RangedNonZeroI32<{ -i32_two_pow(24) }, { i32_two_pow(24) - 1 }>;
 /// 26-bit signed non-zero integer
-pub type NonZeroI26 = RangedNonZeroI32<{ -i32_two_pow(25) }, { i32_two_pow(25) - 1 }>;
+pub type NonZeroI26 =
+    RangedNonZeroI32<{ -i32_two_pow(25) }, { i32_two_pow(25) - 1 }>;
 /// 27-bit signed non-zero integer
-pub type NonZeroI27 = RangedNonZeroI32<{ -i32_two_pow(26) }, { i32_two_pow(26) - 1 }>;
+pub type NonZeroI27 =
+    RangedNonZeroI32<{ -i32_two_pow(26) }, { i32_two_pow(26) - 1 }>;
 /// 28-bit signed non-zero integer
-pub type NonZeroI28 = RangedNonZeroI32<{ -i32_two_pow(27) }, { i32_two_pow(27) - 1 }>;
+pub type NonZeroI28 =
+    RangedNonZeroI32<{ -i32_two_pow(27) }, { i32_two_pow(27) - 1 }>;
 /// 29-bit signed non-zero integer
-pub type NonZeroI29 = RangedNonZeroI32<{ -i32_two_pow(28) }, { i32_two_pow(28) - 1 }>;
+pub type NonZeroI29 =
+    RangedNonZeroI32<{ -i32_two_pow(28) }, { i32_two_pow(28) - 1 }>;
 /// 30-bit signed non-zero integer
-pub type NonZeroI30 = RangedNonZeroI32<{ -i32_two_pow(29) }, { i32_two_pow(29) - 1 }>;
+pub type NonZeroI30 =
+    RangedNonZeroI32<{ -i32_two_pow(29) }, { i32_two_pow(29) - 1 }>;
 /// 31-bit signed non-zero integer
-pub type NonZeroI31 = RangedNonZeroI32<{ -i32_two_pow(30) }, { i32_two_pow(30) - 1 }>;
+pub type NonZeroI31 =
+    RangedNonZeroI32<{ -i32_two_pow(30) }, { i32_two_pow(30) - 1 }>;
 /// 32-bit signed non-zero integer
 pub type NonZeroI32 = RangedNonZeroI32<{ i32::MIN }, { i32::MAX }>;
 /// 33-bit signed non-zero integer
-pub type NonZeroI33 = RangedNonZeroI64<{ -i64_two_pow(32) }, { i64_two_pow(32) - 1 }>;
+pub type NonZeroI33 =
+    RangedNonZeroI64<{ -i64_two_pow(32) }, { i64_two_pow(32) - 1 }>;
 /// 34-bit signed non-zero integer
-pub type NonZeroI34 = RangedNonZeroI64<{ -i64_two_pow(33) }, { i64_two_pow(33) - 1 }>;
+pub type NonZeroI34 =
+    RangedNonZeroI64<{ -i64_two_pow(33) }, { i64_two_pow(33) - 1 }>;
 /// 35-bit signed non-zero integer
-pub type NonZeroI35 = RangedNonZeroI64<{ -i64_two_pow(34) }, { i64_two_pow(34) - 1 }>;
+pub type NonZeroI35 =
+    RangedNonZeroI64<{ -i64_two_pow(34) }, { i64_two_pow(34) - 1 }>;
 /// 36-bit signed non-zero integer
-pub type NonZeroI36 = RangedNonZeroI64<{ -i64_two_pow(35) }, { i64_two_pow(35) - 1 }>;
+pub type NonZeroI36 =
+    RangedNonZeroI64<{ -i64_two_pow(35) }, { i64_two_pow(35) - 1 }>;
 /// 37-bit signed non-zero integer
-pub type NonZeroI37 = RangedNonZeroI64<{ -i64_two_pow(36) }, { i64_two_pow(36) - 1 }>;
+pub type NonZeroI37 =
+    RangedNonZeroI64<{ -i64_two_pow(36) }, { i64_two_pow(36) - 1 }>;
 /// 38-bit signed non-zero integer
-pub type NonZeroI38 = RangedNonZeroI64<{ -i64_two_pow(37) }, { i64_two_pow(37) - 1 }>;
+pub type NonZeroI38 =
+    RangedNonZeroI64<{ -i64_two_pow(37) }, { i64_two_pow(37) - 1 }>;
 /// 39-bit signed non-zero integer
-pub type NonZeroI39 = RangedNonZeroI64<{ -i64_two_pow(38) }, { i64_two_pow(38) - 1 }>;
+pub type NonZeroI39 =
+    RangedNonZeroI64<{ -i64_two_pow(38) }, { i64_two_pow(38) - 1 }>;
 /// 40-bit signed non-zero integer
-pub type NonZeroI40 = RangedNonZeroI64<{ -i64_two_pow(39) }, { i64_two_pow(39) - 1 }>;
+pub type NonZeroI40 =
+    RangedNonZeroI64<{ -i64_two_pow(39) }, { i64_two_pow(39) - 1 }>;
 /// 41-bit signed non-zero integer
-pub type NonZeroI41 = RangedNonZeroI64<{ -i64_two_pow(40) }, { i64_two_pow(40) - 1 }>;
+pub type NonZeroI41 =
+    RangedNonZeroI64<{ -i64_two_pow(40) }, { i64_two_pow(40) - 1 }>;
 /// 42-bit signed non-zero integer
-pub type NonZeroI42 = RangedNonZeroI64<{ -i64_two_pow(41) }, { i64_two_pow(41) - 1 }>;
+pub type NonZeroI42 =
+    RangedNonZeroI64<{ -i64_two_pow(41) }, { i64_two_pow(41) - 1 }>;
 /// 43-bit signed non-zero integer
-pub type NonZeroI43 = RangedNonZeroI64<{ -i64_two_pow(42) }, { i64_two_pow(42) - 1 }>;
+pub type NonZeroI43 =
+    RangedNonZeroI64<{ -i64_two_pow(42) }, { i64_two_pow(42) - 1 }>;
 /// 44-bit signed non-zero integer
-pub type NonZeroI44 = RangedNonZeroI64<{ -i64_two_pow(43) }, { i64_two_pow(43) - 1 }>;
+pub type NonZeroI44 =
+    RangedNonZeroI64<{ -i64_two_pow(43) }, { i64_two_pow(43) - 1 }>;
 /// 45-bit signed non-zero integer
-pub type NonZeroI45 = RangedNonZeroI64<{ -i64_two_pow(44) }, { i64_two_pow(44) - 1 }>;
+pub type NonZeroI45 =
+    RangedNonZeroI64<{ -i64_two_pow(44) }, { i64_two_pow(44) - 1 }>;
 /// 46-bit signed non-zero integer
-pub type NonZeroI46 = RangedNonZeroI64<{ -i64_two_pow(45) }, { i64_two_pow(45) - 1 }>;
+pub type NonZeroI46 =
+    RangedNonZeroI64<{ -i64_two_pow(45) }, { i64_two_pow(45) - 1 }>;
 /// 47-bit signed non-zero integer
-pub type NonZeroI47 = RangedNonZeroI64<{ -i64_two_pow(46) }, { i64_two_pow(46) - 1 }>;
+pub type NonZeroI47 =
+    RangedNonZeroI64<{ -i64_two_pow(46) }, { i64_two_pow(46) - 1 }>;
 /// 48-bit signed non-zero integer
-pub type NonZeroI48 = RangedNonZeroI64<{ -i64_two_pow(47) }, { i64_two_pow(47) - 1 }>;
+pub type NonZeroI48 =
+    RangedNonZeroI64<{ -i64_two_pow(47) }, { i64_two_pow(47) - 1 }>;
 /// 49-bit signed non-zero integer
-pub type NonZeroI49 = RangedNonZeroI64<{ -i64_two_pow(48) }, { i64_two_pow(48) - 1 }>;
+pub type NonZeroI49 =
+    RangedNonZeroI64<{ -i64_two_pow(48) }, { i64_two_pow(48) - 1 }>;
 /// 50-bit signed non-zero integer
-pub type NonZeroI50 = RangedNonZeroI64<{ -i64_two_pow(49) }, { i64_two_pow(49) - 1 }>;
+pub type NonZeroI50 =
+    RangedNonZeroI64<{ -i64_two_pow(49) }, { i64_two_pow(49) - 1 }>;
 /// 51-bit signed non-zero integer
-pub type NonZeroI51 = RangedNonZeroI64<{ -i64_two_pow(50) }, { i64_two_pow(50) - 1 }>;
+pub type NonZeroI51 =
+    RangedNonZeroI64<{ -i64_two_pow(50) }, { i64_two_pow(50) - 1 }>;
 /// 52-bit signed non-zero integer
-pub type NonZeroI52 = RangedNonZeroI64<{ -i64_two_pow(51) }, { i64_two_pow(51) - 1 }>;
+pub type NonZeroI52 =
+    RangedNonZeroI64<{ -i64_two_pow(51) }, { i64_two_pow(51) - 1 }>;
 /// 53-bit signed non-zero integer
-pub type NonZeroI53 = RangedNonZeroI64<{ -i64_two_pow(52) }, { i64_two_pow(52) - 1 }>;
+pub type NonZeroI53 =
+    RangedNonZeroI64<{ -i64_two_pow(52) }, { i64_two_pow(52) - 1 }>;
 /// 54-bit signed non-zero integer
-pub type NonZeroI54 = RangedNonZeroI64<{ -i64_two_pow(53) }, { i64_two_pow(53) - 1 }>;
+pub type NonZeroI54 =
+    RangedNonZeroI64<{ -i64_two_pow(53) }, { i64_two_pow(53) - 1 }>;
 /// 55-bit signed non-zero integer
-pub type NonZeroI55 = RangedNonZeroI64<{ -i64_two_pow(54) }, { i64_two_pow(54) - 1 }>;
+pub type NonZeroI55 =
+    RangedNonZeroI64<{ -i64_two_pow(54) }, { i64_two_pow(54) - 1 }>;
 /// 56-bit signed non-zero integer
-pub type NonZeroI56 = RangedNonZeroI64<{ -i64_two_pow(55) }, { i64_two_pow(55) - 1 }>;
+pub type NonZeroI56 =
+    RangedNonZeroI64<{ -i64_two_pow(55) }, { i64_two_pow(55) - 1 }>;
 /// 57-bit signed non-zero integer
-pub type NonZeroI57 = RangedNonZeroI64<{ -i64_two_pow(56) }, { i64_two_pow(56) - 1 }>;
+pub type NonZeroI57 =
+    RangedNonZeroI64<{ -i64_two_pow(56) }, { i64_two_pow(56) - 1 }>;
 /// 58-bit signed non-zero integer
-pub type NonZeroI58 = RangedNonZeroI64<{ -i64_two_pow(57) }, { i64_two_pow(57) - 1 }>;
+pub type NonZeroI58 =
+    RangedNonZeroI64<{ -i64_two_pow(57) }, { i64_two_pow(57) - 1 }>;
 /// 59-bit signed non-zero integer
-pub type NonZeroI59 = RangedNonZeroI64<{ -i64_two_pow(58) }, { i64_two_pow(58) - 1 }>;
+pub type NonZeroI59 =
+    RangedNonZeroI64<{ -i64_two_pow(58) }, { i64_two_pow(58) - 1 }>;
 /// 60-bit signed non-zero integer
-pub type NonZeroI60 = RangedNonZeroI64<{ -i64_two_pow(59) }, { i64_two_pow(59) - 1 }>;
+pub type NonZeroI60 =
+    RangedNonZeroI64<{ -i64_two_pow(59) }, { i64_two_pow(59) - 1 }>;
 /// 61-bit signed non-zero integer
-pub type NonZeroI61 = RangedNonZeroI64<{ -i64_two_pow(60) }, { i64_two_pow(60) - 1 }>;
+pub type NonZeroI61 =
+    RangedNonZeroI64<{ -i64_two_pow(60) }, { i64_two_pow(60) - 1 }>;
 /// 62-bit signed non-zero integer
-pub type NonZeroI62 = RangedNonZeroI64<{ -i64_two_pow(61) }, { i64_two_pow(61) - 1 }>;
+pub type NonZeroI62 =
+    RangedNonZeroI64<{ -i64_two_pow(61) }, { i64_two_pow(61) - 1 }>;
 /// 63-bit signed non-zero integer
-pub type NonZeroI63 = RangedNonZeroI64<{ -i64_two_pow(62) }, { i64_two_pow(62) - 1 }>;
+pub type NonZeroI63 =
+    RangedNonZeroI64<{ -i64_two_pow(62) }, { i64_two_pow(62) - 1 }>;
 /// 64-bit signed non-zero integer
 pub type NonZeroI64 = RangedNonZeroI64<{ i64::MIN }, { i64::MAX }>;
 /// 65-bit signed non-zero integer
-pub type NonZeroI65 = RangedNonZeroI128<{ -i128_two_pow(64) }, { i128_two_pow(64) - 1 }>;
+pub type NonZeroI65 =
+    RangedNonZeroI128<{ -i128_two_pow(64) }, { i128_two_pow(64) - 1 }>;
 /// 66-bit signed non-zero integer
-pub type NonZeroI66 = RangedNonZeroI128<{ -i128_two_pow(65) }, { i128_two_pow(65) - 1 }>;
+pub type NonZeroI66 =
+    RangedNonZeroI128<{ -i128_two_pow(65) }, { i128_two_pow(65) - 1 }>;
 /// 67-bit signed non-zero integer
-pub type NonZeroI67 = RangedNonZeroI128<{ -i128_two_pow(66) }, { i128_two_pow(66) - 1 }>;
+pub type NonZeroI67 =
+    RangedNonZeroI128<{ -i128_two_pow(66) }, { i128_two_pow(66) - 1 }>;
 /// 68-bit signed non-zero integer
-pub type NonZeroI68 = RangedNonZeroI128<{ -i128_two_pow(67) }, { i128_two_pow(67) - 1 }>;
+pub type NonZeroI68 =
+    RangedNonZeroI128<{ -i128_two_pow(67) }, { i128_two_pow(67) - 1 }>;
 /// 69-bit signed non-zero integer
-pub type NonZeroI69 = RangedNonZeroI128<{ -i128_two_pow(68) }, { i128_two_pow(68) - 1 }>;
+pub type NonZeroI69 =
+    RangedNonZeroI128<{ -i128_two_pow(68) }, { i128_two_pow(68) - 1 }>;
 /// 70-bit signed non-zero integer
-pub type NonZeroI70 = RangedNonZeroI128<{ -i128_two_pow(69) }, { i128_two_pow(69) - 1 }>;
+pub type NonZeroI70 =
+    RangedNonZeroI128<{ -i128_two_pow(69) }, { i128_two_pow(69) - 1 }>;
 /// 71-bit signed non-zero integer
-pub type NonZeroI71 = RangedNonZeroI128<{ -i128_two_pow(70) }, { i128_two_pow(70) - 1 }>;
+pub type NonZeroI71 =
+    RangedNonZeroI128<{ -i128_two_pow(70) }, { i128_two_pow(70) - 1 }>;
 /// 72-bit signed non-zero integer
-pub type NonZeroI72 = RangedNonZeroI128<{ -i128_two_pow(71) }, { i128_two_pow(71) - 1 }>;
+pub type NonZeroI72 =
+    RangedNonZeroI128<{ -i128_two_pow(71) }, { i128_two_pow(71) - 1 }>;
 /// 73-bit signed non-zero integer
-pub type NonZeroI73 = RangedNonZeroI128<{ -i128_two_pow(72) }, { i128_two_pow(72) - 1 }>;
+pub type NonZeroI73 =
+    RangedNonZeroI128<{ -i128_two_pow(72) }, { i128_two_pow(72) - 1 }>;
 /// 74-bit signed non-zero integer
-pub type NonZeroI74 = RangedNonZeroI128<{ -i128_two_pow(73) }, { i128_two_pow(73) - 1 }>;
+pub type NonZeroI74 =
+    RangedNonZeroI128<{ -i128_two_pow(73) }, { i128_two_pow(73) - 1 }>;
 /// 75-bit signed non-zero integer
-pub type NonZeroI75 = RangedNonZeroI128<{ -i128_two_pow(74) }, { i128_two_pow(74) - 1 }>;
+pub type NonZeroI75 =
+    RangedNonZeroI128<{ -i128_two_pow(74) }, { i128_two_pow(74) - 1 }>;
 /// 76-bit signed non-zero integer
-pub type NonZeroI76 = RangedNonZeroI128<{ -i128_two_pow(75) }, { i128_two_pow(75) - 1 }>;
+pub type NonZeroI76 =
+    RangedNonZeroI128<{ -i128_two_pow(75) }, { i128_two_pow(75) - 1 }>;
 /// 77-bit signed non-zero integer
-pub type NonZeroI77 = RangedNonZeroI128<{ -i128_two_pow(76) }, { i128_two_pow(76) - 1 }>;
+pub type NonZeroI77 =
+    RangedNonZeroI128<{ -i128_two_pow(76) }, { i128_two_pow(76) - 1 }>;
 /// 78-bit signed non-zero integer
-pub type NonZeroI78 = RangedNonZeroI128<{ -i128_two_pow(77) }, { i128_two_pow(77) - 1 }>;
+pub type NonZeroI78 =
+    RangedNonZeroI128<{ -i128_two_pow(77) }, { i128_two_pow(77) - 1 }>;
 /// 79-bit signed non-zero integer
-pub type NonZeroI79 = RangedNonZeroI128<{ -i128_two_pow(78) }, { i128_two_pow(78) - 1 }>;
+pub type NonZeroI79 =
+    RangedNonZeroI128<{ -i128_two_pow(78) }, { i128_two_pow(78) - 1 }>;
 /// 80-bit signed non-zero integer
-pub type NonZeroI80 = RangedNonZeroI128<{ -i128_two_pow(79) }, { i128_two_pow(79) - 1 }>;
+pub type NonZeroI80 =
+    RangedNonZeroI128<{ -i128_two_pow(79) }, { i128_two_pow(79) - 1 }>;
 /// 81-bit signed non-zero integer
-pub type NonZeroI81 = RangedNonZeroI128<{ -i128_two_pow(80) }, { i128_two_pow(80) - 1 }>;
+pub type NonZeroI81 =
+    RangedNonZeroI128<{ -i128_two_pow(80) }, { i128_two_pow(80) - 1 }>;
 /// 82-bit signed non-zero integer
-pub type NonZeroI82 = RangedNonZeroI128<{ -i128_two_pow(81) }, { i128_two_pow(81) - 1 }>;
+pub type NonZeroI82 =
+    RangedNonZeroI128<{ -i128_two_pow(81) }, { i128_two_pow(81) - 1 }>;
 /// 83-bit signed non-zero integer
-pub type NonZeroI83 = RangedNonZeroI128<{ -i128_two_pow(82) }, { i128_two_pow(82) - 1 }>;
+pub type NonZeroI83 =
+    RangedNonZeroI128<{ -i128_two_pow(82) }, { i128_two_pow(82) - 1 }>;
 /// 84-bit signed non-zero integer
-pub type NonZeroI84 = RangedNonZeroI128<{ -i128_two_pow(83) }, { i128_two_pow(83) - 1 }>;
+pub type NonZeroI84 =
+    RangedNonZeroI128<{ -i128_two_pow(83) }, { i128_two_pow(83) - 1 }>;
 /// 85-bit signed non-zero integer
-pub type NonZeroI85 = RangedNonZeroI128<{ -i128_two_pow(84) }, { i128_two_pow(84) - 1 }>;
+pub type NonZeroI85 =
+    RangedNonZeroI128<{ -i128_two_pow(84) }, { i128_two_pow(84) - 1 }>;
 /// 86-bit signed non-zero integer
-pub type NonZeroI86 = RangedNonZeroI128<{ -i128_two_pow(85) }, { i128_two_pow(85) - 1 }>;
+pub type NonZeroI86 =
+    RangedNonZeroI128<{ -i128_two_pow(85) }, { i128_two_pow(85) - 1 }>;
 /// 87-bit signed non-zero integer
-pub type NonZeroI87 = RangedNonZeroI128<{ -i128_two_pow(86) }, { i128_two_pow(86) - 1 }>;
+pub type NonZeroI87 =
+    RangedNonZeroI128<{ -i128_two_pow(86) }, { i128_two_pow(86) - 1 }>;
 /// 88-bit signed non-zero integer
-pub type NonZeroI88 = RangedNonZeroI128<{ -i128_two_pow(87) }, { i128_two_pow(87) - 1 }>;
+pub type NonZeroI88 =
+    RangedNonZeroI128<{ -i128_two_pow(87) }, { i128_two_pow(87) - 1 }>;
 /// 89-bit signed non-zero integer
-pub type NonZeroI89 = RangedNonZeroI128<{ -i128_two_pow(88) }, { i128_two_pow(88) - 1 }>;
+pub type NonZeroI89 =
+    RangedNonZeroI128<{ -i128_two_pow(88) }, { i128_two_pow(88) - 1 }>;
 /// 90-bit signed non-zero integer
-pub type NonZeroI90 = RangedNonZeroI128<{ -i128_two_pow(89) }, { i128_two_pow(89) - 1 }>;
+pub type NonZeroI90 =
+    RangedNonZeroI128<{ -i128_two_pow(89) }, { i128_two_pow(89) - 1 }>;
 /// 91-bit signed non-zero integer
-pub type NonZeroI91 = RangedNonZeroI128<{ -i128_two_pow(90) }, { i128_two_pow(90) - 1 }>;
+pub type NonZeroI91 =
+    RangedNonZeroI128<{ -i128_two_pow(90) }, { i128_two_pow(90) - 1 }>;
 /// 92-bit signed non-zero integer
-pub type NonZeroI92 = RangedNonZeroI128<{ -i128_two_pow(91) }, { i128_two_pow(91) - 1 }>;
+pub type NonZeroI92 =
+    RangedNonZeroI128<{ -i128_two_pow(91) }, { i128_two_pow(91) - 1 }>;
 /// 93-bit signed non-zero integer
-pub type NonZeroI93 = RangedNonZeroI128<{ -i128_two_pow(92) }, { i128_two_pow(92) - 1 }>;
+pub type NonZeroI93 =
+    RangedNonZeroI128<{ -i128_two_pow(92) }, { i128_two_pow(92) - 1 }>;
 /// 94-bit signed non-zero integer
-pub type NonZeroI94 = RangedNonZeroI128<{ -i128_two_pow(93) }, { i128_two_pow(93) - 1 }>;
+pub type NonZeroI94 =
+    RangedNonZeroI128<{ -i128_two_pow(93) }, { i128_two_pow(93) - 1 }>;
 /// 95-bit signed non-zero integer
-pub type NonZeroI95 = RangedNonZeroI128<{ -i128_two_pow(94) }, { i128_two_pow(94) - 1 }>;
+pub type NonZeroI95 =
+    RangedNonZeroI128<{ -i128_two_pow(94) }, { i128_two_pow(94) - 1 }>;
 /// 96-bit signed non-zero integer
-pub type NonZeroI96 = RangedNonZeroI128<{ -i128_two_pow(95) }, { i128_two_pow(95) - 1 }>;
+pub type NonZeroI96 =
+    RangedNonZeroI128<{ -i128_two_pow(95) }, { i128_two_pow(95) - 1 }>;
 /// 97-bit signed non-zero integer
-pub type NonZeroI97 = RangedNonZeroI128<{ -i128_two_pow(96) }, { i128_two_pow(96) - 1 }>;
+pub type NonZeroI97 =
+    RangedNonZeroI128<{ -i128_two_pow(96) }, { i128_two_pow(96) - 1 }>;
 /// 98-bit signed non-zero integer
-pub type NonZeroI98 = RangedNonZeroI128<{ -i128_two_pow(97) }, { i128_two_pow(97) - 1 }>;
+pub type NonZeroI98 =
+    RangedNonZeroI128<{ -i128_two_pow(97) }, { i128_two_pow(97) - 1 }>;
 /// 99-bit signed non-zero integer
-pub type NonZeroI99 = RangedNonZeroI128<{ -i128_two_pow(98) }, { i128_two_pow(98) - 1 }>;
+pub type NonZeroI99 =
+    RangedNonZeroI128<{ -i128_two_pow(98) }, { i128_two_pow(98) - 1 }>;
 /// 100-bit signed non-zero integer
-pub type NonZeroI100 = RangedNonZeroI128<{ -i128_two_pow(99) }, { i128_two_pow(99) - 1 }>;
+pub type NonZeroI100 =
+    RangedNonZeroI128<{ -i128_two_pow(99) }, { i128_two_pow(99) - 1 }>;
 /// 101-bit signed non-zero integer
-pub type NonZeroI101 = RangedNonZeroI128<{ -i128_two_pow(100) }, { i128_two_pow(100) - 1 }>;
+pub type NonZeroI101 =
+    RangedNonZeroI128<{ -i128_two_pow(100) }, { i128_two_pow(100) - 1 }>;
 /// 102-bit signed non-zero integer
-pub type NonZeroI102 = RangedNonZeroI128<{ -i128_two_pow(101) }, { i128_two_pow(101) - 1 }>;
+pub type NonZeroI102 =
+    RangedNonZeroI128<{ -i128_two_pow(101) }, { i128_two_pow(101) - 1 }>;
 /// 103-bit signed non-zero integer
-pub type NonZeroI103 = RangedNonZeroI128<{ -i128_two_pow(102) }, { i128_two_pow(102) - 1 }>;
+pub type NonZeroI103 =
+    RangedNonZeroI128<{ -i128_two_pow(102) }, { i128_two_pow(102) - 1 }>;
 /// 104-bit signed non-zero integer
-pub type NonZeroI104 = RangedNonZeroI128<{ -i128_two_pow(103) }, { i128_two_pow(103) - 1 }>;
+pub type NonZeroI104 =
+    RangedNonZeroI128<{ -i128_two_pow(103) }, { i128_two_pow(103) - 1 }>;
 /// 105-bit signed non-zero integer
-pub type NonZeroI105 = RangedNonZeroI128<{ -i128_two_pow(104) }, { i128_two_pow(104) - 1 }>;
+pub type NonZeroI105 =
+    RangedNonZeroI128<{ -i128_two_pow(104) }, { i128_two_pow(104) - 1 }>;
 /// 106-bit signed non-zero integer
-pub type NonZeroI106 = RangedNonZeroI128<{ -i128_two_pow(105) }, { i128_two_pow(105) - 1 }>;
+pub type NonZeroI106 =
+    RangedNonZeroI128<{ -i128_two_pow(105) }, { i128_two_pow(105) - 1 }>;
 /// 107-bit signed non-zero integer
-pub type NonZeroI107 = RangedNonZeroI128<{ -i128_two_pow(106) }, { i128_two_pow(106) - 1 }>;
+pub type NonZeroI107 =
+    RangedNonZeroI128<{ -i128_two_pow(106) }, { i128_two_pow(106) - 1 }>;
 /// 108-bit signed non-zero integer
-pub type NonZeroI108 = RangedNonZeroI128<{ -i128_two_pow(107) }, { i128_two_pow(107) - 1 }>;
+pub type NonZeroI108 =
+    RangedNonZeroI128<{ -i128_two_pow(107) }, { i128_two_pow(107) - 1 }>;
 /// 109-bit signed non-zero integer
-pub type NonZeroI109 = RangedNonZeroI128<{ -i128_two_pow(108) }, { i128_two_pow(108) - 1 }>;
+pub type NonZeroI109 =
+    RangedNonZeroI128<{ -i128_two_pow(108) }, { i128_two_pow(108) - 1 }>;
 /// 110-bit signed non-zero integer
-pub type NonZeroI110 = RangedNonZeroI128<{ -i128_two_pow(109) }, { i128_two_pow(109) - 1 }>;
+pub type NonZeroI110 =
+    RangedNonZeroI128<{ -i128_two_pow(109) }, { i128_two_pow(109) - 1 }>;
 /// 111-bit signed non-zero integer
-pub type NonZeroI111 = RangedNonZeroI128<{ -i128_two_pow(110) }, { i128_two_pow(110) - 1 }>;
+pub type NonZeroI111 =
+    RangedNonZeroI128<{ -i128_two_pow(110) }, { i128_two_pow(110) - 1 }>;
 /// 112-bit signed non-zero integer
-pub type NonZeroI112 = RangedNonZeroI128<{ -i128_two_pow(111) }, { i128_two_pow(111) - 1 }>;
+pub type NonZeroI112 =
+    RangedNonZeroI128<{ -i128_two_pow(111) }, { i128_two_pow(111) - 1 }>;
 /// 113-bit signed non-zero integer
-pub type NonZeroI113 = RangedNonZeroI128<{ -i128_two_pow(112) }, { i128_two_pow(112) - 1 }>;
+pub type NonZeroI113 =
+    RangedNonZeroI128<{ -i128_two_pow(112) }, { i128_two_pow(112) - 1 }>;
 /// 114-bit signed non-zero integer
-pub type NonZeroI114 = RangedNonZeroI128<{ -i128_two_pow(113) }, { i128_two_pow(113) - 1 }>;
+pub type NonZeroI114 =
+    RangedNonZeroI128<{ -i128_two_pow(113) }, { i128_two_pow(113) - 1 }>;
 /// 115-bit signed non-zero integer
-pub type NonZeroI115 = RangedNonZeroI128<{ -i128_two_pow(114) }, { i128_two_pow(114) - 1 }>;
+pub type NonZeroI115 =
+    RangedNonZeroI128<{ -i128_two_pow(114) }, { i128_two_pow(114) - 1 }>;
 /// 116-bit signed non-zero integer
-pub type NonZeroI116 = RangedNonZeroI128<{ -i128_two_pow(115) }, { i128_two_pow(115) - 1 }>;
+pub type NonZeroI116 =
+    RangedNonZeroI128<{ -i128_two_pow(115) }, { i128_two_pow(115) - 1 }>;
 /// 117-bit signed non-zero integer
-pub type NonZeroI117 = RangedNonZeroI128<{ -i128_two_pow(116) }, { i128_two_pow(116) - 1 }>;
+pub type NonZeroI117 =
+    RangedNonZeroI128<{ -i128_two_pow(116) }, { i128_two_pow(116) - 1 }>;
 /// 118-bit signed non-zero integer
-pub type NonZeroI118 = RangedNonZeroI128<{ -i128_two_pow(117) }, { i128_two_pow(117) - 1 }>;
+pub type NonZeroI118 =
+    RangedNonZeroI128<{ -i128_two_pow(117) }, { i128_two_pow(117) - 1 }>;
 /// 119-bit signed non-zero integer
-pub type NonZeroI119 = RangedNonZeroI128<{ -i128_two_pow(118) }, { i128_two_pow(118) - 1 }>;
+pub type NonZeroI119 =
+    RangedNonZeroI128<{ -i128_two_pow(118) }, { i128_two_pow(118) - 1 }>;
 /// 120-bit signed non-zero integer
-pub type NonZeroI120 = RangedNonZeroI128<{ -i128_two_pow(119) }, { i128_two_pow(119) - 1 }>;
+pub type NonZeroI120 =
+    RangedNonZeroI128<{ -i128_two_pow(119) }, { i128_two_pow(119) - 1 }>;
 /// 121-bit signed non-zero integer
-pub type NonZeroI121 = RangedNonZeroI128<{ -i128_two_pow(120) }, { i128_two_pow(120) - 1 }>;
+pub type NonZeroI121 =
+    RangedNonZeroI128<{ -i128_two_pow(120) }, { i128_two_pow(120) - 1 }>;
 /// 122-bit signed non-zero integer
-pub type NonZeroI122 = RangedNonZeroI128<{ -i128_two_pow(121) }, { i128_two_pow(121) - 1 }>;
+pub type NonZeroI122 =
+    RangedNonZeroI128<{ -i128_two_pow(121) }, { i128_two_pow(121) - 1 }>;
 /// 123-bit signed non-zero integer
-pub type NonZeroI123 = RangedNonZeroI128<{ -i128_two_pow(122) }, { i128_two_pow(122) - 1 }>;
+pub type NonZeroI123 =
+    RangedNonZeroI128<{ -i128_two_pow(122) }, { i128_two_pow(122) - 1 }>;
 /// 124-bit signed non-zero integer
-pub type NonZeroI124 = RangedNonZeroI128<{ -i128_two_pow(123) }, { i128_two_pow(123) - 1 }>;
+pub type NonZeroI124 =
+    RangedNonZeroI128<{ -i128_two_pow(123) }, { i128_two_pow(123) - 1 }>;
 /// 125-bit signed non-zero integer
-pub type NonZeroI125 = RangedNonZeroI128<{ -i128_two_pow(124) }, { i128_two_pow(124) - 1 }>;
+pub type NonZeroI125 =
+    RangedNonZeroI128<{ -i128_two_pow(124) }, { i128_two_pow(124) - 1 }>;
 /// 126-bit signed non-zero integer
-pub type NonZeroI126 = RangedNonZeroI128<{ -i128_two_pow(125) }, { i128_two_pow(125) - 1 }>;
+pub type NonZeroI126 =
+    RangedNonZeroI128<{ -i128_two_pow(125) }, { i128_two_pow(125) - 1 }>;
 /// 127-bit signed non-zero integer
-pub type NonZeroI127 = RangedNonZeroI128<{ -i128_two_pow(126) }, { i128_two_pow(126) - 1 }>;
+pub type NonZeroI127 =
+    RangedNonZeroI128<{ -i128_two_pow(126) }, { i128_two_pow(126) - 1 }>;
 /// 128-bit signed non-zero integer
 pub type NonZeroI128 = RangedNonZeroI128<{ i128::MIN }, { i128::MAX }>;
 
