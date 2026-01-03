@@ -16,7 +16,7 @@ impl Uppercase {
     ///
     /// assert_eq!(Lowercase::new::<97>(), uppercase_a.to_ascii_lowercase());
     /// ```
-    pub fn to_ascii_lowercase(&self) -> Lowercase {
+    pub const fn to_ascii_lowercase(&self) -> Lowercase {
         RangedU8(self.get().to_ascii_lowercase())
     }
 }
@@ -33,7 +33,7 @@ impl Lowercase {
     ///
     /// assert_eq!(Uppercase::new::<65>(), lowercase_a.to_ascii_uppercase());
     /// ```
-    pub fn to_ascii_uppercase(&self) -> Uppercase {
+    pub const fn to_ascii_uppercase(&self) -> Uppercase {
         RangedU8(self.get().to_ascii_uppercase())
     }
 }
@@ -55,7 +55,7 @@ impl Graphic {
     /// assert_eq!(Graphic::new::<b'A'>(), ascii.to_ascii_uppercase());
     /// assert_eq!(Graphic::new::<b'1'>(), non_alphabetic.to_ascii_uppercase());
     /// ```
-    pub fn to_ascii_uppercase(&self) -> Self {
+    pub const fn to_ascii_uppercase(&self) -> Self {
         Self(self.get().to_ascii_uppercase())
     }
 
@@ -72,7 +72,7 @@ impl Graphic {
     /// assert_eq!(Graphic::new::<b'a'>(), ascii.to_ascii_lowercase());
     /// assert_eq!(Graphic::new::<b'1'>(), non_alphabetic.to_ascii_lowercase());
     /// ```
-    pub fn to_ascii_lowercase(&self) -> Self {
+    pub const fn to_ascii_lowercase(&self) -> Self {
         Self(self.get().to_ascii_lowercase())
     }
 }
@@ -90,7 +90,7 @@ impl Digit {
     ///     Digit::new::<b'5'>(),
     /// );
     /// ```
-    pub fn from_digit(digit: RangedU8<0, 9>) -> Self {
+    pub const fn from_digit(digit: RangedU8<0, 9>) -> Self {
         digit.add::<0x30, 0x30, 0x39>()
     }
 
@@ -103,7 +103,7 @@ impl Digit {
     ///     RangedU8::new::<5>(),
     /// );
     /// ```
-    pub fn to_digit(self) -> RangedU8<0, 9> {
+    pub const fn to_digit(self) -> RangedU8<0, 9> {
         self.sub::<0x30, 0, 9>()
     }
 }
@@ -126,7 +126,7 @@ impl Char {
     /// assert_eq!(Char::new::<b'A'>(), ascii.to_ascii_uppercase());
     /// assert_eq!(Char::new::<b'1'>(), non_alphabetic.to_ascii_uppercase());
     /// ```
-    pub fn to_ascii_uppercase(&self) -> Self {
+    pub const fn to_ascii_uppercase(&self) -> Self {
         Self(self.get().to_ascii_uppercase())
     }
 
@@ -143,7 +143,7 @@ impl Char {
     /// assert_eq!(Char::new::<b'a'>(), ascii.to_ascii_lowercase());
     /// assert_eq!(Char::new::<b'1'>(), non_alphabetic.to_ascii_lowercase());
     /// ```
-    pub fn to_ascii_lowercase(&self) -> Self {
+    pub const fn to_ascii_lowercase(&self) -> Self {
         Self(self.get().to_ascii_lowercase())
     }
 }

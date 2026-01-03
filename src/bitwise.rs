@@ -262,7 +262,7 @@ pub type NonZeroU127 = RangedNonZeroU128<1, { u128_two_pow(127) - 1 }>;
 pub type NonZeroU128 = RangedNonZeroU128<1, { u128::MAX }>;
 
 /// 1-bit signed non-zero integer
-pub type NonZeroI1 = RangedNonZeroI8<{ -i8_two_pow(0) }, { i8_two_pow(0) }>;
+pub type NonZeroI1 = unit::UnitNonZeroI8<{ -i8_two_pow(0) }>;
 /// 2-bit signed non-zero integer
 pub type NonZeroI2 = RangedNonZeroI8<{ -i8_two_pow(1) }, { i8_two_pow(1) - 1 }>;
 /// 3-bit signed non-zero integer
