@@ -1,8 +1,9 @@
 //! Ranged integer types and math
 //!
 //! This crate heavily leverages the type system to allow for powerful ranged
-//! integer mathematics, covering arbitrary `i{N}` / `u{N}` types, unit
-//! integers, non-zero divisions, and const operations.
+//! integer mathematics, covering [arbitrary `i{N}` / `u{N}` types](bitwise),
+//! [unit integers](mod@unit), non-zero divisions, [ASCII](ascii), and const
+//! operations.
 
 #![doc(
     html_logo_url = "https://ardaku.github.io/mm/logo.svg",

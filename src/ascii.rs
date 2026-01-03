@@ -91,7 +91,7 @@ impl Digit {
     /// );
     /// ```
     pub fn from_digit(digit: RangedU8<0, 9>) -> Self {
-        digit.add::<0x30, _, _>()
+        digit.add::<0x30, 0x30, 0x39>()
     }
 
     /// Convert from ASCII digit to numeric digit.
@@ -104,7 +104,7 @@ impl Digit {
     /// );
     /// ```
     pub fn to_digit(self) -> RangedU8<0, 9> {
-        self.sub::<0x30, _, _>()
+        self.sub::<0x30, 0, 9>()
     }
 }
 
@@ -113,31 +113,6 @@ impl Digit {
 pub type Char = bitwise::U7;
 
 impl Char {
-    /// Return an iterator that produces an escaped version of a `u8`, treating
-    /// it as an ASCII character.
-    ///
-    /// The behavior is identical to [`core::ascii::escape_default()`].
-    ///
-    /// ```rust
-    /// # use ranch::ascii::Char;
-    /// assert_eq!("0", Char::new::<b'0'>().escape_ascii().to_string());
-    /// assert_eq!("\\t", Char::new::<b'\t'>().escape_ascii().to_string());
-    /// assert_eq!("\\r", Char::new::<b'\r'>().escape_ascii().to_string());
-    /// assert_eq!("\\n", Char::new::<b'\n'>().escape_ascii().to_string());
-    /// assert_eq!("\\'", Char::new::<b'\''>().escape_ascii().to_string());
-    /// assert_eq!("\\\"", Char::new::<b'"'>().escape_ascii().to_string());
-    /// assert_eq!("\\\\", Char::new::<b'\\'>().escape_ascii().to_string());
-    /// ```
-    ///
-    /// Won't compile if out of ASCII range:
-    ///
-    /// ```rust,compile_fail
-    /// assert_eq!("\\x9d", Char::new::<b'\x9d'>().escape_ascii().to_string());
-    /// ```
-    pub fn escape_ascii(self) -> EscapeDefault {
-        self.get().escape_ascii()
-    }
-
     /// Convert to ASCII uppercase.
     ///
     /// ASCII letters ‘a’ to ‘z’ are mapped to ‘A’ to ‘Z’, but non-alphabetic
@@ -170,5 +145,32 @@ impl Char {
     /// ```
     pub fn to_ascii_lowercase(&self) -> Self {
         Self(self.get().to_ascii_lowercase())
+    }
+}
+
+impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
+    /// Return an iterator that produces an escaped version of a `u8`, treating
+    /// it as an ASCII character.
+    ///
+    /// The behavior is identical to [`u8::escape_ascii()`].
+    ///
+    /// ```rust
+    /// # use ranch::ascii::Char;
+    /// assert_eq!("0", Char::new::<b'0'>().escape_ascii().to_string());
+    /// assert_eq!("\\t", Char::new::<b'\t'>().escape_ascii().to_string());
+    /// assert_eq!("\\r", Char::new::<b'\r'>().escape_ascii().to_string());
+    /// assert_eq!("\\n", Char::new::<b'\n'>().escape_ascii().to_string());
+    /// assert_eq!("\\'", Char::new::<b'\''>().escape_ascii().to_string());
+    /// assert_eq!("\\\"", Char::new::<b'"'>().escape_ascii().to_string());
+    /// assert_eq!("\\\\", Char::new::<b'\\'>().escape_ascii().to_string());
+    /// ```
+    ///
+    /// Won't compile if out of ASCII range:
+    ///
+    /// ```rust,compile_fail
+    /// assert_eq!("\\x9d", Char::new::<b'\x9d'>().escape_ascii().to_string());
+    /// ```
+    pub fn escape_ascii(self) -> EscapeDefault {
+        self.get().escape_ascii()
     }
 }
