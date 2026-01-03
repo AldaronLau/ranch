@@ -145,7 +145,7 @@ macro_rules! impl_ops {
             ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
                 let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
 
-                self.ranged_add(rhs)
+                self.add_ranged(rhs)
             }
 
             /// Subtract a number from `self`.
@@ -166,7 +166,7 @@ macro_rules! impl_ops {
             ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
                 let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
 
-                self.ranged_sub(rhs)
+                self.sub_ranged(rhs)
             }
 
             /// Multiply a number to `self`.
@@ -187,7 +187,7 @@ macro_rules! impl_ops {
             ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
                 let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
 
-                self.ranged_mul(rhs)
+                self.mul_ranged(rhs)
             }
 
             /// Divide `self` by a number.
@@ -208,7 +208,7 @@ macro_rules! impl_ops {
             ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
                 let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
 
-                self.ranged_div(rhs)
+                self.div_ranged(rhs)
             }
 
             /// Raise `self` to a power.
@@ -229,7 +229,7 @@ macro_rules! impl_ops {
             ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
                 let rhs = const { RangedU32::<RHS, RHS>::new::<RHS>() };
 
-                self.ranged_pow(rhs)
+                self.pow_ranged(rhs)
             }
 
             /// Compare and return the minimum of two values.
@@ -249,7 +249,7 @@ macro_rules! impl_ops {
             /// ```
             pub const fn min<const OTHER: $p, const OUTPUT_MIN: $p, const OUTPUT_MAX: $p>(self) -> $type<OUTPUT_MIN, OUTPUT_MAX>
             {
-                self.ranged_min($type::<OTHER, OTHER>::new::<OTHER>())
+                self.min_ranged($type::<OTHER, OTHER>::new::<OTHER>())
             }
 
             /// Compare and return the maximum of two values.
@@ -269,7 +269,7 @@ macro_rules! impl_ops {
             /// ```
             pub const fn max<const OTHER: $p, const OUTPUT_MIN: $p, const OUTPUT_MAX: $p>(self) -> $type<OUTPUT_MIN, OUTPUT_MAX>
             {
-                self.ranged_max($type::<OTHER, OTHER>::new::<OTHER>())
+                self.max_ranged($type::<OTHER, OTHER>::new::<OTHER>())
             }
 
             /// Restrict a value to a certain interval.
@@ -289,7 +289,7 @@ macro_rules! impl_ops {
                 self
             ) -> $type<OUTPUT_MIN, OUTPUT_MAX>
             {
-                self.ranged_clamp(
+                self.clamp_ranged(
                     $type::<TO_MIN, TO_MIN>::new::<TO_MIN>(),
                     $type::<TO_MAX, TO_MAX>::new::<TO_MAX>(),
                 )

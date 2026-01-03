@@ -398,7 +398,7 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
     /// # use ranch::RangedNonZeroU8;
     /// let a = RangedNonZeroU8::<1, 3>::new::<1>();
     /// let b = RangedNonZeroU8::<1, 3>::new::<2>();
-    /// let output: RangedNonZeroU8::<2, 6> = a.ranged_add(b);
+    /// let output: RangedNonZeroU8::<2, 6> = a.add_ranged(b);
     ///
     /// assert_eq!(output.get(), 3);
     /// ```
@@ -409,13 +409,13 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
     /// # use ranch::RangedNonZeroU8;
     /// let a = RangedNonZeroU8::<1, 3>::new::<1>();
     /// let b = RangedNonZeroU8::<1, 3>::new::<2>();
-    /// let output: RangedNonZeroU8::<1, 6> = a.ranged_add(b);
+    /// let output: RangedNonZeroU8::<1, 6> = a.add_ranged(b);
     ///
     /// assert_eq!(output.get(), 3);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn ranged_add<
+    pub const fn add_ranged<
         const RHS_MIN: u8,
         const RHS_MAX: u8,
         const OUTPUT_MIN: u8,
@@ -425,7 +425,7 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
         rhs: RangedNonZeroU8<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroU8<OUTPUT_MIN, OUTPUT_MAX> {
         RangedNonZeroU8::with_ranged(
-            self.to_ranged().ranged_add(rhs.to_ranged()),
+            self.to_ranged().add_ranged(rhs.to_ranged()),
         )
         .unwrap()
     }
@@ -436,7 +436,7 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
     /// # use ranch::RangedNonZeroU8;
     /// let a = RangedNonZeroU8::<1, 3>::new::<1>();
     /// let b = RangedNonZeroU8::<2, 3>::new::<2>();
-    /// let output: RangedNonZeroU8::<2, 9> = a.ranged_mul(b);
+    /// let output: RangedNonZeroU8::<2, 9> = a.mul_ranged(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
@@ -447,13 +447,13 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
     /// # use ranch::RangedNonZeroU8;
     /// let a = RangedNonZeroU8::<1, 3>::new::<1>();
     /// let b = RangedNonZeroU8::<2, 3>::new::<2>();
-    /// let output: RangedNonZeroU8::<1, 9> = a.ranged_mul(b);
+    /// let output: RangedNonZeroU8::<1, 9> = a.mul_ranged(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn ranged_mul<
+    pub const fn mul_ranged<
         const RHS_MIN: u8,
         const RHS_MAX: u8,
         const OUTPUT_MIN: u8,
@@ -463,7 +463,7 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
         rhs: RangedNonZeroU8<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroU8<OUTPUT_MIN, OUTPUT_MAX> {
         RangedNonZeroU8::with_ranged(
-            self.to_ranged().ranged_mul(rhs.to_ranged()),
+            self.to_ranged().mul_ranged(rhs.to_ranged()),
         )
         .unwrap()
     }
@@ -474,7 +474,7 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
     /// # use ranch::{RangedNonZeroU8, RangedU32};
     /// let a = RangedNonZeroU8::<1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedNonZeroU8::<1, 27> = a.ranged_pow(b);
+    /// let output: RangedNonZeroU8::<1, 27> = a.pow_ranged(b);
     ///
     /// assert_eq!(output.get(), 4);
     /// ```
@@ -485,13 +485,13 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
     /// # use ranch::{RangedNonZeroU8, RangedU32};
     /// let a = RangedNonZeroU8::<1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedNonZeroU8::<0, 27> = a.ranged_pow(b);
+    /// let output: RangedNonZeroU8::<0, 27> = a.pow_ranged(b);
     ///
     /// assert_eq!(output.get(), 4);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn ranged_pow<
+    pub const fn pow_ranged<
         const RHS_MIN: u32,
         const RHS_MAX: u32,
         const OUTPUT_MIN: u8,
@@ -500,7 +500,7 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
         self,
         rhs: RangedU32<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroU8<OUTPUT_MIN, OUTPUT_MAX> {
-        RangedNonZeroU8::with_ranged(self.to_ranged().ranged_pow(rhs)).unwrap()
+        RangedNonZeroU8::with_ranged(self.to_ranged().pow_ranged(rhs)).unwrap()
     }
 
     /// Calculate the midpoint (average) between `self` and `rhs`.

@@ -396,7 +396,7 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
     /// # use ranch::RangedNonZeroI16;
     /// let a = RangedNonZeroI16::<-2, 3>::new::<1>();
     /// let b = RangedNonZeroI16::<-1, 3>::new::<2>();
-    /// let output: RangedNonZeroI16::<-6, 9> = a.ranged_mul(b);
+    /// let output: RangedNonZeroI16::<-6, 9> = a.mul_ranged(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
@@ -407,13 +407,13 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
     /// # use ranch::RangedNonZeroI16;
     /// let a = RangedNonZeroI16::<-2, 3>::new::<1>();
     /// let b = RangedNonZeroI16::<-1, 3>::new::<2>();
-    /// let output: RangedNonZeroI16::<0, 9> = a.ranged_mul(b);
+    /// let output: RangedNonZeroI16::<0, 9> = a.mul_ranged(b);
     ///
     /// assert_eq!(output.get(), 2);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn ranged_mul<
+    pub const fn mul_ranged<
         const RHS_MIN: i16,
         const RHS_MAX: i16,
         const OUTPUT_MIN: i16,
@@ -423,7 +423,7 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
         rhs: RangedNonZeroI16<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroI16<OUTPUT_MIN, OUTPUT_MAX> {
         RangedNonZeroI16::with_ranged(
-            self.to_ranged().ranged_mul(rhs.to_ranged()),
+            self.to_ranged().mul_ranged(rhs.to_ranged()),
         )
         .unwrap()
     }
@@ -434,7 +434,7 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
     /// # use ranch::{RangedNonZeroI16, RangedU32};
     /// let a = RangedNonZeroI16::<-1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedNonZeroI16::<-1, 27> = a.ranged_pow(b);
+    /// let output: RangedNonZeroI16::<-1, 27> = a.pow_ranged(b);
     ///
     /// assert_eq!(output.get(), 4);
     /// ```
@@ -445,13 +445,13 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
     /// # use ranch::{RangedNonZeroI16, RangedU32};
     /// let a = RangedNonZeroI16::<1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedNonZeroI16::<0, 27> = a.ranged_pow(b);
+    /// let output: RangedNonZeroI16::<0, 27> = a.pow_ranged(b);
     ///
     /// assert_eq!(output.get(), 4);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
-    pub const fn ranged_pow<
+    pub const fn pow_ranged<
         const RHS_MIN: u32,
         const RHS_MAX: u32,
         const OUTPUT_MIN: i16,
@@ -460,7 +460,7 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
         self,
         rhs: RangedU32<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroI16<OUTPUT_MIN, OUTPUT_MAX> {
-        RangedNonZeroI16::with_ranged(self.to_ranged().ranged_pow(rhs)).unwrap()
+        RangedNonZeroI16::with_ranged(self.to_ranged().pow_ranged(rhs)).unwrap()
     }
 }
 
