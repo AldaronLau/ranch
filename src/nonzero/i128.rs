@@ -228,11 +228,11 @@ impl<const MIN: i128, const MAX: i128> RangedNonZeroI128<MIN, MAX> {
     /// # use ranch::RangedNonZeroI128;
     /// let a = RangedNonZeroI128::<1, 100>::new::<50>();
     /// let b = RangedNonZeroI128::<1, 100>::new::<5>();
-    /// let c = a.checked_add(b.get()).unwrap().unwrap();
+    /// let c = a.checked_add(b).unwrap().unwrap();
     ///
-    /// assert!(c.checked_add(a.get()).is_err());
+    /// assert!(c.checked_add(a).is_err());
     /// assert_eq!(c.get(), 55);
-    /// assert_eq!(a.checked_add(a.get()).unwrap().unwrap().get(), 100);
+    /// assert_eq!(a.checked_add(a).unwrap().unwrap().get(), 100);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
@@ -256,9 +256,9 @@ impl<const MIN: i128, const MAX: i128> RangedNonZeroI128<MIN, MAX> {
     /// let b = RangedNonZeroI128::<-100, 100>::new::<5>();
     /// let c = RangedNonZeroI128::<-100, 100>::new::<-75>();
     ///
-    /// assert_eq!(b.checked_mul(b.get()).unwrap().unwrap().get(), 25);
-    /// assert_eq!(a.checked_mul(c.get()).unwrap_err(), Error::NegOverflow);
-    /// assert_eq!(c.checked_mul(c.get()).unwrap_err(), Error::PosOverflow);
+    /// assert_eq!(b.checked_mul(b).unwrap().unwrap().get(), 25);
+    /// assert_eq!(a.checked_mul(c).unwrap_err(), Error::NegOverflow);
+    /// assert_eq!(c.checked_mul(c).unwrap_err(), Error::PosOverflow);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
@@ -345,7 +345,7 @@ impl<const MIN: i128, const MAX: i128> RangedNonZeroI128<MIN, MAX> {
     ///
     /// assert_eq!(a.checked_sub(-51), Err(Error::PosOverflow));
     /// assert_eq!(b.get(), 45);
-    /// assert_eq!(a.checked_sub(a.get()), Err(Error::NegOverflow));
+    /// assert_eq!(a.checked_sub(a), Err(Error::NegOverflow));
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]

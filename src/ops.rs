@@ -89,7 +89,7 @@ macro_rules! impl_ops {
             type Output = Self;
 
             fn add(self, other: NonZero<$p>) -> Self {
-                self.checked_add(other.get()).unwrap()
+                self.checked_add(other).unwrap()
             }
         }
 
@@ -99,7 +99,7 @@ macro_rules! impl_ops {
             type Output = Self;
 
             fn sub(self, other: NonZero<$p>) -> Self {
-                self.checked_sub(other.get()).unwrap()
+                self.checked_sub(other).unwrap()
             }
         }
 
@@ -109,7 +109,7 @@ macro_rules! impl_ops {
             type Output = Self;
 
             fn mul(self, other: NonZero<$p>) -> Self {
-                self.checked_mul(other.get()).unwrap()
+                self.checked_mul(other).unwrap()
             }
         }
 
@@ -119,7 +119,7 @@ macro_rules! impl_ops {
             type Output = Self;
 
             fn div(self, other: NonZero<$p>) -> Self {
-                match self.checked_div(other.get()).unwrap() {
+                match self.checked_div(other).unwrap() {
                     Quotient::Nan => unreachable!(),
                     Quotient::Number(number) => number,
                 }

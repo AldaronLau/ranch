@@ -220,11 +220,11 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
     /// # use ranch::RangedNonZeroU128;
     /// let a = RangedNonZeroU128::<1, 100>::new::<50>();
     /// let b = RangedNonZeroU128::<1, 100>::new::<5>();
-    /// let c = a.checked_add(b.get()).unwrap();
+    /// let c = a.checked_add(b).unwrap();
     ///
-    /// assert!(c.checked_add(a.get()).is_none());
+    /// assert!(c.checked_add(a).is_none());
     /// assert_eq!(c.get(), 55);
-    /// assert_eq!(a.checked_add(a.get()).unwrap().get(), 100);
+    /// assert_eq!(a.checked_add(a).unwrap().get(), 100);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
@@ -246,9 +246,9 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
     /// let b = RangedNonZeroU128::<1, 100>::new::<5>();
     /// let c = RangedNonZeroU128::<1, 100>::new::<75>();
     ///
-    /// assert_eq!(b.checked_mul(b.get()).unwrap().get(), 25);
-    /// assert_eq!(a.checked_mul(c.get()), None);
-    /// assert_eq!(c.checked_mul(c.get()), None);
+    /// assert_eq!(b.checked_mul(b).unwrap().get(), 25);
+    /// assert_eq!(a.checked_mul(c), None);
+    /// assert_eq!(c.checked_mul(c), None);
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
@@ -329,7 +329,7 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
     /// let b = a.checked_sub(5).unwrap();
     ///
     /// assert_eq!(b.get(), 45);
-    /// assert!(a.checked_sub(a.get()).is_none());
+    /// assert!(a.checked_sub(a).is_none());
     /// ```
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
