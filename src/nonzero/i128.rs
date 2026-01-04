@@ -13,13 +13,6 @@ pub struct RangedNonZeroI128<const MIN: i128, const MAX: i128>(
     pub(crate) NonZero<i128>,
 );
 
-// unsafe: `repr(transparent)` is `repr(NonZero<i128>)`
-#[expect(unsafe_code)]
-unsafe impl<const MIN: i128, const MAX: i128> AsRepr<NonZero<i128>>
-    for RangedNonZeroI128<MIN, MAX>
-{
-}
-
 impl<const MIN: i128, const MAX: i128> RangedNonZeroI128<MIN, MAX> {
     /// The size of this integer type in bits.
     pub const BITS: u32 = i128::BITS;

@@ -7,13 +7,6 @@ use crate::{Error, ParsingError, ParsingResult, Quotient, RangedU32, Result};
 #[repr(transparent)]
 pub struct RangedU16<const MIN: u16, const MAX: u16>(pub(crate) u16);
 
-// unsafe: `repr(transparent)` is `repr(u16)`
-#[expect(unsafe_code)]
-unsafe impl<const MIN: u16, const MAX: u16> AsRepr<u16>
-    for RangedU16<MIN, MAX>
-{
-}
-
 impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     /// The size of this integer type in bits.
     pub const BITS: u32 = u16::BITS;

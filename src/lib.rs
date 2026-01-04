@@ -72,6 +72,7 @@ mod nonzero {
     pub(super) mod u64;
     pub(super) mod u8;
 }
+mod repr;
 pub mod unit;
 
 pub use self::{
