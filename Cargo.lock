@@ -10,7 +10,7 @@ checksum = "23f5c5e71e748a7de64c788b60ec43f61e8c6709ebf006a9700c178ccd629181"
 
 [[package]]
 name = "ranch"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "as_repr",
 ]
