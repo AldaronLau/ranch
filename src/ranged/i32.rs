@@ -639,7 +639,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
     /// # use ranch::RangedI32;
     /// let a = RangedI32::<2, 5>::new::<3>();
     /// let b = RangedI32::<1, 2>::new::<2>();
-    /// let output: RangedI32::<1, 2> = a.div_ranged(b);
+    /// let output: RangedI32::<1, 2> = a.div_ranged(b).number().unwrap();
     ///
     /// assert_eq!(output.get(), 1);
     /// ```
@@ -650,7 +650,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
     /// # use ranch::RangedI32;
     /// let a = RangedI32::<2, 5>::new::<3>();
     /// let b = RangedI32::<1, 2>::new::<1>();
-    /// let output: RangedI32::<0, 2> = a.div_ranged(b);
+    /// let output: RangedI32::<0, 2> = a.div_ranged(b).number().unwrap();
     ///
     /// assert_eq!(output.get(), 1);
     /// ```
@@ -664,12 +664,8 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
     >(
         self,
         rhs: RangedI32<RHS_MIN, RHS_MAX>,
-    ) -> RangedI32<OUTPUT_MIN, OUTPUT_MAX> {
+    ) -> Quotient<RangedI32<OUTPUT_MIN, OUTPUT_MAX>> {
         const {
-            if RHS_MIN == 0 || RHS_MAX == 0 {
-                panic!("Division by zero not allowed");
-            }
-
             let (min_min, min_max) = (MIN / RHS_MIN, MIN / RHS_MAX);
             let (max_min, max_max) = (MAX / RHS_MIN, MAX / RHS_MAX);
             let min = if min_min < min_max { min_min } else { min_max };
@@ -688,7 +684,11 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
             }
         }
 
-        RangedI32(self.get() / rhs.get())
+        if rhs.get() == 0 {
+            Quotient::Nan
+        } else {
+            Quotient::Number(RangedI32(self.get() / rhs.get()))
+        }
     }
 
     /// Raise to an integer power.

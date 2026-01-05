@@ -223,9 +223,9 @@ macro_rules! impl_ops {
             >(
                 self,
             ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
-                let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
+                let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
 
-                self.div_ranged(rhs)
+                self.div_ranged_nonzero(rhs)
             }
 
             /// Raise `self` to a power.
@@ -384,6 +384,50 @@ macro_rules! impl_ops {
 
                 number
             }
+
+            /// Divide `self` by a non-zero number.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<1, 2> = a.div_ranged_nonzero(b);")]
+            ///
+            /// assert_eq!(output.get(), 1);
+            /// ```
+            ///
+            /// Does not compile:
+            //
+            /// ```compile_fail
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<1>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.div_ranged_nonzero(b);")]
+            ///
+            /// assert_eq!(output.get(), 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn div_ranged_nonzero<
+                const RHS_MIN: $p,
+                const RHS_MAX: $p,
+                const OUTPUT_MIN: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+                rhs: $nonzero::<RHS_MIN, RHS_MAX>,
+            ) -> $type::<OUTPUT_MIN, OUTPUT_MAX> {
+                match self.div_ranged::<
+                    RHS_MIN,
+                    RHS_MAX,
+                    OUTPUT_MIN,
+                    OUTPUT_MAX,
+                >(rhs.to_ranged())
+                {
+                    Quotient::Number(num) => num,
+                    Quotient::Nan => unreachable!(),
+                }
+            }
         }
     };
 }
@@ -455,18 +499,76 @@ macro_rules! impl_ops_nonzero_unsigned {
     };
 }
 
-impl_ops!(RangedI8, i8, RangedNonZeroI8, Result, signed_nan_unreachable);
-impl_ops!(RangedI16, i16, RangedNonZeroI16, Result, signed_nan_unreachable);
-impl_ops!(RangedI32, i32, RangedNonZeroI32, Result, signed_nan_unreachable);
-impl_ops!(RangedI64, i64, RangedNonZeroI64, Result, signed_nan_unreachable);
-impl_ops!(RangedI128, i128, RangedNonZeroI128, Result, signed_nan_unreachable);
-
-impl_ops!(RangedU8, u8, RangedNonZeroU8, Option, unsigned_nan_unreachable);
-impl_ops!(RangedU16, u16, RangedNonZeroU16, Option, unsigned_nan_unreachable);
-impl_ops!(RangedU32, u32, RangedNonZeroU32, Option, unsigned_nan_unreachable);
-impl_ops!(RangedU64, u64, RangedNonZeroU64, Option, unsigned_nan_unreachable);
 impl_ops!(
-    RangedU128, u128, RangedNonZeroU128, Option, unsigned_nan_unreachable,
+    RangedI8,
+    i8,
+    RangedNonZeroI8,
+    Result,
+    signed_nan_unreachable,
+);
+impl_ops!(
+    RangedI16,
+    i16,
+    RangedNonZeroI16,
+    Result,
+    signed_nan_unreachable,
+);
+impl_ops!(
+    RangedI32,
+    i32,
+    RangedNonZeroI32,
+    Result,
+    signed_nan_unreachable,
+);
+impl_ops!(
+    RangedI64,
+    i64,
+    RangedNonZeroI64,
+    Result,
+    signed_nan_unreachable,
+);
+impl_ops!(
+    RangedI128,
+    i128,
+    RangedNonZeroI128,
+    Result,
+    signed_nan_unreachable,
+);
+
+impl_ops!(
+    RangedU8,
+    u8,
+    RangedNonZeroU8,
+    Option,
+    unsigned_nan_unreachable,
+);
+impl_ops!(
+    RangedU16,
+    u16,
+    RangedNonZeroU16,
+    Option,
+    unsigned_nan_unreachable,
+);
+impl_ops!(
+    RangedU32,
+    u32,
+    RangedNonZeroU32,
+    Option,
+    unsigned_nan_unreachable,
+);
+impl_ops!(
+    RangedU64,
+    u64,
+    RangedNonZeroU64,
+    Option,
+    unsigned_nan_unreachable,
+);
+impl_ops!(
+    RangedU128,
+    u128,
+    RangedNonZeroU128,
+    Option,
+    unsigned_nan_unreachable,
 );
 
 impl_ops_nonzero_signed!(RangedNonZeroI8, i8);
@@ -482,7 +584,8 @@ impl_ops_nonzero_unsigned!(RangedNonZeroU64, u64);
 impl_ops_nonzero_unsigned!(RangedNonZeroU128, u128);
 
 const fn signed_nan_unreachable<T>(result: Result<Quotient<T>>) -> Result<T>
-where T: Copy + Clone
+where
+    T: Copy + Clone,
 {
     match result {
         Ok(Quotient::Number(number)) => Ok(number),
@@ -492,7 +595,8 @@ where T: Copy + Clone
 }
 
 const fn unsigned_nan_unreachable<T>(option: Option<Quotient<T>>) -> Option<T>
-where T: Copy + Clone
+where
+    T: Copy + Clone,
 {
     match option {
         Some(Quotient::Number(number)) => Some(number),

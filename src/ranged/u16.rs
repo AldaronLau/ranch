@@ -613,7 +613,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     /// # use ranch::RangedU16;
     /// let a = RangedU16::<2, 5>::new::<3>();
     /// let b = RangedU16::<1, 2>::new::<2>();
-    /// let output: RangedU16::<1, 2> = a.div_ranged(b);
+    /// let output: RangedU16::<1, 2> = a.div_ranged(b).number().unwrap();
     ///
     /// assert_eq!(output.get(), 1);
     /// ```
@@ -624,7 +624,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     /// # use ranch::RangedU16;
     /// let a = RangedU16::<2, 5>::new::<3>();
     /// let b = RangedU16::<1, 2>::new::<1>();
-    /// let output: RangedU16::<0, 2> = a.div_ranged(b);
+    /// let output: RangedU16::<0, 2> = a.div_ranged(b).number().unwrap();
     ///
     /// assert_eq!(output.get(), 1);
     /// ```
@@ -638,12 +638,8 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
     >(
         self,
         rhs: RangedU16<RHS_MIN, RHS_MAX>,
-    ) -> RangedU16<OUTPUT_MIN, OUTPUT_MAX> {
+    ) -> Quotient<RangedU16<OUTPUT_MIN, OUTPUT_MAX>> {
         const {
-            if RHS_MIN == 0 {
-                panic!("Division by zero not allowed");
-            }
-
             if MIN / RHS_MAX != OUTPUT_MIN {
                 panic!("Min mismatch");
             }
@@ -653,7 +649,11 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
             }
         }
 
-        RangedU16(self.get() / rhs.get())
+        if rhs.get() == 0 {
+            Quotient::Nan
+        } else {
+            Quotient::Number(RangedU16(self.get() / rhs.get()))
+        }
     }
 
     /// Raise to an integer power.
