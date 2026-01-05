@@ -31,7 +31,7 @@ Any future MSRV updates will follow the [Ardaku MSRV guidelines].
 
 ## License
 
-Copyright © 2025 The Ranch Contributors.
+Copyright © 2025-2026 The Ranch Contributors.
 
 Licensed under any of
  - Apache License, Version 2.0, ([LICENSE\_APACHE] or
