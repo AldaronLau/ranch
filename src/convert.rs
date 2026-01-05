@@ -48,10 +48,10 @@ macro_rules! impl_signed_nonzero_conversion {
     };
 }
 
-macro_rules! impl_to_ranged_nonzero {
+macro_rules! impl_nonzero_from_ranged {
     ($type:ident, $p:ty, $nonzero:ident $(,)?) => {
-        impl<const MIN: $p, const MAX: $p> $type::<MIN, MAX> {
-            #[doc = concat!("Convert to [`", stringify!($nonzero), "`].")]
+        impl<const MIN: $p, const MAX: $p> $nonzero::<MIN, MAX> {
+            #[doc = concat!("Convert from [`", stringify!($type), "`].")]
             ///
             /// Won't compile if the range contains zero.  If you need to check
             /// at runtime for zero instead of at compile-time, try using
@@ -60,7 +60,7 @@ macro_rules! impl_to_ranged_nonzero {
             /// ```rust
             #[doc = concat!("use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             /// assert_eq!(
-            #[doc = concat!("    ", stringify!($type), "::<1, 100>::new::<42>().to_ranged_nonzero(),")]
+            #[doc = concat!("    ", stringify!($nonzero), "::from_ranged(", stringify!($type), "::<1, 100>::new::<42>()),")]
             #[doc = concat!("    ", stringify!($nonzero), "::<1, 100>::new::<42>(),")]
             /// );
             /// ```
@@ -68,9 +68,9 @@ macro_rules! impl_to_ranged_nonzero {
             /// ```rust,compile_fail
             #[doc = concat!("use ranch::{", stringify!($type), "};")]
             ///
-            #[doc = concat!(stringify!($type), "::<0, 100>::new::<42>().to_ranged_nonzero();")]
+            #[doc = concat!(stringify!($nonzero), "::from_ranged(", stringify!($type), "::<0, 100>::new::<42>())")]
             /// ```
-            pub const fn to_ranged_nonzero(self) -> $nonzero::<MIN, MAX> {
+            pub const fn from_ranged(ranged: $type::<MIN, MAX>) -> Self {
                 // `MAX` comparison only needed for signed numbers
                 #[allow(unused_comparisons)]
                 const {
@@ -79,7 +79,7 @@ macro_rules! impl_to_ranged_nonzero {
                     }
                 }
 
-                let Some(value) = NonZero::new(self.get()) else {
+                let Some(value) = NonZero::new(ranged.get()) else {
                     unreachable!()
                 };
 
@@ -111,16 +111,16 @@ impl_unsigned_nonzero_conversion!(RangedU32, u32);
 impl_unsigned_nonzero_conversion!(RangedU64, u64);
 impl_unsigned_nonzero_conversion!(RangedU128, u128);
 
-impl_to_ranged_nonzero!(RangedI8, i8, RangedNonZeroI8);
-impl_to_ranged_nonzero!(RangedI16, i16, RangedNonZeroI16);
-impl_to_ranged_nonzero!(RangedI32, i32, RangedNonZeroI32);
-impl_to_ranged_nonzero!(RangedI64, i64, RangedNonZeroI64);
-impl_to_ranged_nonzero!(RangedI128, i128, RangedNonZeroI128);
-impl_to_ranged_nonzero!(RangedU8, u8, RangedNonZeroU8);
-impl_to_ranged_nonzero!(RangedU16, u16, RangedNonZeroU16);
-impl_to_ranged_nonzero!(RangedU32, u32, RangedNonZeroU32);
-impl_to_ranged_nonzero!(RangedU64, u64, RangedNonZeroU64);
-impl_to_ranged_nonzero!(RangedU128, u128, RangedNonZeroU128);
+impl_nonzero_from_ranged!(RangedI8, i8, RangedNonZeroI8);
+impl_nonzero_from_ranged!(RangedI16, i16, RangedNonZeroI16);
+impl_nonzero_from_ranged!(RangedI32, i32, RangedNonZeroI32);
+impl_nonzero_from_ranged!(RangedI64, i64, RangedNonZeroI64);
+impl_nonzero_from_ranged!(RangedI128, i128, RangedNonZeroI128);
+impl_nonzero_from_ranged!(RangedU8, u8, RangedNonZeroU8);
+impl_nonzero_from_ranged!(RangedU16, u16, RangedNonZeroU16);
+impl_nonzero_from_ranged!(RangedU32, u32, RangedNonZeroU32);
+impl_nonzero_from_ranged!(RangedU64, u64, RangedNonZeroU64);
+impl_nonzero_from_ranged!(RangedU128, u128, RangedNonZeroU128);
 
 impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     /// Convert to [`RangedU8`].
