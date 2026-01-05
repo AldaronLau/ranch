@@ -50,13 +50,7 @@ impl<const MIN: i8, const MAX: i8> RangedNonZeroI8<MIN, MAX> {
     #[must_use]
     pub const fn new<const N: i8>() -> Self {
         const {
-            if MIN == 0 {
-                panic!("Minimum can't be zero");
-            }
-
-            if MAX == 0 {
-                panic!("Maximum can't be zero");
-            }
+            Self::assert_range();
 
             if N < MIN || N > MAX {
                 panic!("Out of bounds");
@@ -79,6 +73,8 @@ impl<const MIN: i8, const MAX: i8> RangedNonZeroI8<MIN, MAX> {
     /// assert_eq!(RangedNonZeroI8::<-1, 1>::with_i8(2).unwrap_err(), Error::PosOverflow);
     /// ```
     pub const fn with_i8(value: impl AsRepr<i8>) -> Result<Option<Self>> {
+        const { Self::assert_range() };
+
         let value = as_repr::as_repr(value);
         let Some(value) = NonZero::new(value) else {
             return Ok(None);
@@ -103,6 +99,8 @@ impl<const MIN: i8, const MAX: i8> RangedNonZeroI8<MIN, MAX> {
     pub const fn with_nonzero(
         nonzero: impl AsRepr<NonZero<i8>>,
     ) -> Result<Self> {
+        const { Self::assert_range() };
+
         let nonzero = as_repr::as_repr(nonzero);
 
         if nonzero.get() < MIN {

@@ -40,6 +40,7 @@
 )]
 
 pub mod ascii;
+mod assertions;
 pub mod bitwise;
 mod convert;
 mod error;

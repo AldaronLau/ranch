@@ -40,6 +40,8 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
     #[must_use]
     pub const fn new<const N: i64>() -> Self {
         const {
+            Self::assert_range();
+
             if N < MIN || N > MAX {
                 panic!("Out of bounds");
             }
@@ -60,6 +62,8 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
     /// assert_eq!(RangedI64::<1, 2>::with_i64(3).unwrap_err(), Error::PosOverflow);
     /// ```
     pub const fn with_i64(value: impl AsRepr<i64>) -> Result<Self> {
+        const { Self::assert_range() };
+
         let value = as_repr::as_repr(value);
 
         if value < MIN {

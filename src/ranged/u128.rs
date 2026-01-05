@@ -40,6 +40,8 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     #[must_use]
     pub const fn new<const N: u128>() -> Self {
         const {
+            Self::assert_range();
+
             if N < MIN || N > MAX {
                 panic!("Out of bounds");
             }
@@ -60,6 +62,8 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
     /// assert_eq!(RangedU128::<1, 2>::with_u128(3).unwrap_err(), Error::PosOverflow);
     /// ```
     pub const fn with_u128(value: impl AsRepr<u128>) -> Result<Self> {
+        const { Self::assert_range() };
+
         let value = as_repr::as_repr(value);
 
         if value < MIN {

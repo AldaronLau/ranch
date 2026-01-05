@@ -46,9 +46,7 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
     #[must_use]
     pub const fn new<const N: u128>() -> Self {
         const {
-            if MIN < 1 {
-                panic!("Minimum must be at least one");
-            }
+            Self::assert_range();
 
             if N < MIN || N > MAX {
                 panic!("Out of bounds");
@@ -71,6 +69,8 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
     /// assert_eq!(RangedNonZeroU128::<2, 3>::with_u128(4).unwrap_err(), Error::PosOverflow);
     /// ```
     pub const fn with_u128(value: impl AsRepr<u128>) -> Result<Option<Self>> {
+        const { Self::assert_range() };
+
         let value = as_repr::as_repr(value);
         let Some(value) = NonZero::new(value) else {
             return Ok(None);
@@ -95,6 +95,8 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
     pub const fn with_nonzero(
         nonzero: impl AsRepr<NonZero<u128>>,
     ) -> Result<Self> {
+        const { Self::assert_range() };
+
         let nonzero = as_repr::as_repr(nonzero);
 
         if nonzero.get() < MIN {

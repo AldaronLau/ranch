@@ -40,6 +40,8 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     #[must_use]
     pub const fn new<const N: i16>() -> Self {
         const {
+            Self::assert_range();
+
             if N < MIN || N > MAX {
                 panic!("Out of bounds");
             }
@@ -60,6 +62,8 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// assert_eq!(RangedI16::<1, 2>::with_i16(3).unwrap_err(), Error::PosOverflow);
     /// ```
     pub const fn with_i16(value: impl AsRepr<i16>) -> Result<Self> {
+        const { Self::assert_range() };
+
         let value = as_repr::as_repr(value);
 
         if value < MIN {

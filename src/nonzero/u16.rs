@@ -46,9 +46,7 @@ impl<const MIN: u16, const MAX: u16> RangedNonZeroU16<MIN, MAX> {
     #[must_use]
     pub const fn new<const N: u16>() -> Self {
         const {
-            if MIN < 1 {
-                panic!("Minimum must be at least one");
-            }
+            Self::assert_range();
 
             if N < MIN || N > MAX {
                 panic!("Out of bounds");
@@ -71,6 +69,8 @@ impl<const MIN: u16, const MAX: u16> RangedNonZeroU16<MIN, MAX> {
     /// assert_eq!(RangedNonZeroU16::<2, 3>::with_u16(4).unwrap_err(), Error::PosOverflow);
     /// ```
     pub const fn with_u16(value: impl AsRepr<u16>) -> Result<Option<Self>> {
+        const { Self::assert_range() };
+
         let value = as_repr::as_repr(value);
         let Some(value) = NonZero::new(value) else {
             return Ok(None);
@@ -95,6 +95,8 @@ impl<const MIN: u16, const MAX: u16> RangedNonZeroU16<MIN, MAX> {
     pub const fn with_nonzero(
         nonzero: impl AsRepr<NonZero<u16>>,
     ) -> Result<Self> {
+        const { Self::assert_range() };
+
         let nonzero = as_repr::as_repr(nonzero);
 
         if nonzero.get() < MIN {
