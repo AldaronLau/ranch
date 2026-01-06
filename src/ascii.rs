@@ -1,4 +1,7 @@
 //! ASCII Types
+//!
+//! This could be an alternate implementation for
+//! <https://github.com/rust-lang/rust/issues/110998> using ranged integers.
 
 use core::ascii::EscapeDefault;
 
@@ -16,8 +19,22 @@ impl Uppercase {
     ///
     /// assert_eq!(Lowercase::new::<97>(), uppercase_a.to_ascii_lowercase());
     /// ```
-    pub const fn to_ascii_lowercase(&self) -> Lowercase {
+    pub const fn to_ascii_lowercase(self) -> Lowercase {
         RangedU8(self.get().to_ascii_lowercase())
+    }
+
+    /// Convert to [`char`].
+    ///
+    /// ```rust
+    /// # use ranch::ascii::Uppercase;
+    /// let uppercase_a = Uppercase::new::<65>();
+    ///
+    /// assert_eq!(uppercase_a.to_char(), 'A');
+    /// ```
+    pub const fn to_char(self) -> char {
+        let chr: Char = self.to_ranged_u8();
+
+        chr.to_char()
     }
 }
 
@@ -33,8 +50,22 @@ impl Lowercase {
     ///
     /// assert_eq!(Uppercase::new::<65>(), lowercase_a.to_ascii_uppercase());
     /// ```
-    pub const fn to_ascii_uppercase(&self) -> Uppercase {
+    pub const fn to_ascii_uppercase(self) -> Uppercase {
         RangedU8(self.get().to_ascii_uppercase())
+    }
+
+    /// Convert to [`char`].
+    ///
+    /// ```rust
+    /// # use ranch::ascii::Lowercase;
+    /// let lowercase_a = Lowercase::new::<97>();
+    ///
+    /// assert_eq!(lowercase_a.to_char(), 'a');
+    /// ```
+    pub const fn to_char(self) -> char {
+        let chr: Char = self.to_ranged_u8();
+
+        chr.to_char()
     }
 }
 
@@ -55,7 +86,7 @@ impl Graphic {
     /// assert_eq!(Graphic::new::<b'A'>(), ascii.to_ascii_uppercase());
     /// assert_eq!(Graphic::new::<b'1'>(), non_alphabetic.to_ascii_uppercase());
     /// ```
-    pub const fn to_ascii_uppercase(&self) -> Self {
+    pub const fn to_ascii_uppercase(self) -> Self {
         Self(self.get().to_ascii_uppercase())
     }
 
@@ -72,8 +103,22 @@ impl Graphic {
     /// assert_eq!(Graphic::new::<b'a'>(), ascii.to_ascii_lowercase());
     /// assert_eq!(Graphic::new::<b'1'>(), non_alphabetic.to_ascii_lowercase());
     /// ```
-    pub const fn to_ascii_lowercase(&self) -> Self {
+    pub const fn to_ascii_lowercase(self) -> Self {
         Self(self.get().to_ascii_lowercase())
+    }
+
+    /// Convert to [`char`].
+    ///
+    /// ```rust
+    /// # use ranch::ascii::Graphic;
+    /// let lowercase_a = Graphic::new::<97>();
+    ///
+    /// assert_eq!(lowercase_a.to_char(), 'a');
+    /// ```
+    pub const fn to_char(self) -> char {
+        let chr: Char = self.to_ranged_u8();
+
+        chr.to_char()
     }
 }
 
@@ -106,6 +151,20 @@ impl Digit {
     pub const fn to_digit(self) -> RangedU8<0, 9> {
         self.sub::<0x30, 0, 9>()
     }
+
+    /// Convert to [`char`].
+    ///
+    /// ```rust
+    /// # use ranch::ascii::Digit;
+    /// let one = Digit::new::<0x31>();
+    ///
+    /// assert_eq!(one.to_char(), '1');
+    /// ```
+    pub const fn to_char(self) -> char {
+        let chr: Char = self.to_ranged_u8();
+
+        chr.to_char()
+    }
 }
 
 /// One of the 128 Unicode characters from U+0000 through U+007F, often known as
@@ -126,7 +185,7 @@ impl Char {
     /// assert_eq!(Char::new::<b'A'>(), ascii.to_ascii_uppercase());
     /// assert_eq!(Char::new::<b'1'>(), non_alphabetic.to_ascii_uppercase());
     /// ```
-    pub const fn to_ascii_uppercase(&self) -> Self {
+    pub const fn to_ascii_uppercase(self) -> Self {
         Self(self.get().to_ascii_uppercase())
     }
 
@@ -143,8 +202,20 @@ impl Char {
     /// assert_eq!(Char::new::<b'a'>(), ascii.to_ascii_lowercase());
     /// assert_eq!(Char::new::<b'1'>(), non_alphabetic.to_ascii_lowercase());
     /// ```
-    pub const fn to_ascii_lowercase(&self) -> Self {
+    pub const fn to_ascii_lowercase(self) -> Self {
         Self(self.get().to_ascii_lowercase())
+    }
+
+    /// Convert to [`char`].
+    ///
+    /// ```rust
+    /// # use ranch::ascii::Char;
+    /// let one = Char::new::<b'\n'>();
+    ///
+    /// assert_eq!(one.to_char(), '\n');
+    /// ```
+    pub const fn to_char(self) -> char {
+        self.get() as char
     }
 }
 
