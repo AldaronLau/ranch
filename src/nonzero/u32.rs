@@ -320,31 +320,6 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
         value.to_ranged_nonzero()
     }
 
-    /// Return the smallest power of two greater than or equal to self.
-    ///
-    /// Returns [`None`] on overflow.
-    ///
-    /// ```rust
-    /// # use ranch::{Error, RangedNonZeroU32};
-    /// let a = RangedNonZeroU32::<1, 33>::new::<1>();
-    /// let b = RangedNonZeroU32::<1, 33>::new::<9>();
-    /// let c = RangedNonZeroU32::<1, 33>::new::<32>();
-    /// let d = RangedNonZeroU32::<1, 33>::new::<33>();
-    ///
-    /// assert_eq!(a.checked_next_power_of_two().unwrap().get(), 1);
-    /// assert_eq!(b.checked_next_power_of_two().unwrap().get(), 16);
-    /// assert_eq!(c.checked_next_power_of_two().unwrap().get(), 32);
-    /// assert_eq!(d.checked_next_power_of_two(), None);
-    /// ```
-    #[must_use]
-    pub const fn checked_next_power_of_two(self) -> Option<Self> {
-        let Some(value) = self.to_ranged().checked_next_power_of_two() else {
-            return None;
-        };
-
-        value.to_ranged_nonzero()
-    }
-
     /// Returns true if and only if `self == (1 << k)` for some `k`.
     ///
     /// ```rust

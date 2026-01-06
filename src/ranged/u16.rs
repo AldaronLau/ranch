@@ -406,34 +406,6 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
         }
     }
 
-    /// Return the smallest power of two greater than or equal to self.
-    ///
-    /// Returns [`None`] on overflow.
-    ///
-    /// ```rust
-    /// # use ranch::{Error, RangedU16};
-    /// let a = RangedU16::<0, 33>::new::<0>();
-    /// let b = RangedU16::<0, 33>::new::<9>();
-    /// let c = RangedU16::<0, 33>::new::<32>();
-    /// let d = RangedU16::<0, 33>::new::<33>();
-    ///
-    /// assert_eq!(a.checked_next_power_of_two().unwrap().get(), 1);
-    /// assert_eq!(b.checked_next_power_of_two().unwrap().get(), 16);
-    /// assert_eq!(c.checked_next_power_of_two().unwrap().get(), 32);
-    /// assert_eq!(d.checked_next_power_of_two(), None);
-    /// ```
-    #[must_use]
-    pub const fn checked_next_power_of_two(self) -> Option<Self> {
-        let Some(value) = self.get().checked_next_power_of_two() else {
-            return None;
-        };
-
-        Some(match Self::with_u16(value) {
-            Ok(value) => value,
-            Err(_) => return None,
-        })
-    }
-
     /// Returns true if and only if `self == (1 << k)` for some `k`.
     ///
     /// ```rust

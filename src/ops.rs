@@ -499,6 +499,82 @@ macro_rules! impl_ops_nonzero_unsigned {
     };
 }
 
+macro_rules! impl_ops_unsigned {
+    ($type:ident, $p:ty, $nonzero:ident, $with:ident $(,)?) => {
+        impl<const MIN: $p, const MAX: $p> $type<MIN, MAX> {
+            /// Return the smallest power of two greater than or equal to self.
+            ///
+            /// Returns [`None`] on overflow.
+            ///
+            /// ```rust
+            /// # use ranch::{Error, RangedU128};
+            /// let a = RangedU128::<0, 33>::new::<0>();
+            /// let b = RangedU128::<0, 33>::new::<9>();
+            /// let c = RangedU128::<0, 33>::new::<32>();
+            /// let d = RangedU128::<0, 33>::new::<33>();
+            ///
+            /// assert_eq!(a.checked_next_power_of_two().unwrap().get(), 1);
+            /// assert_eq!(b.checked_next_power_of_two().unwrap().get(), 16);
+            /// assert_eq!(c.checked_next_power_of_two().unwrap().get(), 32);
+            /// assert_eq!(d.checked_next_power_of_two(), None);
+            /// ```
+            #[must_use]
+            pub const fn checked_next_power_of_two(self) -> Option<Self> {
+                let Some(value) = self.get().checked_next_power_of_two() else {
+                    return None;
+                };
+                let Some(value) = NonZero::new(value) else {
+                    unreachable!()
+                };
+                let Ok(value) = $type::$with(value) else {
+                    return None;
+                };
+
+                Some(value)
+            }
+
+            /// Return the smallest power of two greater than or equal to self.
+            ///
+            /// ```rust
+            /// # use ranch::{Error, RangedU8};
+            /// let a = RangedU8::<0, 33>::new::<0>();
+            /// let b = RangedU8::<0, 33>::new::<9>();
+            /// let c = RangedU8::<0, 33>::new::<32>();
+            /// let d = RangedU8::<0, 33>::new::<33>();
+            ///
+            /// assert_eq!(a.next_power_of_two::<1, 64>().get(), 1);
+            /// assert_eq!(b.next_power_of_two::<1, 64>().get(), 16);
+            /// assert_eq!(c.next_power_of_two::<1, 64>().get(), 32);
+            /// assert_eq!(d.next_power_of_two::<1, 64>().get(), 64);
+            /// ```
+            #[must_use]
+            pub const fn next_power_of_two<
+                const OUT_MIN: $p,
+                const OUT_MAX: $p,
+            >(
+                self,
+            ) -> $nonzero<OUT_MIN, OUT_MAX> {
+                const {
+                    if OUT_MIN != MIN.checked_next_power_of_two().unwrap() {
+                        panic!("mismatched OUT_MIN")
+                    }
+
+                    if OUT_MAX != MAX.checked_next_power_of_two().unwrap() {
+                        panic!("mismatched OUT_MAX")
+                    }
+                }
+
+                let Some(value) = NonZero::new(self.get().next_power_of_two())
+                else {
+                    unreachable!()
+                };
+
+                $nonzero(value)
+            }
+        }
+    };
+}
+
 impl_ops!(
     RangedI8,
     i8,
@@ -582,6 +658,18 @@ impl_ops_nonzero_unsigned!(RangedNonZeroU16, u16);
 impl_ops_nonzero_unsigned!(RangedNonZeroU32, u32);
 impl_ops_nonzero_unsigned!(RangedNonZeroU64, u64);
 impl_ops_nonzero_unsigned!(RangedNonZeroU128, u128);
+
+impl_ops_unsigned!(RangedU8, u8, RangedNonZeroU8, with_u8);
+impl_ops_unsigned!(RangedU16, u16, RangedNonZeroU16, with_u16);
+impl_ops_unsigned!(RangedU32, u32, RangedNonZeroU32, with_u32);
+impl_ops_unsigned!(RangedU64, u64, RangedNonZeroU64, with_u64);
+impl_ops_unsigned!(RangedU128, u128, RangedNonZeroU128, with_u128);
+
+impl_ops_unsigned!(RangedNonZeroU8, u8, RangedNonZeroU8, with_nonzero);
+impl_ops_unsigned!(RangedNonZeroU16, u16, RangedNonZeroU16, with_nonzero);
+impl_ops_unsigned!(RangedNonZeroU32, u32, RangedNonZeroU32, with_nonzero);
+impl_ops_unsigned!(RangedNonZeroU64, u64, RangedNonZeroU64, with_nonzero);
+impl_ops_unsigned!(RangedNonZeroU128, u128, RangedNonZeroU128, with_nonzero);
 
 const fn signed_nan_unreachable<T>(result: Result<Quotient<T>>) -> Result<T>
 where
