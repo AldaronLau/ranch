@@ -114,27 +114,6 @@ impl<const MIN: i128, const MAX: i128> RangedNonZeroI128<MIN, MAX> {
         Ok(Self(nonzero))
     }
 
-    /// Convert from [`RangedI128`].
-    ///
-    /// ```rust
-    /// # use ranch::{RangedNonZeroI128, RangedI128};
-    /// assert_eq!(
-    ///     RangedNonZeroI128::<1, 100>::with_ranged(RangedI128::new::<42>()).unwrap(),
-    ///     RangedNonZeroI128::<1, 100>::new::<42>(),
-    /// );
-    /// assert!(
-    ///     RangedNonZeroI128::<0, 100>::with_ranged(RangedI128::new::<0>())
-    ///         .is_none(),
-    /// );
-    /// ```
-    pub const fn with_ranged(ranged: RangedI128<MIN, MAX>) -> Option<Self> {
-        let Some(nonzero) = NonZero::new(ranged.get()) else {
-            return None;
-        };
-
-        Some(Self(nonzero))
-    }
-
     /// Return the contained value as a primitive type.
     ///
     /// ```rust
@@ -239,7 +218,7 @@ impl<const MIN: i128, const MAX: i128> RangedNonZeroI128<MIN, MAX> {
         other: impl AsRepr<i128>,
     ) -> Result<Option<Self>> {
         match self.to_ranged().checked_add(other) {
-            Ok(value) => Ok(Self::with_ranged(value)),
+            Ok(value) => Ok(value.to_ranged_nonzero()),
             Err(e) => Err(e),
         }
     }
@@ -265,7 +244,7 @@ impl<const MIN: i128, const MAX: i128> RangedNonZeroI128<MIN, MAX> {
         other: impl AsRepr<i128>,
     ) -> Result<Option<Self>> {
         match self.to_ranged().checked_mul(other) {
-            Ok(value) => Ok(Self::with_ranged(value)),
+            Ok(value) => Ok(value.to_ranged_nonzero()),
             Err(e) => Err(e),
         }
     }
@@ -290,7 +269,7 @@ impl<const MIN: i128, const MAX: i128> RangedNonZeroI128<MIN, MAX> {
                   without modifying the original"]
     pub const fn checked_pow(self, other: impl AsRepr<u32>) -> Result<Self> {
         match self.to_ranged().checked_pow(other) {
-            Ok(value) => Ok(Self::with_ranged(value).unwrap()),
+            Ok(value) => Ok(value.to_ranged_nonzero().unwrap()),
             Err(e) => Err(e),
         }
     }
@@ -325,7 +304,7 @@ impl<const MIN: i128, const MAX: i128> RangedNonZeroI128<MIN, MAX> {
         let Quotient::Number(number) = value else {
             return Ok(Some(Quotient::Nan));
         };
-        let Some(number) = Self::with_ranged(number) else {
+        let Some(number) = number.to_ranged_nonzero() else {
             return Ok(None);
         };
 
@@ -352,7 +331,7 @@ impl<const MIN: i128, const MAX: i128> RangedNonZeroI128<MIN, MAX> {
         other: impl AsRepr<i128>,
     ) -> Result<Option<Self>> {
         match self.to_ranged().checked_sub(other) {
-            Ok(value) => Ok(Self::with_ranged(value)),
+            Ok(value) => Ok(value.to_ranged_nonzero()),
             Err(e) => Err(e),
         }
     }
@@ -413,10 +392,12 @@ impl<const MIN: i128, const MAX: i128> RangedNonZeroI128<MIN, MAX> {
         self,
         rhs: RangedNonZeroI128<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroI128<OUTPUT_MIN, OUTPUT_MAX> {
-        RangedNonZeroI128::with_ranged(
-            self.to_ranged().mul_ranged(rhs.to_ranged()),
-        )
-        .unwrap()
+        self.to_ranged()
+            .mul_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(
+                rhs.to_ranged(),
+            )
+            .to_ranged_nonzero()
+            .unwrap()
     }
 
     /// Raise to an integer power.
@@ -451,7 +432,9 @@ impl<const MIN: i128, const MAX: i128> RangedNonZeroI128<MIN, MAX> {
         self,
         rhs: RangedU32<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroI128<OUTPUT_MIN, OUTPUT_MAX> {
-        RangedNonZeroI128::with_ranged(self.to_ranged().pow_ranged(rhs))
+        self.to_ranged()
+            .pow_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
+            .to_ranged_nonzero()
             .unwrap()
     }
 }

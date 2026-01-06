@@ -110,27 +110,6 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
         Ok(Self(nonzero))
     }
 
-    /// Convert from [`RangedU128`].
-    ///
-    /// ```rust
-    /// # use ranch::{RangedNonZeroU128, RangedU128};
-    /// assert_eq!(
-    ///     RangedNonZeroU128::<1, 100>::with_ranged(RangedU128::new::<42>()).unwrap(),
-    ///     RangedNonZeroU128::<1, 100>::new::<42>(),
-    /// );
-    /// assert!(
-    ///     RangedNonZeroU128::<0, 100>::with_ranged(RangedU128::new::<0>())
-    ///         .is_none(),
-    /// );
-    /// ```
-    pub const fn with_ranged(ranged: RangedU128<MIN, MAX>) -> Option<Self> {
-        let Some(nonzero) = NonZero::new(ranged.get()) else {
-            return None;
-        };
-
-        Some(Self(nonzero))
-    }
-
     /// Return the contained value as a primitive type.
     ///
     /// ```rust
@@ -235,7 +214,7 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
             return None;
         };
 
-        Self::with_ranged(value)
+        value.to_ranged_nonzero()
     }
 
     /// Multiply two ranged integers together.
@@ -259,7 +238,7 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
             return None;
         };
 
-        Self::with_ranged(value)
+        value.to_ranged_nonzero()
     }
 
     /// Raise to an integer power.
@@ -283,7 +262,7 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
             return None;
         };
 
-        Self::with_ranged(value)
+        value.to_ranged_nonzero()
     }
 
     /// Checked integer division.
@@ -314,7 +293,7 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
         let Quotient::Number(number) = value else {
             return Some(Quotient::Nan);
         };
-        let Some(number) = Self::with_ranged(number) else {
+        let Some(number) = number.to_ranged_nonzero() else {
             return None;
         };
 
@@ -340,7 +319,7 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
             return None;
         };
 
-        Self::with_ranged(value)
+        value.to_ranged_nonzero()
     }
 
     /// Return the smallest power of two greater than or equal to self.
@@ -365,7 +344,7 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
             return None;
         };
 
-        Self::with_ranged(value)
+        value.to_ranged_nonzero()
     }
 
     /// Returns true if and only if `self == (1 << k)` for some `k`.
@@ -419,10 +398,12 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
         self,
         rhs: RangedNonZeroU128<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroU128<OUTPUT_MIN, OUTPUT_MAX> {
-        RangedNonZeroU128::with_ranged(
-            self.to_ranged().add_ranged(rhs.to_ranged()),
-        )
-        .unwrap()
+        self.to_ranged()
+            .add_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(
+                rhs.to_ranged(),
+            )
+            .to_ranged_nonzero()
+            .unwrap()
     }
 
     /// Multiply two numbers together.
@@ -457,10 +438,12 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
         self,
         rhs: RangedNonZeroU128<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroU128<OUTPUT_MIN, OUTPUT_MAX> {
-        RangedNonZeroU128::with_ranged(
-            self.to_ranged().mul_ranged(rhs.to_ranged()),
-        )
-        .unwrap()
+        self.to_ranged()
+            .mul_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(
+                rhs.to_ranged(),
+            )
+            .to_ranged_nonzero()
+            .unwrap()
     }
 
     /// Raise to an integer power.
@@ -495,7 +478,9 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
         self,
         rhs: RangedU32<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroU128<OUTPUT_MIN, OUTPUT_MAX> {
-        RangedNonZeroU128::with_ranged(self.to_ranged().pow_ranged(rhs))
+        self.to_ranged()
+            .pow_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
+            .to_ranged_nonzero()
             .unwrap()
     }
 

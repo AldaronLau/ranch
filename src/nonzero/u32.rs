@@ -108,27 +108,6 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
         Ok(Self(nonzero))
     }
 
-    /// Convert from [`RangedU32`].
-    ///
-    /// ```rust
-    /// # use ranch::{RangedNonZeroU32, RangedU32};
-    /// assert_eq!(
-    ///     RangedNonZeroU32::<1, 100>::with_ranged(RangedU32::new::<42>()).unwrap(),
-    ///     RangedNonZeroU32::<1, 100>::new::<42>(),
-    /// );
-    /// assert!(
-    ///     RangedNonZeroU32::<0, 100>::with_ranged(RangedU32::new::<0>())
-    ///         .is_none(),
-    /// );
-    /// ```
-    pub const fn with_ranged(ranged: RangedU32<MIN, MAX>) -> Option<Self> {
-        let Some(nonzero) = NonZero::new(ranged.get()) else {
-            return None;
-        };
-
-        Some(Self(nonzero))
-    }
-
     /// Return the contained value as a primitive type.
     ///
     /// ```rust
@@ -233,7 +212,7 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
             return None;
         };
 
-        Self::with_ranged(value)
+        value.to_ranged_nonzero()
     }
 
     /// Multiply two ranged integers together.
@@ -257,7 +236,7 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
             return None;
         };
 
-        Self::with_ranged(value)
+        value.to_ranged_nonzero()
     }
 
     /// Raise to an integer power.
@@ -281,7 +260,7 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
             return None;
         };
 
-        Self::with_ranged(value)
+        value.to_ranged_nonzero()
     }
 
     /// Checked integer division.
@@ -312,7 +291,7 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
         let Quotient::Number(number) = value else {
             return Some(Quotient::Nan);
         };
-        let Some(number) = Self::with_ranged(number) else {
+        let Some(number) = number.to_ranged_nonzero() else {
             return None;
         };
 
@@ -338,7 +317,7 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
             return None;
         };
 
-        Self::with_ranged(value)
+        value.to_ranged_nonzero()
     }
 
     /// Return the smallest power of two greater than or equal to self.
@@ -363,7 +342,7 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
             return None;
         };
 
-        Self::with_ranged(value)
+        value.to_ranged_nonzero()
     }
 
     /// Returns true if and only if `self == (1 << k)` for some `k`.
@@ -417,10 +396,12 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
         self,
         rhs: RangedNonZeroU32<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroU32<OUTPUT_MIN, OUTPUT_MAX> {
-        RangedNonZeroU32::with_ranged(
-            self.to_ranged().add_ranged(rhs.to_ranged()),
-        )
-        .unwrap()
+        self.to_ranged()
+            .add_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(
+                rhs.to_ranged(),
+            )
+            .to_ranged_nonzero()
+            .unwrap()
     }
 
     /// Multiply two numbers together.
@@ -455,10 +436,12 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
         self,
         rhs: RangedNonZeroU32<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroU32<OUTPUT_MIN, OUTPUT_MAX> {
-        RangedNonZeroU32::with_ranged(
-            self.to_ranged().mul_ranged(rhs.to_ranged()),
-        )
-        .unwrap()
+        self.to_ranged()
+            .mul_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(
+                rhs.to_ranged(),
+            )
+            .to_ranged_nonzero()
+            .unwrap()
     }
 
     /// Raise to an integer power.
@@ -493,7 +476,10 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
         self,
         rhs: RangedU32<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroU32<OUTPUT_MIN, OUTPUT_MAX> {
-        RangedNonZeroU32::with_ranged(self.to_ranged().pow_ranged(rhs)).unwrap()
+        self.to_ranged()
+            .pow_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
+            .to_ranged_nonzero()
+            .unwrap()
     }
 
     /// Calculate the midpoint (average) between `self` and `rhs`.

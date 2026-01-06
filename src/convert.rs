@@ -55,10 +55,10 @@ macro_rules! impl_nonzero_from_ranged {
             ///
             /// Won't compile if the range contains zero.  If you need to check
             /// at runtime for zero instead of at compile-time, try using
-            #[doc = concat!("[`", stringify!($nonzero), "::with_ranged()`].")]
+            #[doc = concat!("[`", stringify!($type), "::to_ranged_nonzero()`].")]
             ///
             /// ```rust
-            #[doc = concat!("use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             /// assert_eq!(
             #[doc = concat!("    ", stringify!($nonzero), "::from_ranged(", stringify!($type), "::<1, 100>::new::<42>()),")]
             #[doc = concat!("    ", stringify!($nonzero), "::<1, 100>::new::<42>(),")]
@@ -66,7 +66,7 @@ macro_rules! impl_nonzero_from_ranged {
             /// ```
             ///
             /// ```rust,compile_fail
-            #[doc = concat!("use ranch::{", stringify!($type), "};")]
+            #[doc = concat!("# use ranch::{", stringify!($type), "};")]
             ///
             #[doc = concat!(stringify!($nonzero), "::from_ranged(", stringify!($type), "::<0, 100>::new::<42>())")]
             /// ```
@@ -84,6 +84,56 @@ macro_rules! impl_nonzero_from_ranged {
                 };
 
                 $nonzero(value)
+            }
+        }
+
+        impl<const MIN: $p, const MAX: $p> $type::<MIN, MAX> {
+            #[doc = concat!("Convert from [`", stringify!($nonzero), "`],")]
+            /// optionally expanding the range.
+            ///
+            /// If you don't need to change the range (range neither includes zero nor needs to be
+            /// expanded), try using
+            #[doc = concat!("[`", stringify!($nonzero), "::from_ranged()`].")]
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let ranged = ", stringify!($type), "::<0, 2>::new::<1>();")]
+            #[doc = concat!("let expanded: ", stringify!($nonzero), "<1, 4> =")]
+            ///     ranged.to_ranged_nonzero().unwrap();
+            ///
+            /// assert_eq!(expanded.get(), ranged.get());
+            /// ```
+            pub const fn to_ranged_nonzero<
+                const OUT_MIN: $p,
+                const OUT_MAX: $p,
+            >(self) -> Option<$nonzero::<OUT_MIN, OUT_MAX>>
+            {
+                const {
+                    if OUT_MIN > MIN && MIN != 0 && (OUT_MIN - 1) != 0 {
+                        panic!(
+                            "minimum must be lower or match or exclude zero",
+                        );
+                    }
+
+                    if OUT_MAX < MAX && MAX != 0 && (OUT_MAX + 1) != 0 {
+                        panic!(
+                            "maximum must be higher or match or exclude zero",
+                        );
+                    }
+
+                    if OUT_MIN == 0 {
+                        panic!("minimum of a non-zero number cannot be zero");
+                    }
+
+                    if OUT_MAX == 0 {
+                        panic!("maximum of a non-zero number cannot be zero");
+                    }
+                }
+
+                match NonZero::new(self.get()) {
+                    Some(value) => Some($nonzero(value)),
+                    None => None,
+                }
             }
         }
     }
