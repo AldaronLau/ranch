@@ -8,7 +8,7 @@ use core::ascii::EscapeDefault;
 use super::*;
 
 /// ASCII uppercase character
-pub type Uppercase = RangedU8<0x41, 0x5A>;
+pub type Uppercase = RangedNonZeroU8<0x41, 0x5A>;
 
 impl Uppercase {
     /// Convert to ASCII lowercase.
@@ -20,7 +20,7 @@ impl Uppercase {
     /// assert_eq!(Lowercase::new::<97>(), uppercase_a.to_ascii_lowercase());
     /// ```
     pub const fn to_ascii_lowercase(self) -> Lowercase {
-        RangedU8(self.get().to_ascii_lowercase())
+        RangedNonZeroU8::from_ranged(RangedU8(self.get().to_ascii_lowercase()))
     }
 
     /// Convert to [`char`].
@@ -32,14 +32,14 @@ impl Uppercase {
     /// assert_eq!(uppercase_a.to_char(), 'A');
     /// ```
     pub const fn to_char(self) -> char {
-        let chr: Char = self.to_ranged_u8();
+        let chr: Char = self.to_ranged().to_ranged_u8();
 
         chr.to_char()
     }
 }
 
 /// ASCII lowercase character
-pub type Lowercase = RangedU8<0x61, 0x7A>;
+pub type Lowercase = RangedNonZeroU8<0x61, 0x7A>;
 
 impl Lowercase {
     /// Convert to ASCII uppercase.
@@ -51,7 +51,7 @@ impl Lowercase {
     /// assert_eq!(Uppercase::new::<65>(), lowercase_a.to_ascii_uppercase());
     /// ```
     pub const fn to_ascii_uppercase(self) -> Uppercase {
-        RangedU8(self.get().to_ascii_uppercase())
+        RangedNonZeroU8::from_ranged(RangedU8(self.get().to_ascii_uppercase()))
     }
 
     /// Convert to [`char`].
@@ -63,14 +63,14 @@ impl Lowercase {
     /// assert_eq!(lowercase_a.to_char(), 'a');
     /// ```
     pub const fn to_char(self) -> char {
-        let chr: Char = self.to_ranged_u8();
+        let chr: Char = self.to_ranged().to_ranged_u8();
 
         chr.to_char()
     }
 }
 
 /// ASCII graphic character
-pub type Graphic = RangedU8<0x21, 0x7E>;
+pub type Graphic = RangedNonZeroU8<0x21, 0x7E>;
 
 impl Graphic {
     /// Convert to ASCII uppercase.
@@ -87,7 +87,7 @@ impl Graphic {
     /// assert_eq!(Graphic::new::<b'1'>(), non_alphabetic.to_ascii_uppercase());
     /// ```
     pub const fn to_ascii_uppercase(self) -> Self {
-        Self(self.get().to_ascii_uppercase())
+        Self::from_ranged(RangedU8(self.get().to_ascii_uppercase()))
     }
 
     /// Convert to ASCII lowercase.
@@ -104,7 +104,7 @@ impl Graphic {
     /// assert_eq!(Graphic::new::<b'1'>(), non_alphabetic.to_ascii_lowercase());
     /// ```
     pub const fn to_ascii_lowercase(self) -> Self {
-        Self(self.get().to_ascii_lowercase())
+        Self::from_ranged(RangedU8(self.get().to_ascii_lowercase()))
     }
 
     /// Convert to [`char`].
@@ -116,14 +116,14 @@ impl Graphic {
     /// assert_eq!(lowercase_a.to_char(), 'a');
     /// ```
     pub const fn to_char(self) -> char {
-        let chr: Char = self.to_ranged_u8();
+        let chr: Char = self.to_ranged().to_ranged_u8();
 
         chr.to_char()
     }
 }
 
 /// ASCII digit character
-pub type Digit = RangedU8<0x30, 0x39>;
+pub type Digit = RangedNonZeroU8<0x30, 0x39>;
 
 impl Digit {
     /// Convert from numeric digit to ASCII digit.
@@ -136,7 +136,7 @@ impl Digit {
     /// );
     /// ```
     pub const fn from_digit(digit: RangedU8<0, 9>) -> Self {
-        digit.add::<0x30, 0x30, 0x39>()
+        Self::from_ranged(digit.add::<0x30, 0x30, 0x39>())
     }
 
     /// Convert from ASCII digit to numeric digit.
@@ -149,7 +149,7 @@ impl Digit {
     /// );
     /// ```
     pub const fn to_digit(self) -> RangedU8<0, 9> {
-        self.sub::<0x30, 0, 9>()
+        self.to_ranged().sub::<0x30, 0, 9>()
     }
 
     /// Convert to [`char`].
@@ -161,7 +161,7 @@ impl Digit {
     /// assert_eq!(one.to_char(), '1');
     /// ```
     pub const fn to_char(self) -> char {
-        let chr: Char = self.to_ranged_u8();
+        let chr: Char = self.to_ranged().to_ranged_u8();
 
         chr.to_char()
     }
