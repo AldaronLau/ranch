@@ -322,25 +322,6 @@ impl<const MIN: u16, const MAX: u16> RangedNonZeroU16<MIN, MAX> {
         value.to_ranged_nonzero()
     }
 
-    /// Returns true if and only if `self == (1 << k)` for some `k`.
-    ///
-    /// ```rust
-    /// # use ranch::{Error, RangedNonZeroU16};
-    /// let a = RangedNonZeroU16::<1, 32>::new::<3>();
-    /// let b = RangedNonZeroU16::<1, 32>::new::<9>();
-    /// let c = RangedNonZeroU16::<1, 32>::new::<32>();
-    /// let d = RangedNonZeroU16::<1, 32>::new::<1>();
-    ///
-    /// assert!(!a.is_power_of_two());
-    /// assert!(!b.is_power_of_two());
-    /// assert!(c.is_power_of_two());
-    /// assert!(d.is_power_of_two());
-    /// ```
-    #[must_use]
-    pub const fn is_power_of_two(self) -> bool {
-        self.get().is_power_of_two()
-    }
-
     /// Add two numbers together.
     ///
     /// ```rust

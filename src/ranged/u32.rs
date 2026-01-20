@@ -406,25 +406,6 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
         }
     }
 
-    /// Returns true if and only if `self == (1 << k)` for some `k`.
-    ///
-    /// ```rust
-    /// # use ranch::{Error, RangedU32};
-    /// let a = RangedU32::<0, 32>::new::<0>();
-    /// let b = RangedU32::<0, 32>::new::<9>();
-    /// let c = RangedU32::<0, 32>::new::<32>();
-    /// let d = RangedU32::<0, 32>::new::<1>();
-    ///
-    /// assert!(!a.is_power_of_two());
-    /// assert!(!b.is_power_of_two());
-    /// assert!(c.is_power_of_two());
-    /// assert!(d.is_power_of_two());
-    /// ```
-    #[must_use]
-    pub const fn is_power_of_two(self) -> bool {
-        self.get().is_power_of_two()
-    }
-
     /// Calculate the midpoint (average) between `self` and `rhs`.
     ///
     /// ```rust
