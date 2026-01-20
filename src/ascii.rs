@@ -167,6 +167,59 @@ impl Digit {
     }
 }
 
+/// One of the 127 Unicode characters from U+0001 through U+007F.
+///
+/// Can be used for niche optimization with ASCII characters.
+pub type NonNul = bitwise::NonZeroU7;
+
+impl NonNul {
+    /// Convert to ASCII uppercase.
+    ///
+    /// ASCII letters ‘a’ to ‘z’ are mapped to ‘A’ to ‘Z’, but non-alphabetic
+    /// letters are unchanged.
+    ///
+    /// ```rust
+    /// # use ranch::ascii::NonNul;
+    /// let ascii = NonNul::new::<b'a'>();
+    /// let non_alphabetic = NonNul::new::<b'1'>();
+    ///
+    /// assert_eq!(NonNul::new::<b'A'>(), ascii.to_ascii_uppercase());
+    /// assert_eq!(NonNul::new::<b'1'>(), non_alphabetic.to_ascii_uppercase());
+    /// ```
+    pub const fn to_ascii_uppercase(self) -> Self {
+        Self::from_ranged(RangedU8(self.get().to_ascii_uppercase()))
+    }
+
+    /// Convert to ASCII lowercase.
+    ///
+    /// ASCII letters ‘A’ to ‘Z’ are mapped to ‘a’ to ‘z’, but non-alphabetic
+    /// letters are unchanged.
+    ///
+    /// ```rust
+    /// # use ranch::ascii::NonNul;
+    /// let ascii = NonNul::new::<b'A'>();
+    /// let non_alphabetic = NonNul::new::<b'1'>();
+    ///
+    /// assert_eq!(NonNul::new::<b'a'>(), ascii.to_ascii_lowercase());
+    /// assert_eq!(NonNul::new::<b'1'>(), non_alphabetic.to_ascii_lowercase());
+    /// ```
+    pub const fn to_ascii_lowercase(self) -> Self {
+        Self::from_ranged(RangedU8(self.get().to_ascii_lowercase()))
+    }
+
+    /// Convert to [`char`].
+    ///
+    /// ```rust
+    /// # use ranch::ascii::NonNul;
+    /// let one = NonNul::new::<b'\n'>();
+    ///
+    /// assert_eq!(one.to_char(), '\n');
+    /// ```
+    pub const fn to_char(self) -> char {
+        self.get() as char
+    }
+}
+
 /// One of the 128 Unicode characters from U+0000 through U+007F, often known as
 /// the ASCII subset.
 pub type Char = bitwise::U7;
