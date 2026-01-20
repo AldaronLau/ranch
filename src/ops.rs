@@ -676,7 +676,10 @@ macro_rules! impl_ops_nonzero_unsigned {
             pub const fn is_multiple_of(self, rhs: impl AsRepr<$p>) -> bool {
                 let rhs = as_repr::as_repr(rhs);
 
-                self.get().is_multiple_of(rhs)
+                match rhs {
+                    0 => self.get() == 0,
+                    _ => self.get() % rhs == 0,
+                }
             }
         }
     };
@@ -865,7 +868,10 @@ macro_rules! impl_ops_unsigned {
             pub const fn is_multiple_of(self, rhs: impl AsRepr<$p>) -> bool {
                 let rhs = as_repr::as_repr(rhs);
 
-                self.get().is_multiple_of(rhs)
+                match rhs {
+                    0 => self.get() == 0,
+                    _ => self.get() % rhs == 0,
+                }
             }
         }
     };
