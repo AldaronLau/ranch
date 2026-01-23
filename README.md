@@ -11,6 +11,12 @@
 
 Ranged integer types and math for Rust
 
+Do you ever need to restrict a `u8` from 0 to 100 or restrict any other integer
+type to any other range?  Then this crate is for you!  The ranges are encoded in
+the type system, so you only need to validate the range once (and it can even be
+at compile time!).  This crate is sort of like a combination of similar crates
+[deranged](https://docs.rs/crate/deranged) and [ux](https://docs.rs/crate/ux).
+
 This crate heavily leverages the type system to allow for powerful ranged
 integer mathematics, covering arbitrary i{N} / u{N} types, unit integers,
 non-zero divisions, and const operations.
