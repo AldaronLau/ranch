@@ -54,6 +54,7 @@ pub mod bitwise;
 mod convert;
 mod error;
 mod format;
+mod impl_ascii;
 mod ops;
 mod ord;
 pub mod parsing;
