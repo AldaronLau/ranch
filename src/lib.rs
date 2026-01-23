@@ -2,9 +2,9 @@
 //!
 //! Do you ever need to restrict a [`u8`] from 0 to 100 or restrict any other
 //! integer type to any other range?  Then this crate is for you!  The ranges
-//! are encoded in the type system, so you only need to validate the range once
-//! (and it can even be at compile time!).  This crate is sort of like a
-//! combination of similar crates [deranged] and [ux].
+//! are encoded in the type system, so you only need to
+//! [validate the range once] (and it can even be [at compile time]!).  This
+//! crate is sort of like a combination of similar crates [deranged] and [ux].
 //!
 //! This crate heavily leverages the type system to allow for powerful ranged
 //! integer mathematics, covering [arbitrary `i{N}` / `u{N}` types](bitwise),
@@ -13,6 +13,8 @@
 //!
 //! [deranged]: https://docs.rs/crate/deranged
 //! [ux]: https://docs.rs/crate/ux
+//! [validate the range once]: RangedI32::with_i32()
+//! [at compile time]: RangedI32::new()
 
 #![doc(
     html_logo_url = "https://ardaku.github.io/mm/logo.svg",

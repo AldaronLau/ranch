@@ -3,8 +3,6 @@
 //! This could be an alternate implementation for
 //! <https://github.com/rust-lang/rust/issues/110998> using ranged integers.
 
-use core::ascii::EscapeDefault;
-
 use super::*;
 
 /// ASCII uppercase character
