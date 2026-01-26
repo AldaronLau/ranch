@@ -2,9 +2,7 @@ use core::num::NonZero;
 
 use as_repr::AsRepr;
 
-use crate::{
-    Error, Quotient, RangedI64, RangedU32, Result,
-};
+use crate::{Error, Quotient, RangedI64, RangedU32, Result};
 
 /// [`i64`] not to equal zero with a specified minimum and maximum value
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]

@@ -37,11 +37,10 @@ macro_rules! impl_serde_nonzero {
             where
                 D: Deserializer<'de>,
             {
-                let r: $r::<MIN, MAX> = <$p as Deserialize>::deserialize(
-                    deserializer
-                )?
-                .try_into()
-                .map_err(Error::custom)?;
+                let r: $r<MIN, MAX> =
+                    <$p as Deserialize>::deserialize(deserializer)?
+                        .try_into()
+                        .map_err(Error::custom)?;
 
                 r.to_ranged_nonzero()
                     .ok_or("must not be zero")

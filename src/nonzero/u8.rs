@@ -2,9 +2,7 @@ use core::num::NonZero;
 
 use as_repr::AsRepr;
 
-use crate::{
-    Error, Quotient, RangedU8, RangedU32, Result,
-};
+use crate::{Error, Quotient, RangedU8, RangedU32, Result};
 
 /// [`u8`] not to equal zero with a specified minimum and maximum value
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]

@@ -1,6 +1,6 @@
 //! Error types related to parsing
 
-use core::{error, fmt, result, num::NonZero};
+use core::{error, fmt, num::NonZero, result};
 
 use super::*;
 
@@ -54,7 +54,7 @@ impl From<crate::Error> for Error {
 macro_rules! parse_nonzero {
     ($nonzero:ident, $p:ident) => {
         impl<const MIN: $p, const MAX: $p> core::str::FromStr
-            for $nonzero::<MIN, MAX>
+            for $nonzero<MIN, MAX>
         {
             type Err = Error;
 
