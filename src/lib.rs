@@ -52,6 +52,7 @@
 
 pub mod ascii;
 mod assertions;
+mod assign;
 pub mod bitwise;
 mod convert;
 mod error;
