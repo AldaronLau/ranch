@@ -1,4 +1,4 @@
-use core::num::NonZero;
+use core::num::{NonZero, TryFromIntError};
 
 use super::*;
 
@@ -21,10 +21,39 @@ macro_rules! impl_ranged_conversion {
 }
 
 macro_rules! impl_ranged_nonzero_conversion {
-    ($type:ident, $p:ty $(,)?) => {
+    ($type:ident, $p:ty, $r:ident $(,)?) => {
+        impl<const MIN: $p, const MAX: $p> TryFrom<$p> for $type<MIN, MAX> {
+            type Error = TryFromIntError;
+
+            fn try_from(primitive: $p) -> Result<Self, Self::Error> {
+                $r::<MIN, MAX>::with_primitive(primitive)
+                    .ok()
+                    .ok_or_else(try_from_int_err)
+                    .and_then(TryFrom::try_from)
+            }
+        }
+
+        impl<const MIN: $p, const MAX: $p> TryFrom<$r<MIN, MAX>>
+            for $type<MIN, MAX>
+        {
+            type Error = TryFromIntError;
+
+            fn try_from(ranged: $r<MIN, MAX>) -> Result<Self, Self::Error> {
+                ranged.to_ranged_nonzero().ok_or_else(try_from_int_err)
+            }
+        }
+
         impl<const MIN: $p, const MAX: $p> From<$type<MIN, MAX>> for $p {
             fn from(ranged: $type<MIN, MAX>) -> Self {
                 ranged.get()
+            }
+        }
+
+        impl<const MIN: $p, const MAX: $p> From<$type<MIN, MAX>>
+            for $r<MIN, MAX>
+        {
+            fn from(ranged: $type<MIN, MAX>) -> Self {
+                ranged.to_ranged()
             }
         }
     };
@@ -160,16 +189,16 @@ impl_ranged_conversion!(RangedU32, u32);
 impl_ranged_conversion!(RangedU64, u64);
 impl_ranged_conversion!(RangedU128, u128);
 
-impl_ranged_nonzero_conversion!(RangedNonZeroI8, i8);
-impl_ranged_nonzero_conversion!(RangedNonZeroI16, i16);
-impl_ranged_nonzero_conversion!(RangedNonZeroI32, i32);
-impl_ranged_nonzero_conversion!(RangedNonZeroI64, i64);
-impl_ranged_nonzero_conversion!(RangedNonZeroI128, i128);
-impl_ranged_nonzero_conversion!(RangedNonZeroU8, u8);
-impl_ranged_nonzero_conversion!(RangedNonZeroU16, u16);
-impl_ranged_nonzero_conversion!(RangedNonZeroU32, u32);
-impl_ranged_nonzero_conversion!(RangedNonZeroU64, u64);
-impl_ranged_nonzero_conversion!(RangedNonZeroU128, u128);
+impl_ranged_nonzero_conversion!(RangedNonZeroI8, i8, RangedI8);
+impl_ranged_nonzero_conversion!(RangedNonZeroI16, i16, RangedI16);
+impl_ranged_nonzero_conversion!(RangedNonZeroI32, i32, RangedI32);
+impl_ranged_nonzero_conversion!(RangedNonZeroI64, i64, RangedI64);
+impl_ranged_nonzero_conversion!(RangedNonZeroI128, i128, RangedI128);
+impl_ranged_nonzero_conversion!(RangedNonZeroU8, u8, RangedU8);
+impl_ranged_nonzero_conversion!(RangedNonZeroU16, u16, RangedU16);
+impl_ranged_nonzero_conversion!(RangedNonZeroU32, u32, RangedU32);
+impl_ranged_nonzero_conversion!(RangedNonZeroU64, u64, RangedU64);
+impl_ranged_nonzero_conversion!(RangedNonZeroU128, u128, RangedU128);
 
 impl_signed_nonzero_conversion!(RangedI8, i8);
 impl_signed_nonzero_conversion!(RangedI16, i16);
@@ -2911,4 +2940,8 @@ const fn u128_to_i128(value: u128) -> i128 {
     }
 
     value as _
+}
+
+fn try_from_int_err() -> TryFromIntError {
+    NonZero::try_from(0u32).unwrap_err()
 }
