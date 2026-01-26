@@ -23,13 +23,12 @@ macro_rules! impl_ranged_conversion {
 macro_rules! impl_ranged_nonzero_conversion {
     ($type:ident, $p:ty, $r:ident $(,)?) => {
         impl<const MIN: $p, const MAX: $p> TryFrom<$p> for $type<MIN, MAX> {
-            type Error = TryFromIntError;
+            type Error = range::Error;
 
-            fn try_from(primitive: $p) -> Result<Self, Self::Error> {
-                $r::<MIN, MAX>::with_primitive(primitive)
-                    .ok()
-                    .ok_or_else(try_from_int_err)
-                    .and_then(TryFrom::try_from)
+            fn try_from(primitive: $p) -> range::Result<Self> {
+                $r::<MIN, MAX>::with_primitive(primitive)?
+                    .to_ranged_nonzero()
+                    .ok_or(Self::Error::Zero)
             }
         }
 

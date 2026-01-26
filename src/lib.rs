@@ -66,6 +66,7 @@ mod ops;
 mod ord;
 pub mod parsing;
 mod quotient;
+pub mod range;
 mod ranged {
     pub(super) mod i128;
     pub(super) mod i16;

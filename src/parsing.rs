@@ -10,12 +10,12 @@ pub type Result<T = (), E = Error> = result::Result<T, E>;
 /// Error parsing ranged integer
 #[derive(Eq, PartialEq, Debug)]
 pub enum Error {
-    /// Internal parsing error
-    ParseInt(core::num::ParseIntError),
     /// Integer is too large to store in target integer type
     PosOverflow,
     /// Integer is too small to store in target integer type
     NegOverflow,
+    /// Internal parsing error
+    ParseInt(core::num::ParseIntError),
 }
 
 impl error::Error for Error {}
@@ -24,12 +24,10 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::ParseInt(err) => err.fmt(f),
-            Self::PosOverflow => write!(
-                f,
+            Self::PosOverflow => f.write_str(
                 "Integer is too large to store in target integer type",
             ),
-            Self::NegOverflow => write!(
-                f,
+            Self::NegOverflow => f.write_str(
                 "Integer is too small to store in target integer type",
             ),
         }
