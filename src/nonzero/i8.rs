@@ -3,7 +3,7 @@ use core::num::NonZero;
 use as_repr::AsRepr;
 
 use crate::{
-    Error, ParsingError, ParsingResult, Quotient, RangedI8, RangedU32, Result,
+    Error, Quotient, RangedI8, RangedU32, Result,
 };
 
 /// [`i8`] not to equal zero with a specified minimum and maximum value
@@ -436,21 +436,6 @@ impl<const MIN: i8, const MAX: i8> RangedNonZeroI8<MIN, MAX> {
             .pow_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
             .to_ranged_nonzero()
             .unwrap()
-    }
-}
-
-impl<const MIN: i8, const MAX: i8> core::str::FromStr
-    for RangedNonZeroI8<MIN, MAX>
-{
-    type Err = ParsingError;
-
-    fn from_str(src: &str) -> ParsingResult<Self> {
-        let parsed = src.parse::<NonZero<i8>>()?;
-
-        Self::with_i8(parsed.get())
-            .transpose()
-            .unwrap()
-            .map_err(From::from)
     }
 }
 

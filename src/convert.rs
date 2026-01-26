@@ -20,6 +20,16 @@ macro_rules! impl_ranged_conversion {
     };
 }
 
+macro_rules! impl_ranged_nonzero_conversion {
+    ($type:ident, $p:ty $(,)?) => {
+        impl<const MIN: $p, const MAX: $p> From<$type<MIN, MAX>> for $p {
+            fn from(ranged: $type<MIN, MAX>) -> Self {
+                ranged.get()
+            }
+        }
+    };
+}
+
 macro_rules! impl_unsigned_nonzero_conversion {
     ($type:ident, $p:ty $(,)?) => {
         impl From<NonZero<$p>> for $type<1, { <$p>::MAX }> {
@@ -149,6 +159,17 @@ impl_ranged_conversion!(RangedU16, u16);
 impl_ranged_conversion!(RangedU32, u32);
 impl_ranged_conversion!(RangedU64, u64);
 impl_ranged_conversion!(RangedU128, u128);
+
+impl_ranged_nonzero_conversion!(RangedNonZeroI8, i8);
+impl_ranged_nonzero_conversion!(RangedNonZeroI16, i16);
+impl_ranged_nonzero_conversion!(RangedNonZeroI32, i32);
+impl_ranged_nonzero_conversion!(RangedNonZeroI64, i64);
+impl_ranged_nonzero_conversion!(RangedNonZeroI128, i128);
+impl_ranged_nonzero_conversion!(RangedNonZeroU8, u8);
+impl_ranged_nonzero_conversion!(RangedNonZeroU16, u16);
+impl_ranged_nonzero_conversion!(RangedNonZeroU32, u32);
+impl_ranged_nonzero_conversion!(RangedNonZeroU64, u64);
+impl_ranged_nonzero_conversion!(RangedNonZeroU128, u128);
 
 impl_signed_nonzero_conversion!(RangedI8, i8);
 impl_signed_nonzero_conversion!(RangedI16, i16);

@@ -2,7 +2,7 @@ use core::num::NonZero;
 
 use as_repr::AsRepr;
 
-use crate::{Error, ParsingError, ParsingResult, Quotient, RangedU32, Result};
+use crate::{Error, Quotient, RangedU32, Result};
 
 /// [`u32`] not to equal zero with a specified minimum and maximum value
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -460,21 +460,6 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
         };
 
         value
-    }
-}
-
-impl<const MIN: u32, const MAX: u32> core::str::FromStr
-    for RangedNonZeroU32<MIN, MAX>
-{
-    type Err = ParsingError;
-
-    fn from_str(src: &str) -> ParsingResult<Self> {
-        let parsed = src.parse::<NonZero<u32>>()?;
-
-        Self::with_u32(parsed.get())
-            .transpose()
-            .unwrap()
-            .map_err(From::from)
     }
 }
 

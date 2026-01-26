@@ -20,5 +20,16 @@ include = [
 ]
 rust-version = "1.85"
 
+[package.metadata.docs.rs]
+all-features = true
+
 [dependencies.as_repr]
 version = "1.3.0"
+
+[dependencies.serde_core]
+version = "1.0.228"
+optional = true
+
+[features]
+default = []
+serde = ["dep:serde_core"]

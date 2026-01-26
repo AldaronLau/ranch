@@ -19,7 +19,9 @@ at compile time!).  This crate is sort of like a combination of similar crates
 
 This crate heavily leverages the type system to allow for powerful ranged
 integer mathematics, covering arbitrary i{N} / u{N} types, unit integers,
-non-zero divisions, and const operations.
+non-zero divisions, and const operations.  Enable the _**`serde`**_ feature for
+range-validated deserialization / serialization (implements `Serialize` and
+`Deserialize` for `Ranged*` types).
 
 Check out the [documentation] for examples.
 

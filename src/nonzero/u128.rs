@@ -3,7 +3,7 @@ use core::num::NonZero;
 use as_repr::AsRepr;
 
 use crate::{
-    Error, ParsingError, ParsingResult, Quotient, RangedU32, RangedU128, Result,
+    Error, Quotient, RangedU32, RangedU128, Result,
 };
 
 /// [`u128`] not to equal zero with a specified minimum and maximum value
@@ -462,21 +462,6 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
         };
 
         value
-    }
-}
-
-impl<const MIN: u128, const MAX: u128> core::str::FromStr
-    for RangedNonZeroU128<MIN, MAX>
-{
-    type Err = ParsingError;
-
-    fn from_str(src: &str) -> ParsingResult<Self> {
-        let parsed = src.parse::<NonZero<u128>>()?;
-
-        Self::with_u128(parsed.get())
-            .transpose()
-            .unwrap()
-            .map_err(From::from)
     }
 }
 

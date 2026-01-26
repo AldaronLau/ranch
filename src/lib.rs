@@ -9,12 +9,16 @@
 //! This crate heavily leverages the type system to allow for powerful ranged
 //! integer mathematics, covering [arbitrary `i{N}` / `u{N}` types](bitwise),
 //! [unit integers](mod@unit), non-zero divisions, [ASCII](ascii), and const
-//! operations.
+//! operations.  Enable the _**`serde`**_ feature for range-validated
+//! deserialization / serialization (implements [`Serialize`] and
+//! [`Deserialize`] for `Ranged*` types).
 //!
 //! [deranged]: https://docs.rs/crate/deranged
 //! [ux]: https://docs.rs/crate/ux
 //! [validate the range once]: RangedI32::with_i32()
 //! [at compile time]: RangedI32::new()
+//! [`Serialize`]: serde_core::Serialize
+//! [`Deserialize`]: serde_core::Deserialize
 
 #![doc(
     html_logo_url = "https://ardaku.github.io/mm/logo.svg",
@@ -87,6 +91,8 @@ mod nonzero {
     pub(super) mod u8;
 }
 mod repr;
+#[cfg(feature = "serde")]
+mod serde;
 pub mod unit;
 
 pub use self::{
