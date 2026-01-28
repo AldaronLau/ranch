@@ -1,7 +1,4 @@
-use core::{
-    num::NonZero,
-    ops::{AddAssign, DivAssign, MulAssign, SubAssign},
-};
+use core::ops::{AddAssign, DivAssign, MulAssign, SubAssign};
 
 use as_repr::AsRepr;
 
@@ -38,7 +35,7 @@ macro_rules! assign_impl {
 
         impl<T, const MIN: $p, const MAX: $p> DivAssign<T> for $t<MIN, MAX>
         where
-            T: AsRepr<NonZero<$p>>,
+            T: AsRepr<$p>,
         {
             fn div_assign(&mut self, other: T) {
                 *self = *self / other;

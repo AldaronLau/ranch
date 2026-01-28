@@ -50,27 +50,12 @@ macro_rules! impl_ops {
 
         impl<T, const MIN: $p, const MAX: $p> Div<T> for $type::<MIN, MAX>
         where
-            T: AsRepr<NonZero<$p>>,
+            T: AsRepr<$p>,
         {
             type Output = Self;
 
             fn div(self, other: T) -> Self {
-                self.checked_div_nonzero(other).expect("out of range")
-            }
-        }
-
-        impl<
-            const MIN: $p,
-            const MAX: $p,
-            const OTHER_MIN: $p,
-            const OTHER_MAX: $p,
-        > Div<$type::<OTHER_MIN, OTHER_MAX>>
-            for $type::<MIN, MAX>
-        {
-            type Output = Quotient<Self>;
-
-            fn div(self, other: $type::<OTHER_MIN, OTHER_MAX>) -> Self::Output {
-                self.checked_div(other).expect("out of range")
+                self.checked_div(other).expect("out of range").number().expect("cannot divide by zero")
             }
         }
 
