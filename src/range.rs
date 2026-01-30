@@ -1,4 +1,6 @@
 //! Range integration
+//!
+//! Some convenience utilities for type ranges.
 
 use core::{error, fmt, num::NonZero, ops, result};
 
@@ -8,6 +10,10 @@ use super::*;
 pub type Result<T = (), E = Error> = result::Result<T, E>;
 
 /// Error validating an integer is within a range
+///
+/// Error returned when converting from integer to non-zero ranged integer.
+///
+/// It is also returned from [`result()`].
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum Error {
     /// Integer is too large to store in target integer type
@@ -51,18 +57,53 @@ pub trait Range<T = Self> {
     const MAX: T;
 }
 
-/// Get the range of a type with a range.
-pub const fn range<T, U>() -> ops::Range<U>
+/// Get the inclusive range of a type with a range.
+///
+/// ```rust
+/// # use core::ops::RangeInclusive;
+/// # use ranch::{range, RangedI32};
+/// assert_eq!(
+///     range::range_inclusive::<u8, _>(),
+///     RangeInclusive::new(0, 255),
+/// );
+///
+/// assert_eq!(
+///     range::range_inclusive::<RangedI32<0, 10>, _>(),
+///     RangeInclusive::new(0, 10),
+/// );
+/// assert_eq!(
+///     range::range_inclusive::<RangedI32<0, 10>, _>(),
+///     RangeInclusive::new(RangedI32::new::<0>(), RangedI32::new::<10>()),
+/// );
+/// ```
+pub const fn range_inclusive<T, U>() -> ops::RangeInclusive<U>
 where
     T: Range<U>,
 {
-    ops::Range {
-        start: T::MIN,
-        end: T::MAX,
-    }
+    ops::RangeInclusive::new(T::MIN, T::MAX)
 }
 
 /// Convert a result of an option to a range result.
+///
+/// ```rust
+/// # use ranch::{range::{self, Error}, RangedNonZeroI32};
+/// let a = RangedNonZeroI32::<-100, 100>::new::<50>();
+///
+/// assert_eq!(
+///     (
+///         range::result(a.checked_add(51)),
+///         range::result(a.checked_sub(151)),
+///         range::result(a.checked_sub(50)),
+///         range::result(a.checked_add(1)),
+///     ),
+///     (
+///         Err(Error::PosOverflow),
+///         Err(Error::NegOverflow),
+///         Err(Error::Zero),
+///         Ok(RangedNonZeroI32::new::<51>()),
+///     ),
+/// );
+/// ```
 pub const fn result<T>(result: crate::Result<Option<T>>) -> Result<T>
 where
     T: Copy + Clone,
