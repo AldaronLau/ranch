@@ -384,6 +384,37 @@ macro_rules! impl_ops_nonzero_signed {
                     Ok(Some(Quotient::Nan)) => unreachable!(),
                 }
             }
+
+            /// Multiply two non-zero ranged integers together.
+            ///
+            /// Returns an [`Error`] on overflow.
+            ///
+            /// ```rust
+            /// # use ranch::{Error, RangedNonZeroI32};
+            /// let a = RangedNonZeroI32::<-100, 100>::new::<50>();
+            /// let b = RangedNonZeroI32::<-100, 100>::new::<5>();
+            /// let c = RangedNonZeroI32::<-100, 100>::new::<-75>();
+            ///
+            /// assert_eq!(b.checked_mul_nonzero(b).unwrap().get(), 25);
+            /// assert_eq!(a.checked_mul_nonzero(c).unwrap_err(), Error::NegOverflow);
+            /// assert_eq!(c.checked_mul_nonzero(c).unwrap_err(), Error::PosOverflow);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn checked_mul_nonzero(
+                self,
+                rhs: impl AsRepr<NonZero<$p>>,
+            )
+                -> Result<Self>
+            {
+                let rhs = as_repr::as_repr(rhs);
+
+                match self.checked_mul(rhs) {
+                    Ok(Some(value)) => Ok(value),
+                    Ok(None) => unreachable!(),
+                    Err(e) => Err(e),
+                }
+            }
         }
     };
 }
