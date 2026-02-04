@@ -27,9 +27,12 @@ Check out the [documentation] for examples.
 
 ### Features
 
- - Compile-time checked constructors for ranged integers
- - Operations and conversions for ranged integers
- - Aliases for arbitrary width integers and unit integers
+ - Compile-time and runtime checked constructors for ranged integers
+ - Strict, checked, saturating, constant, and ranged operations
+ - Conversions between for ranged integers
+ - Aliases for arbitrary width integers, unit integers, and ASCII types
+ - Optional integrations
+   - Enable **_`serde`_** for serialization and deserialization
 
 ## MSRV
 
