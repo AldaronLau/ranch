@@ -192,9 +192,13 @@ mod nonzero {
     pub(super) mod u8;
 }
 mod repr;
-#[cfg(feature = "serde")]
-mod serde;
 pub mod unit;
+mod crates {
+    #[cfg(feature = "serde")]
+    mod serde;
+    #[cfg(feature = "zeroize")]
+    mod zeroize;
+}
 
 pub use self::{
     error::{Error, Result},

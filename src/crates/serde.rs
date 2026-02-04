@@ -1,6 +1,6 @@
 use serde_core::{Deserialize, Deserializer, Serialize, Serializer, de::Error};
 
-use super::*;
+use crate::*;
 
 macro_rules! impl_serde {
     ($type:ident, $p:ty) => {

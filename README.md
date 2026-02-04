@@ -31,8 +31,11 @@ Check out the [documentation] for examples.
  - Strict, checked, saturating, constant, and ranged operations
  - Conversions between for ranged integers
  - Aliases for arbitrary width integers, unit integers, and ASCII types
- - Optional integrations
-   - Enable **_`serde`_** for serialization and deserialization
+ - Optional crate support
+   - Enable [**_`serde`_**](https://docs.rs/crate/serde) for serialization and
+     deserialization
+   - Enable [**_`zeroize`_**](https://docs.rs/crate/zeroize) for secure secret
+     clearing
 
 ## MSRV
 
