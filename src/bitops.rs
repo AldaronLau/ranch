@@ -16,6 +16,8 @@ macro_rules! bitops {
             /// assert_eq!(I12::new::<-2048>().bitnot(), I12::new::<2047>());
             /// assert_eq!(I12::new::<2047>().bitnot(), I12::new::<-2048>());
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitnot(self) -> Self {
                 Self(!self.get()).clear_invalid_bits()
             }
@@ -29,6 +31,8 @@ macro_rules! bitops {
             ///     I12::new::<0b1010>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitand<const N: $s>(self) -> Self {
                 self.bitand_ranged(Self::new::<N>())
             }
@@ -46,6 +50,8 @@ macro_rules! bitops {
             ///     I12::new::<0b1010>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitand_ranged<R>(self, ranged: R) -> Self
             where
                 R: RangedSigned<$s>,
@@ -68,6 +74,8 @@ macro_rules! bitops {
             ///     I12::new::<0b1111>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitor<const N: $s>(self) -> Self {
                 self.bitor_ranged(Self::new::<N>())
             }
@@ -85,6 +93,8 @@ macro_rules! bitops {
             ///     I12::new::<0b1111>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitor_ranged<R>(self, ranged: R) -> Self
             where
                 R: RangedSigned<$s>,
@@ -107,6 +117,8 @@ macro_rules! bitops {
             ///     I12::new::<0b0101>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitxor<const N: $s>(self) -> Self {
                 self.bitxor_ranged(Self::new::<N>())
             }
@@ -124,6 +136,8 @@ macro_rules! bitops {
             ///     I12::new::<0b0101>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitxor_ranged<R>(self, ranged: R) -> Self
             where
                 R: RangedSigned<$s>,
@@ -149,6 +163,8 @@ macro_rules! bitops {
             ///     I12::new::<0b1011_0000>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn checked_shl(
                 self,
                 rhs: impl AsRepr<u32>,
@@ -178,6 +194,8 @@ macro_rules! bitops {
             /// );
             /// ```
             #[doc = concat!(stringify!($bits), ".")]
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn checked_shr(
                 self,
                 rhs: impl AsRepr<u32>,
@@ -204,6 +222,8 @@ macro_rules! bitops {
             ///     I12::new::<0b1011_0000>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn shl<const N: u32>(self) -> Self {
                 const {
                     if N >= $bits {
@@ -230,6 +250,8 @@ macro_rules! bitops {
             ///     I12::new::<0b1011>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn shr<const N: u32>(self) -> Self {
                 const {
                     if N >= $bits {
@@ -257,6 +279,8 @@ macro_rules! bitops {
             ///     I12::new::<0b1011_0000>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn shl_ranged<const MIN: u32, const MAX: u32>(
                 self,
                 ranged: RangedU32<MIN, MAX>,
@@ -287,6 +311,8 @@ macro_rules! bitops {
             ///     I12::new::<0b1011>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn shr_ranged<const MIN: u32, const MAX: u32>(
                 self,
                 ranged: RangedU32<MIN, MAX>,
@@ -394,6 +420,8 @@ macro_rules! bitops {
             /// assert_eq!(U12::new::<0>().bitnot(), U12::new::<4095>());
             /// assert_eq!(U12::new::<4095>().bitnot(), U12::new::<0>());
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitnot(self) -> Self {
                 Self(!self.get()).clear_invalid_bits()
             }
@@ -407,6 +435,8 @@ macro_rules! bitops {
             ///     U12::new::<0b1010>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitand<const N: $u>(self) -> Self {
                 self.bitand_ranged(Self::new::<N>())
             }
@@ -424,6 +454,8 @@ macro_rules! bitops {
             ///     U12::new::<0b1010>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitand_ranged<R>(self, ranged: R) -> Self
             where
                 R: RangedUnsigned<$u>,
@@ -446,6 +478,8 @@ macro_rules! bitops {
             ///     U12::new::<0b1111>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitor<const N: $u>(self) -> Self {
                 self.bitor_ranged(Self::new::<N>())
             }
@@ -463,6 +497,8 @@ macro_rules! bitops {
             ///     U12::new::<0b1111>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitor_ranged<R>(self, ranged: R) -> Self
             where
                 R: RangedUnsigned<$u>,
@@ -485,6 +521,8 @@ macro_rules! bitops {
             ///     U12::new::<0b0101>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitxor<const N: $u>(self) -> Self {
                 self.bitxor_ranged(Self::new::<N>())
             }
@@ -502,6 +540,8 @@ macro_rules! bitops {
             ///     U12::new::<0b0101>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn bitxor_ranged<R>(self, ranged: R) -> Self
             where
                 R: RangedUnsigned<$u>,
@@ -527,6 +567,8 @@ macro_rules! bitops {
             ///     U12::new::<0b1011_0000>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn checked_shl(
                 self,
                 rhs: impl AsRepr<u32>,
@@ -556,6 +598,8 @@ macro_rules! bitops {
             /// );
             /// ```
             #[doc = concat!(stringify!($bits), ".")]
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn checked_shr(
                 self,
                 rhs: impl AsRepr<u32>,
@@ -582,6 +626,8 @@ macro_rules! bitops {
             ///     U12::new::<0b1011_0000>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn shl<const N: u32>(self) -> Self {
                 const {
                     if N >= $bits {
@@ -608,6 +654,8 @@ macro_rules! bitops {
             ///     U12::new::<0b1011>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn shr<const N: u32>(self) -> Self {
                 const {
                     if N >= $bits {
@@ -635,6 +683,8 @@ macro_rules! bitops {
             ///     U12::new::<0b1011_0000>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn shl_ranged<const MIN: u32, const MAX: u32>(
                 self,
                 ranged: RangedU32<MIN, MAX>,
@@ -665,6 +715,8 @@ macro_rules! bitops {
             ///     U12::new::<0b1011>(),
             /// );
             /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn shr_ranged<const MIN: u32, const MAX: u32>(
                 self,
                 ranged: RangedU32<MIN, MAX>,
