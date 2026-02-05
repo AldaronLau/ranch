@@ -194,6 +194,8 @@ mod nonzero {
 mod repr;
 pub mod unit;
 mod crates {
+    #[cfg(feature = "bytemuck")]
+    mod bytemuck;
     #[cfg(feature = "serde")]
     mod serde;
     #[cfg(feature = "zeroize")]
