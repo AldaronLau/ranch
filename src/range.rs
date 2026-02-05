@@ -1,4 +1,4 @@
-//! Range integration
+//! Range utilities
 //!
 //! Some convenience utilities for type ranges.
 

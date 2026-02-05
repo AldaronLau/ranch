@@ -24,8 +24,9 @@
 //!
 //! Strict operations panic when out of range, or a division by nonzero occurs.
 //! This is exposed in ranch with `+`, `-`, `/`, `*`, `%`.  Using the other
-//! provided operation methods will never result in panics or UB (even if unsafe
-//! is used to set the inner value to something out of range).
+//! provided operation methods will never result in UB (even if unsafe is used
+//! to set the inner value to something out of range), but may result in logic
+//! bugs and panics on invalid bit patterns.
 //!
 //! ```rust
 //! # use ranch::RangedI32;
@@ -154,19 +155,15 @@
     rustdoc::redundant_explicit_links
 )]
 
-pub mod ascii;
-mod assertions;
-mod assign;
-pub mod bitwise;
-mod convert;
-mod error;
-mod format;
-mod impl_ascii;
-mod ops;
-mod ord;
-pub mod parsing;
-mod quotient;
-pub mod range;
+mod crates {
+    #[cfg(feature = "bytemuck")]
+    mod bytemuck;
+    #[cfg(feature = "serde")]
+    mod serde;
+    #[cfg(feature = "zeroize")]
+    mod zeroize;
+}
+
 mod ranged {
     pub(super) mod i128;
     pub(super) mod i16;
@@ -179,6 +176,7 @@ mod ranged {
     pub(super) mod u64;
     pub(super) mod u8;
 }
+
 mod nonzero {
     pub(super) mod i128;
     pub(super) mod i16;
@@ -191,16 +189,23 @@ mod nonzero {
     pub(super) mod u64;
     pub(super) mod u8;
 }
+
+pub mod ascii;
+mod assertions;
+mod assign;
+mod bitops;
+pub mod bitwise;
+mod convert;
+mod error;
+mod format;
+mod impl_ascii;
+mod ops;
+mod ord;
+pub mod parsing;
+mod quotient;
+pub mod range;
 mod repr;
 pub mod unit;
-mod crates {
-    #[cfg(feature = "bytemuck")]
-    mod bytemuck;
-    #[cfg(feature = "serde")]
-    mod serde;
-    #[cfg(feature = "zeroize")]
-    mod zeroize;
-}
 
 pub use self::{
     error::{Error, Result},
