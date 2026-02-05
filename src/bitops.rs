@@ -2,7 +2,7 @@ use core::ops::{BitAnd, BitOr, BitXor, Not, Shl, Shr};
 
 use as_repr::AsRepr;
 
-use crate::{bitwise::*, range::Range, *};
+use crate::{bitwise::*, range::Range};
 
 macro_rules! bitops {
     ($u:ty, $s:ty, $unsigned:ty, $signed:ty, $bits:literal) => {
@@ -137,6 +137,116 @@ macro_rules! bitops {
                 Self(self.get() ^ as_repr::as_repr(ranged)).clear_invalid_bits()
             }
 
+            /// Bitwise shift left.
+            ///
+            /// Returns `None` if `rhs` is greater than or equal to
+            #[doc = concat!(stringify!($bits), ".")]
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::I12;
+            /// assert_eq!(
+            ///     I12::new::<0b1011>().checked_shl(4).unwrap(),
+            ///     I12::new::<0b1011_0000>(),
+            /// );
+            /// ```
+            pub const fn checked_shl(
+                self,
+                rhs: impl AsRepr<u32>,
+            ) -> Option<Self> {
+                let rhs = as_repr::as_repr(rhs);
+
+                if rhs >= $bits {
+                    return None;
+                }
+
+                let Some(value) = self.get().checked_shl(rhs) else {
+                    return None;
+                };
+
+                Some(Self(value).clear_invalid_bits())
+            }
+
+            /// Bitwise shift right.
+            ///
+            /// Returns `None` if `rhs` is greater than or equal to
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::I12;
+            /// assert_eq!(
+            ///     I12::new::<0b1011_0000>().checked_shr(4).unwrap(),
+            ///     I12::new::<0b1011>(),
+            /// );
+            /// ```
+            #[doc = concat!(stringify!($bits), ".")]
+            pub const fn checked_shr(
+                self,
+                rhs: impl AsRepr<u32>,
+            ) -> Option<Self> {
+                let rhs = as_repr::as_repr(rhs);
+
+                if rhs >= $bits {
+                    return None;
+                }
+
+                let Some(value) = self.get().checked_shr(rhs) else {
+                    return None;
+                };
+
+                Some(Self(value).clear_invalid_bits())
+            }
+
+            /// Bitwise shift left.
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::I12;
+            /// assert_eq!(
+            ///     I12::new::<0b1011>().shl::<4>(),
+            ///     I12::new::<0b1011_0000>(),
+            /// );
+            /// ```
+            pub const fn shl<const N: u32>(self) -> Self {
+                const {
+                    if N >= $bits {
+                        panic!(concat!(
+                            "cannot shift left more than ",
+                            stringify!($bits),
+                            " bits.",
+                        ));
+                    }
+                }
+
+                match self.checked_shl(N) {
+                    Some(value) => value,
+                    None => unreachable!(),
+                }
+            }
+
+            /// Bitwise shift right.
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::I12;
+            /// assert_eq!(
+            ///     I12::new::<0b1011_0000>().shr::<4>(),
+            ///     I12::new::<0b1011>(),
+            /// );
+            /// ```
+            pub const fn shr<const N: u32>(self) -> Self {
+                const {
+                    if N >= $bits {
+                        panic!(concat!(
+                            "cannot shift right more than ",
+                            stringify!($bits),
+                            " bits.",
+                        ));
+                    }
+                }
+
+                match self.checked_shr(N) {
+                    Some(value) => value,
+                    None => unreachable!(),
+                }
+            }
+
             const fn clear_invalid_bits(self) -> Self {
                 let unused_bits = const { Self::BITS - $bits };
 
@@ -175,6 +285,44 @@ macro_rules! bitops {
 
             fn bitxor(self, rhs: Self) -> Self {
                 self.bitxor_ranged(rhs)
+            }
+        }
+
+        impl<T> Shl<T> for $signed
+        where
+            T: AsRepr<u32>,
+        {
+            type Output = Self;
+
+            fn shl(self, rhs: T) -> Self::Output {
+                let Some(value) = self.checked_shl(rhs) else {
+                    panic!(concat!(
+                        "cannot shift left more than ",
+                        stringify!($bits),
+                        " bits.",
+                    ));
+                };
+
+                value
+            }
+        }
+
+        impl<T> Shr<T> for $signed
+        where
+            T: AsRepr<u32>,
+        {
+            type Output = Self;
+
+            fn shr(self, rhs: T) -> Self::Output {
+                let Some(value) = self.checked_shr(rhs) else {
+                    panic!(concat!(
+                        "cannot shift right more than ",
+                        stringify!($bits),
+                        " bits.",
+                    ));
+                };
+
+                value
             }
         }
 
@@ -307,33 +455,115 @@ macro_rules! bitops {
                 Self(self.get() ^ as_repr::as_repr(ranged))
             }
 
-            /*
             /// Bitwise shift left.
             ///
             /// Returns `None` if `rhs` is greater than or equal to
-            /// [`Self::BITS`].
-            pub const fn checked_shl(self, rhs: impl AsRepr<u32>) -> Option<Self> {
+            #[doc = concat!(stringify!($bits), ".")]
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::U12;
+            /// assert_eq!(
+            ///     U12::new::<0b1011>().checked_shl(4).unwrap(),
+            ///     U12::new::<0b1011_0000>(),
+            /// );
+            /// ```
+            pub const fn checked_shl(
+                self,
+                rhs: impl AsRepr<u32>,
+            ) -> Option<Self> {
                 let rhs = as_repr::as_repr(rhs);
+
+                if rhs >= $bits {
+                    return None;
+                }
+
                 let Some(value) = self.get().checked_shl(rhs) else {
                     return None;
                 };
 
-                Some(Self(clear_invalid_bits(value)))
+                Some(Self(value).clear_invalid_bits())
             }
 
             /// Bitwise shift right.
             ///
             /// Returns `None` if `rhs` is greater than or equal to
-            /// [`Self::BITS`].
-            pub const fn checked_shr(self: rhs: impl AsRepr<u32>) -> Option<Self> {
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::U12;
+            /// assert_eq!(
+            ///     U12::new::<0b1011_0000>().checked_shr(4).unwrap(),
+            ///     U12::new::<0b1011>(),
+            /// );
+            /// ```
+            #[doc = concat!(stringify!($bits), ".")]
+            pub const fn checked_shr(
+                self,
+                rhs: impl AsRepr<u32>,
+            ) -> Option<Self> {
                 let rhs = as_repr::as_repr(rhs);
+
+                if rhs >= $bits {
+                    return None;
+                }
+
                 let Some(value) = self.get().checked_shr(rhs) else {
                     return None;
                 };
 
-                Some(Self(clear_invalid_bits(value)))
+                Some(Self(value).clear_invalid_bits())
             }
-            */
+
+            /// Bitwise shift left.
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::U12;
+            /// assert_eq!(
+            ///     U12::new::<0b1011>().shl::<4>(),
+            ///     U12::new::<0b1011_0000>(),
+            /// );
+            /// ```
+            pub const fn shl<const N: u32>(self) -> Self {
+                const {
+                    if N >= $bits {
+                        panic!(concat!(
+                            "cannot shift left more than ",
+                            stringify!($bits),
+                            " bits.",
+                        ));
+                    }
+                }
+
+                match self.checked_shl(N) {
+                    Some(value) => value,
+                    None => unreachable!(),
+                }
+            }
+
+            /// Bitwise shift right.
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::U12;
+            /// assert_eq!(
+            ///     U12::new::<0b1011_0000>().shr::<4>(),
+            ///     U12::new::<0b1011>(),
+            /// );
+            /// ```
+            pub const fn shr<const N: u32>(self) -> Self {
+                const {
+                    if N >= $bits {
+                        panic!(concat!(
+                            "cannot shift right more than ",
+                            stringify!($bits),
+                            " bits.",
+                        ));
+                    }
+                }
+
+                match self.checked_shr(N) {
+                    Some(value) => value,
+                    None => unreachable!(),
+                }
+            }
 
             const fn clear_invalid_bits(self) -> Self {
                 self.bitand::<{ Self::MAX.get() }>()
@@ -374,22 +604,43 @@ macro_rules! bitops {
             }
         }
 
-        /*
-        impl Shl<RangedU8<0, { $bits - 1 }>> for $unsigned {
+        impl<T> Shl<T> for $unsigned
+        where
+            T: AsRepr<u32>,
+        {
             type Output = Self;
 
-            fn shl(self, rhs: RangedU8<0, { $bits - 1 }>) -> Self::Output {
-                Self(clear_invalid_bits(self.get() << rhs.get()))
+            fn shl(self, rhs: T) -> Self::Output {
+                let Some(value) = self.checked_shl(rhs) else {
+                    panic!(concat!(
+                        "cannot shift left more than ",
+                        stringify!($bits),
+                        " bits.",
+                    ));
+                };
+
+                value
             }
         }
 
-        impl Shr<RangedU8<0, { $bits - 1 }>> for $unsigned {
+        impl<T> Shr<T> for $unsigned
+        where
+            T: AsRepr<u32>,
+        {
             type Output = Self;
 
-            fn shr(self, rhs: RangedU8<0, { $bits - 1 }>) -> Self::Output {
-                Self(clear_invalid_bits(self.get() >> rhs.get()))
+            fn shr(self, rhs: T) -> Self::Output {
+                let Some(value) = self.checked_shr(rhs) else {
+                    panic!(concat!(
+                        "cannot shift right more than ",
+                        stringify!($bits),
+                        " bits.",
+                    ));
+                };
+
+                value
             }
-        }*/
+        }
     };
 }
 
