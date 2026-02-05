@@ -2,7 +2,7 @@ use core::ops::{BitAnd, BitOr, BitXor, Not, Shl, Shr};
 
 use as_repr::AsRepr;
 
-use crate::{bitwise::*, range::Range};
+use crate::{RangedU32, bitwise::*, range::Range};
 
 macro_rules! bitops {
     ($u:ty, $s:ty, $unsigned:ty, $signed:ty, $bits:literal) => {
@@ -210,7 +210,7 @@ macro_rules! bitops {
                         panic!(concat!(
                             "cannot shift left more than ",
                             stringify!($bits),
-                            " bits.",
+                            " - 1 bits.",
                         ));
                     }
                 }
@@ -236,12 +236,72 @@ macro_rules! bitops {
                         panic!(concat!(
                             "cannot shift right more than ",
                             stringify!($bits),
-                            " bits.",
+                            " - 1 bits.",
                         ));
                     }
                 }
 
                 match self.checked_shr(N) {
+                    Some(value) => value,
+                    None => unreachable!(),
+                }
+            }
+
+            /// Bitwise shift left.
+            ///
+            /// ```rust
+            /// # use ranch::{bitwise::I12, unit::UnitU32};
+            /// assert_eq!(
+            ///     I12::new::<0b1011>()
+            ///         .shl_ranged(UnitU32::<4>::default()),
+            ///     I12::new::<0b1011_0000>(),
+            /// );
+            /// ```
+            pub const fn shl_ranged<const MIN: u32, const MAX: u32>(
+                self,
+                ranged: RangedU32<MIN, MAX>,
+            ) -> Self {
+                const {
+                    if MAX >= $bits {
+                        panic!(concat!(
+                            "cannot shift left more than ",
+                            stringify!($bits),
+                            " - 1 bits.",
+                        ));
+                    }
+                }
+
+                match self.checked_shl(ranged) {
+                    Some(value) => value,
+                    None => unreachable!(),
+                }
+            }
+
+            /// Bitwise shift right.
+            ///
+            /// ```rust
+            /// # use ranch::{bitwise::I12, unit::UnitU32};
+            /// assert_eq!(
+            ///     I12::new::<0b1011_0000>()
+            ///         .shr_ranged(UnitU32::<4>::default()),
+            ///     I12::new::<0b1011>(),
+            /// );
+            /// ```
+            pub const fn shr_ranged<const MIN: u32, const MAX: u32>(
+                self,
+                ranged: RangedU32<MIN, MAX>,
+            ) -> Self {
+                const {
+                    if MAX >= $bits {
+                        panic!(concat!(
+                            "cannot shift right more than ",
+                            stringify!($bits),
+                            " - 1 bits.",
+                        ));
+                    }
+                }
+
+                match self.checked_shr(ranged) {
                     Some(value) => value,
                     None => unreachable!(),
                 }
@@ -299,7 +359,7 @@ macro_rules! bitops {
                     panic!(concat!(
                         "cannot shift left more than ",
                         stringify!($bits),
-                        " bits.",
+                        " - 1 bits.",
                     ));
                 };
 
@@ -318,7 +378,7 @@ macro_rules! bitops {
                     panic!(concat!(
                         "cannot shift right more than ",
                         stringify!($bits),
-                        " bits.",
+                        " - 1 bits.",
                     ));
                 };
 
@@ -528,7 +588,7 @@ macro_rules! bitops {
                         panic!(concat!(
                             "cannot shift left more than ",
                             stringify!($bits),
-                            " bits.",
+                            " - 1 bits.",
                         ));
                     }
                 }
@@ -554,12 +614,72 @@ macro_rules! bitops {
                         panic!(concat!(
                             "cannot shift right more than ",
                             stringify!($bits),
-                            " bits.",
+                            " - 1 bits.",
                         ));
                     }
                 }
 
                 match self.checked_shr(N) {
+                    Some(value) => value,
+                    None => unreachable!(),
+                }
+            }
+
+            /// Bitwise shift left.
+            ///
+            /// ```rust
+            /// # use ranch::{bitwise::U12, unit::UnitU32};
+            /// assert_eq!(
+            ///     U12::new::<0b1011>()
+            ///         .shl_ranged(UnitU32::<4>::default()),
+            ///     U12::new::<0b1011_0000>(),
+            /// );
+            /// ```
+            pub const fn shl_ranged<const MIN: u32, const MAX: u32>(
+                self,
+                ranged: RangedU32<MIN, MAX>,
+            ) -> Self {
+                const {
+                    if MAX >= $bits {
+                        panic!(concat!(
+                            "cannot shift left more than ",
+                            stringify!($bits),
+                            " - 1 bits.",
+                        ));
+                    }
+                }
+
+                match self.checked_shl(ranged) {
+                    Some(value) => value,
+                    None => unreachable!(),
+                }
+            }
+
+            /// Bitwise shift right.
+            ///
+            /// ```rust
+            /// # use ranch::{bitwise::U12, unit::UnitU32};
+            /// assert_eq!(
+            ///     U12::new::<0b1011_0000>()
+            ///         .shr_ranged(UnitU32::<4>::default()),
+            ///     U12::new::<0b1011>(),
+            /// );
+            /// ```
+            pub const fn shr_ranged<const MIN: u32, const MAX: u32>(
+                self,
+                ranged: RangedU32<MIN, MAX>,
+            ) -> Self {
+                const {
+                    if MAX >= $bits {
+                        panic!(concat!(
+                            "cannot shift right more than ",
+                            stringify!($bits),
+                            " - 1 bits.",
+                        ));
+                    }
+                }
+
+                match self.checked_shr(ranged) {
                     Some(value) => value,
                     None => unreachable!(),
                 }
@@ -615,7 +735,7 @@ macro_rules! bitops {
                     panic!(concat!(
                         "cannot shift left more than ",
                         stringify!($bits),
-                        " bits.",
+                        " - 1 bits.",
                     ));
                 };
 
@@ -634,7 +754,7 @@ macro_rules! bitops {
                     panic!(concat!(
                         "cannot shift right more than ",
                         stringify!($bits),
-                        " bits.",
+                        " - 1 bits.",
                     ));
                 };
 
