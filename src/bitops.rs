@@ -54,7 +54,7 @@ macro_rules! bitops {
                           without modifying the original"]
             pub const fn bitand_ranged<R>(self, ranged: R) -> Self
             where
-                R: RangedSigned<$s>,
+                R: BitwiseSigned<$s>,
             {
                 const {
                     if as_repr::as_repr(R::MAX) > Self::MAX.get() {
@@ -97,7 +97,7 @@ macro_rules! bitops {
                           without modifying the original"]
             pub const fn bitor_ranged<R>(self, ranged: R) -> Self
             where
-                R: RangedSigned<$s>,
+                R: BitwiseSigned<$s>,
             {
                 const {
                     if as_repr::as_repr(R::MAX) > Self::MAX.get() {
@@ -140,7 +140,7 @@ macro_rules! bitops {
                           without modifying the original"]
             pub const fn bitxor_ranged<R>(self, ranged: R) -> Self
             where
-                R: RangedSigned<$s>,
+                R: BitwiseSigned<$s>,
             {
                 const {
                     if as_repr::as_repr(R::MAX) > Self::MAX.get() {
@@ -340,7 +340,7 @@ macro_rules! bitops {
             }
         }
 
-        impl RangedSigned<$s> for $signed {}
+        impl BitwiseSigned<$s> for $signed {}
 
         impl Not for $signed {
             type Output = $signed;
@@ -458,7 +458,7 @@ macro_rules! bitops {
                           without modifying the original"]
             pub const fn bitand_ranged<R>(self, ranged: R) -> Self
             where
-                R: RangedUnsigned<$u>,
+                R: BitwiseUnsigned<$u>,
             {
                 const {
                     if as_repr::as_repr(R::MAX) > Self::MAX.get() {
@@ -501,7 +501,7 @@ macro_rules! bitops {
                           without modifying the original"]
             pub const fn bitor_ranged<R>(self, ranged: R) -> Self
             where
-                R: RangedUnsigned<$u>,
+                R: BitwiseUnsigned<$u>,
             {
                 const {
                     if as_repr::as_repr(R::MAX) > Self::MAX.get() {
@@ -544,7 +544,7 @@ macro_rules! bitops {
                           without modifying the original"]
             pub const fn bitxor_ranged<R>(self, ranged: R) -> Self
             where
-                R: RangedUnsigned<$u>,
+                R: BitwiseUnsigned<$u>,
             {
                 const {
                     if as_repr::as_repr(R::MAX) > Self::MAX.get() {
@@ -742,7 +742,7 @@ macro_rules! bitops {
             }
         }
 
-        impl RangedUnsigned<$u> for $unsigned {}
+        impl BitwiseUnsigned<$u> for $unsigned {}
 
         impl Not for $unsigned {
             type Output = $unsigned;
@@ -945,6 +945,6 @@ bitops!(u128, i128, U126, I126, 126);
 bitops!(u128, i128, U127, I127, 127);
 bitops!(u128, i128, U128, I128, 128);
 
-pub trait RangedUnsigned<T>: AsRepr<T> + Range + Sized {}
+pub trait BitwiseUnsigned<T>: AsRepr<T> + Range + Sized {}
 
-pub trait RangedSigned<T>: AsRepr<T> + Range + Sized {}
+pub trait BitwiseSigned<T>: AsRepr<T> + Range + Sized {}
