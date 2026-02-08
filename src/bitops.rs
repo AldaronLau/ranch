@@ -2,11 +2,14 @@ use core::ops::{BitAnd, BitOr, BitXor, Not, Shl, Shr};
 
 use as_repr::AsRepr;
 
-use crate::{RangedU32, bitwise::*, range::Range};
+use crate::{bitwise::*, range::Range, *};
 
-macro_rules! bitops {
-    ($u:ty, $s:ty, $unsigned:ty, $signed:ty, $bits:literal) => {
-        impl $signed {
+macro_rules! bitops_impl {
+    ($unsigned:ident, $signed:ident, $u:ty, $s:ty) => {
+        impl<const MIN: $s, const MAX: $s> $signed<MIN, MAX>
+        where
+            Self: BitwiseSigned<$s>,
+        {
             /// Bitwise NOT.
             ///
             /// ```rust
@@ -171,7 +174,7 @@ macro_rules! bitops {
             ) -> Option<Self> {
                 let rhs = as_repr::as_repr(rhs);
 
-                if rhs >= $bits {
+                if rhs >= Self::USED_BITS {
                     return None;
                 }
 
@@ -202,7 +205,7 @@ macro_rules! bitops {
             ) -> Option<Self> {
                 let rhs = as_repr::as_repr(rhs);
 
-                if rhs >= $bits {
+                if rhs >= Self::USED_BITS {
                     return None;
                 }
 
@@ -226,12 +229,8 @@ macro_rules! bitops {
                           without modifying the original"]
             pub const fn shl<const N: u32>(self) -> Self {
                 const {
-                    if N >= $bits {
-                        panic!(concat!(
-                            "cannot shift left more than ",
-                            stringify!($bits),
-                            " - 1 bits.",
-                        ));
+                    if N >= Self::USED_BITS {
+                        panic!("cannot shift left more than size - 1 in bits");
                     }
                 }
 
@@ -254,12 +253,8 @@ macro_rules! bitops {
                           without modifying the original"]
             pub const fn shr<const N: u32>(self) -> Self {
                 const {
-                    if N >= $bits {
-                        panic!(concat!(
-                            "cannot shift right more than ",
-                            stringify!($bits),
-                            " - 1 bits.",
-                        ));
+                    if N >= Self::USED_BITS {
+                        panic!("cannot shift right more than size - 1 in bits");
                     }
                 }
 
@@ -281,17 +276,13 @@ macro_rules! bitops {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn shl_ranged<const MIN: u32, const MAX: u32>(
+            pub const fn shl_ranged<const RHS_MIN: u32, const RHS_MAX: u32>(
                 self,
-                ranged: RangedU32<MIN, MAX>,
+                ranged: RangedU32<RHS_MIN, RHS_MAX>,
             ) -> Self {
                 const {
-                    if MAX >= $bits {
-                        panic!(concat!(
-                            "cannot shift left more than ",
-                            stringify!($bits),
-                            " - 1 bits.",
-                        ));
+                    if RHS_MAX >= Self::USED_BITS {
+                        panic!("cannot shift left more than size - 1 in bits");
                     }
                 }
 
@@ -313,17 +304,13 @@ macro_rules! bitops {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn shr_ranged<const MIN: u32, const MAX: u32>(
+            pub const fn shr_ranged<const RHS_MIN: u32, const RHS_MAX: u32>(
                 self,
-                ranged: RangedU32<MIN, MAX>,
+                ranged: RangedU32<RHS_MIN, RHS_MAX>,
             ) -> Self {
                 const {
-                    if MAX >= $bits {
-                        panic!(concat!(
-                            "cannot shift right more than ",
-                            stringify!($bits),
-                            " - 1 bits.",
-                        ));
+                    if RHS_MAX >= Self::USED_BITS {
+                        panic!("cannot shift right more than size - 1 in bits");
                     }
                 }
 
@@ -334,85 +321,16 @@ macro_rules! bitops {
             }
 
             const fn clear_invalid_bits(self) -> Self {
-                let unused_bits = const { Self::BITS - $bits };
+                let unused_bits = const { Self::BITS - Self::USED_BITS };
 
                 Self((self.get() << unused_bits) >> unused_bits)
             }
         }
 
-        impl BitwiseSigned<$s> for $signed {}
-
-        impl Not for $signed {
-            type Output = $signed;
-
-            fn not(self) -> Self::Output {
-                self.bitnot()
-            }
-        }
-
-        impl BitAnd for $signed {
-            type Output = $signed;
-
-            fn bitand(self, rhs: Self) -> Self {
-                self.bitand_ranged(rhs)
-            }
-        }
-
-        impl BitOr for $signed {
-            type Output = $signed;
-
-            fn bitor(self, rhs: Self) -> Self {
-                self.bitor_ranged(rhs)
-            }
-        }
-
-        impl BitXor for $signed {
-            type Output = $signed;
-
-            fn bitxor(self, rhs: Self) -> Self {
-                self.bitxor_ranged(rhs)
-            }
-        }
-
-        impl<T> Shl<T> for $signed
+        impl<const MIN: $u, const MAX: $u> $unsigned<MIN, MAX>
         where
-            T: AsRepr<u32>,
+            Self: BitwiseUnsigned<$u>,
         {
-            type Output = Self;
-
-            fn shl(self, rhs: T) -> Self::Output {
-                let Some(value) = self.checked_shl(rhs) else {
-                    panic!(concat!(
-                        "cannot shift left more than ",
-                        stringify!($bits),
-                        " - 1 bits.",
-                    ));
-                };
-
-                value
-            }
-        }
-
-        impl<T> Shr<T> for $signed
-        where
-            T: AsRepr<u32>,
-        {
-            type Output = Self;
-
-            fn shr(self, rhs: T) -> Self::Output {
-                let Some(value) = self.checked_shr(rhs) else {
-                    panic!(concat!(
-                        "cannot shift right more than ",
-                        stringify!($bits),
-                        " - 1 bits.",
-                    ));
-                };
-
-                value
-            }
-        }
-
-        impl $unsigned {
             /// Bitwise NOT.
             ///
             /// ```rust
@@ -575,7 +493,7 @@ macro_rules! bitops {
             ) -> Option<Self> {
                 let rhs = as_repr::as_repr(rhs);
 
-                if rhs >= $bits {
+                if rhs >= Self::USED_BITS {
                     return None;
                 }
 
@@ -606,7 +524,7 @@ macro_rules! bitops {
             ) -> Option<Self> {
                 let rhs = as_repr::as_repr(rhs);
 
-                if rhs >= $bits {
+                if rhs >= Self::USED_BITS {
                     return None;
                 }
 
@@ -630,12 +548,8 @@ macro_rules! bitops {
                           without modifying the original"]
             pub const fn shl<const N: u32>(self) -> Self {
                 const {
-                    if N >= $bits {
-                        panic!(concat!(
-                            "cannot shift left more than ",
-                            stringify!($bits),
-                            " - 1 bits.",
-                        ));
+                    if N >= Self::USED_BITS {
+                        panic!("cannot shift left more than size - 1 in bits");
                     }
                 }
 
@@ -658,12 +572,8 @@ macro_rules! bitops {
                           without modifying the original"]
             pub const fn shr<const N: u32>(self) -> Self {
                 const {
-                    if N >= $bits {
-                        panic!(concat!(
-                            "cannot shift right more than ",
-                            stringify!($bits),
-                            " - 1 bits.",
-                        ));
+                    if N >= Self::USED_BITS {
+                        panic!("cannot shift right more than size - 1 in bits");
                     }
                 }
 
@@ -685,17 +595,13 @@ macro_rules! bitops {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn shl_ranged<const MIN: u32, const MAX: u32>(
+            pub const fn shl_ranged<const RHS_MIN: u32, const RHS_MAX: u32>(
                 self,
-                ranged: RangedU32<MIN, MAX>,
+                ranged: RangedU32<RHS_MIN, RHS_MAX>,
             ) -> Self {
                 const {
-                    if MAX >= $bits {
-                        panic!(concat!(
-                            "cannot shift left more than ",
-                            stringify!($bits),
-                            " - 1 bits.",
-                        ));
+                    if RHS_MAX >= Self::USED_BITS {
+                        panic!("cannot shift left more than size - 1 in bits");
                     }
                 }
 
@@ -717,17 +623,13 @@ macro_rules! bitops {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn shr_ranged<const MIN: u32, const MAX: u32>(
+            pub const fn shr_ranged<const RHS_MIN: u32, const RHS_MAX: u32>(
                 self,
-                ranged: RangedU32<MIN, MAX>,
+                ranged: RangedU32<RHS_MIN, RHS_MAX>,
             ) -> Self {
                 const {
-                    if MAX >= $bits {
-                        panic!(concat!(
-                            "cannot shift right more than ",
-                            stringify!($bits),
-                            " - 1 bits.",
-                        ));
+                    if RHS_MAX >= Self::USED_BITS {
+                        panic!("cannot shift right more than size - 1 in bits");
                     }
                 }
 
@@ -738,80 +640,182 @@ macro_rules! bitops {
             }
 
             const fn clear_invalid_bits(self) -> Self {
-                self.bitand::<{ Self::MAX.get() }>()
+                let unused_bits = const { Self::BITS - Self::USED_BITS };
+
+                Self((self.get() << unused_bits) >> unused_bits)
             }
         }
 
-        impl BitwiseUnsigned<$u> for $unsigned {}
-
-        impl Not for $unsigned {
-            type Output = $unsigned;
+        impl<const MIN: $s, const MAX: $s> Not for $signed<MIN, MAX>
+        where
+            Self: BitwiseSigned<$s>,
+        {
+            type Output = Self;
 
             fn not(self) -> Self::Output {
                 self.bitnot()
             }
         }
 
-        impl BitAnd for $unsigned {
-            type Output = $unsigned;
+        impl<const MIN: $s, const MAX: $s> BitAnd for $signed<MIN, MAX>
+        where
+            Self: BitwiseSigned<$s>,
+        {
+            type Output = Self;
 
             fn bitand(self, rhs: Self) -> Self {
                 self.bitand_ranged(rhs)
             }
         }
 
-        impl BitOr for $unsigned {
-            type Output = $unsigned;
+        impl<const MIN: $s, const MAX: $s> BitOr for $signed<MIN, MAX>
+        where
+            Self: BitwiseSigned<$s>,
+        {
+            type Output = Self;
 
             fn bitor(self, rhs: Self) -> Self {
                 self.bitor_ranged(rhs)
             }
         }
 
-        impl BitXor for $unsigned {
-            type Output = $unsigned;
+        impl<const MIN: $s, const MAX: $s> BitXor for $signed<MIN, MAX>
+        where
+            Self: BitwiseSigned<$s>,
+        {
+            type Output = Self;
 
             fn bitxor(self, rhs: Self) -> Self {
                 self.bitxor_ranged(rhs)
             }
         }
 
-        impl<T> Shl<T> for $unsigned
+        impl<const MIN: $s, const MAX: $s, T> Shl<T> for $signed<MIN, MAX>
         where
+            Self: BitwiseSigned<$s>,
             T: AsRepr<u32>,
         {
             type Output = Self;
 
             fn shl(self, rhs: T) -> Self::Output {
                 let Some(value) = self.checked_shl(rhs) else {
-                    panic!(concat!(
-                        "cannot shift left more than ",
-                        stringify!($bits),
-                        " - 1 bits.",
-                    ));
+                    let used_bits = Self::USED_BITS;
+
+                    panic!("cannot shift left more than {used_bits} - 1 bits");
                 };
 
                 value
             }
         }
 
-        impl<T> Shr<T> for $unsigned
+        impl<const MIN: $s, const MAX: $s, T> Shr<T> for $signed<MIN, MAX>
         where
+            Self: BitwiseSigned<$s>,
             T: AsRepr<u32>,
         {
             type Output = Self;
 
             fn shr(self, rhs: T) -> Self::Output {
                 let Some(value) = self.checked_shr(rhs) else {
-                    panic!(concat!(
-                        "cannot shift right more than ",
-                        stringify!($bits),
-                        " - 1 bits.",
-                    ));
+                    let used_bits = Self::USED_BITS;
+
+                    panic!("cannot shift right more than {used_bits} - 1 bits");
                 };
 
                 value
             }
+        }
+
+        impl<const MIN: $u, const MAX: $u> Not for $unsigned<MIN, MAX>
+        where
+            Self: BitwiseUnsigned<$u>,
+        {
+            type Output = Self;
+
+            fn not(self) -> Self::Output {
+                self.bitnot()
+            }
+        }
+
+        impl<const MIN: $u, const MAX: $u> BitAnd for $unsigned<MIN, MAX>
+        where
+            Self: BitwiseUnsigned<$u>,
+        {
+            type Output = Self;
+
+            fn bitand(self, rhs: Self) -> Self {
+                self.bitand_ranged(rhs)
+            }
+        }
+
+        impl<const MIN: $u, const MAX: $u> BitOr for $unsigned<MIN, MAX>
+        where
+            Self: BitwiseUnsigned<$u>,
+        {
+            type Output = Self;
+
+            fn bitor(self, rhs: Self) -> Self {
+                self.bitor_ranged(rhs)
+            }
+        }
+
+        impl<const MIN: $u, const MAX: $u> BitXor for $unsigned<MIN, MAX>
+        where
+            Self: BitwiseUnsigned<$u>,
+        {
+            type Output = Self;
+
+            fn bitxor(self, rhs: Self) -> Self {
+                self.bitxor_ranged(rhs)
+            }
+        }
+
+        impl<const MIN: $u, const MAX: $u, T> Shl<T> for $unsigned<MIN, MAX>
+        where
+            Self: BitwiseUnsigned<$u>,
+            T: AsRepr<u32>,
+        {
+            type Output = Self;
+
+            fn shl(self, rhs: T) -> Self::Output {
+                let Some(value) = self.checked_shl(rhs) else {
+                    let used_bits = Self::USED_BITS;
+
+                    panic!("cannot shift left more than {used_bits} - 1 bits");
+                };
+
+                value
+            }
+        }
+
+        impl<const MIN: $u, const MAX: $u, T> Shr<T> for $unsigned<MIN, MAX>
+        where
+            Self: BitwiseUnsigned<$u>,
+            T: AsRepr<u32>,
+        {
+            type Output = Self;
+
+            fn shr(self, rhs: T) -> Self::Output {
+                let Some(value) = self.checked_shr(rhs) else {
+                    let used_bits = Self::USED_BITS;
+
+                    panic!("cannot shift right more than {used_bits} - 1 bits");
+                };
+
+                value
+            }
+        }
+    };
+}
+
+macro_rules! bitops {
+    ($u:ty, $s:ty, $unsigned:ty, $signed:ty, $bits:literal) => {
+        impl BitwiseSigned<$s> for $signed {
+            const USED_BITS: u32 = $bits;
+        }
+
+        impl BitwiseUnsigned<$u> for $unsigned {
+            const USED_BITS: u32 = $bits;
         }
     };
 }
@@ -945,6 +949,16 @@ bitops!(u128, i128, U126, I126, 126);
 bitops!(u128, i128, U127, I127, 127);
 bitops!(u128, i128, U128, I128, 128);
 
-pub trait BitwiseUnsigned<T>: AsRepr<T> + Range + Sized {}
+bitops_impl!(RangedU8, RangedI8, u8, i8);
+bitops_impl!(RangedU16, RangedI16, u16, i16);
+bitops_impl!(RangedU32, RangedI32, u32, i32);
+bitops_impl!(RangedU64, RangedI64, u64, i64);
+bitops_impl!(RangedU128, RangedI128, u128, i128);
 
-pub trait BitwiseSigned<T>: AsRepr<T> + Range + Sized {}
+pub trait BitwiseUnsigned<T>: AsRepr<T> + Range + Sized {
+    const USED_BITS: u32;
+}
+
+pub trait BitwiseSigned<T>: AsRepr<T> + Range + Sized {
+    const USED_BITS: u32;
+}

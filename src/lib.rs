@@ -13,6 +13,17 @@
 //! deserialization / serialization (implements [`Serialize`] and
 //! [`Deserialize`] for `Ranged*` types).
 //!
+//! ## Optional Features
+//!
+//! Ranch optionally works with a few other crates:
+//!
+//!  - Enable [**_`bytemuck`_**](https://docs.rs/crate/bytemuck) for casting as
+//!    "plain old data"
+//!  - Enable [**_`serde`_**](https://docs.rs/crate/serde) for serialization and
+//!    deserialization
+//!  - Enable [**_`zeroize`_**](https://docs.rs/crate/zeroize) for secure secret
+//!    clearing
+//!
 //! # Types of operations
 //!
 //! Like the std library, ranch provide [`strict`](#strict),
