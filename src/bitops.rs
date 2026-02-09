@@ -5,7 +5,7 @@ use core::ops::{
 
 use as_repr::AsRepr;
 
-use crate::{bitwise::*, range::Range, *};
+use crate::{bitwise::*, range::Range, scale::RangedScaleTo, *};
 
 macro_rules! bitops_impl {
     ($unsigned:ident, $signed:ident, $u:ty, $s:ty) => {
@@ -46,7 +46,11 @@ macro_rules! bitops_impl {
             /// Bitwise AND another ranged signed int.
             ///
             /// ```rust
-            /// # use ranch::bitwise::{I10, I12};
+            /// # use ranch::bitwise::{I5, I10, I12};
+            /// assert_eq!(
+            ///     I12::new::<0b1011>().bitand_ranged(I5::new::<0b1110>()),
+            ///     I12::new::<0b1010>(),
+            /// );
             /// assert_eq!(
             ///     I12::new::<0b1011>().bitand_ranged(I10::new::<0b1110>()),
             ///     I12::new::<0b1010>(),
@@ -63,12 +67,13 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if as_repr::as_repr(R::MAX) > Self::MAX.get() {
+                    if scale::ranged_scale_to(R::MAX) > Self::MAX.get() {
                         panic!("cannot bitwise AND with a larger type")
                     }
                 }
 
-                Self(self.get() & as_repr::as_repr(ranged)).clear_invalid_bits()
+                Self(self.get() & scale::ranged_scale_to(ranged))
+                    .clear_invalid_bits()
             }
 
             /// Bitwise OR.
@@ -89,7 +94,11 @@ macro_rules! bitops_impl {
             /// Bitwise OR another ranged signed int.
             ///
             /// ```rust
-            /// # use ranch::bitwise::{I10, I12};
+            /// # use ranch::bitwise::{I5, I10, I12};
+            /// assert_eq!(
+            ///     I12::new::<0b1011>().bitor_ranged(I5::new::<0b1110>()),
+            ///     I12::new::<0b1111>(),
+            /// );
             /// assert_eq!(
             ///     I12::new::<0b1011>().bitor_ranged(I10::new::<0b1110>()),
             ///     I12::new::<0b1111>(),
@@ -106,12 +115,13 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if as_repr::as_repr(R::MAX) > Self::MAX.get() {
+                    if scale::ranged_scale_to(R::MAX) > Self::MAX.get() {
                         panic!("cannot bitwise AND with a larger type")
                     }
                 }
 
-                Self(self.get() | as_repr::as_repr(ranged)).clear_invalid_bits()
+                Self(self.get() | scale::ranged_scale_to(ranged))
+                    .clear_invalid_bits()
             }
 
             /// Bitwise XOR.
@@ -132,7 +142,11 @@ macro_rules! bitops_impl {
             /// Bitwise XOR another ranged unsigned int.
             ///
             /// ```rust
-            /// # use ranch::bitwise::{I10, I12};
+            /// # use ranch::bitwise::{I5, I10, I12};
+            /// assert_eq!(
+            ///     I12::new::<0b1011>().bitxor_ranged(I5::new::<0b1110>()),
+            ///     I12::new::<0b0101>(),
+            /// );
             /// assert_eq!(
             ///     I12::new::<0b1011>().bitxor_ranged(I10::new::<0b1110>()),
             ///     I12::new::<0b0101>(),
@@ -149,12 +163,13 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if as_repr::as_repr(R::MAX) > Self::MAX.get() {
+                    if scale::ranged_scale_to(R::MAX) > Self::MAX.get() {
                         panic!("cannot bitwise AND with a larger type")
                     }
                 }
 
-                Self(self.get() ^ as_repr::as_repr(ranged)).clear_invalid_bits()
+                Self(self.get() ^ scale::ranged_scale_to(ranged))
+                    .clear_invalid_bits()
             }
 
             /// Bitwise shift left.
@@ -365,7 +380,11 @@ macro_rules! bitops_impl {
             /// Bitwise AND another ranged unsigned int.
             ///
             /// ```rust
-            /// # use ranch::bitwise::{U10, U12};
+            /// # use ranch::bitwise::{U4, U10, U12};
+            /// assert_eq!(
+            ///     U12::new::<0b1011>().bitand_ranged(U4::new::<0b1110>()),
+            ///     U12::new::<0b1010>(),
+            /// );
             /// assert_eq!(
             ///     U12::new::<0b1011>().bitand_ranged(U10::new::<0b1110>()),
             ///     U12::new::<0b1010>(),
@@ -382,12 +401,12 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if as_repr::as_repr(R::MAX) > Self::MAX.get() {
+                    if scale::ranged_scale_to(R::MAX) > Self::MAX.get() {
                         panic!("cannot bitwise AND with a larger type")
                     }
                 }
 
-                Self(self.get() & as_repr::as_repr(ranged))
+                Self(self.get() & scale::ranged_scale_to(ranged))
             }
 
             /// Bitwise OR.
@@ -408,7 +427,11 @@ macro_rules! bitops_impl {
             /// Bitwise OR another ranged unsigned int.
             ///
             /// ```rust
-            /// # use ranch::bitwise::{U10, U12};
+            /// # use ranch::bitwise::{U4, U10, U12};
+            /// assert_eq!(
+            ///     U12::new::<0b1011>().bitor_ranged(U4::new::<0b1110>()),
+            ///     U12::new::<0b1111>(),
+            /// );
             /// assert_eq!(
             ///     U12::new::<0b1011>().bitor_ranged(U10::new::<0b1110>()),
             ///     U12::new::<0b1111>(),
@@ -425,12 +448,12 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if as_repr::as_repr(R::MAX) > Self::MAX.get() {
+                    if scale::ranged_scale_to(R::MAX) > Self::MAX.get() {
                         panic!("cannot bitwise AND with a larger type")
                     }
                 }
 
-                Self(self.get() | as_repr::as_repr(ranged))
+                Self(self.get() | scale::ranged_scale_to(ranged))
             }
 
             /// Bitwise XOR.
@@ -451,7 +474,11 @@ macro_rules! bitops_impl {
             /// Bitwise XOR another ranged unsigned int.
             ///
             /// ```rust
-            /// # use ranch::bitwise::{U10, U12};
+            /// # use ranch::bitwise::{U4, U10, U12};
+            /// assert_eq!(
+            ///     U12::new::<0b1011>().bitxor_ranged(U4::new::<0b1110>()),
+            ///     U12::new::<0b0101>(),
+            /// );
             /// assert_eq!(
             ///     U12::new::<0b1011>().bitxor_ranged(U10::new::<0b1110>()),
             ///     U12::new::<0b0101>(),
@@ -468,12 +495,12 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if as_repr::as_repr(R::MAX) > Self::MAX.get() {
+                    if scale::ranged_scale_to(R::MAX) > Self::MAX.get() {
                         panic!("cannot bitwise AND with a larger type")
                     }
                 }
 
-                Self(self.get() ^ as_repr::as_repr(ranged))
+                Self(self.get() ^ scale::ranged_scale_to(ranged))
             }
 
             /// Bitwise shift left.
@@ -909,11 +936,17 @@ macro_rules! bitops_impl {
 
 macro_rules! bitops {
     ($u:ty, $s:ty, $unsigned:ty, $signed:ty, $bits:literal) => {
-        impl BitwiseSigned<$s> for $signed {
+        impl<T> BitwiseSigned<T> for $signed
+        where
+            $signed: RangedScaleTo<T>,
+        {
             const USED_BITS: u32 = $bits;
         }
 
-        impl BitwiseUnsigned<$u> for $unsigned {
+        impl<T> BitwiseUnsigned<T> for $unsigned
+        where
+            $unsigned: RangedScaleTo<T>,
+        {
             const USED_BITS: u32 = $bits;
         }
     };
@@ -1054,10 +1087,10 @@ bitops_impl!(RangedU32, RangedI32, u32, i32);
 bitops_impl!(RangedU64, RangedI64, u64, i64);
 bitops_impl!(RangedU128, RangedI128, u128, i128);
 
-pub trait BitwiseUnsigned<T>: AsRepr<T> + Range + Sized {
+pub trait BitwiseUnsigned<T>: RangedScaleTo<T> + Range + Sized {
     const USED_BITS: u32;
 }
 
-pub trait BitwiseSigned<T>: AsRepr<T> + Range + Sized {
+pub trait BitwiseSigned<T>: RangedScaleTo<T> + Range + Sized {
     const USED_BITS: u32;
 }

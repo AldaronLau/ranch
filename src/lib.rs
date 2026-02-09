@@ -216,6 +216,7 @@ pub mod parsing;
 mod quotient;
 pub mod range;
 mod repr;
+mod scale;
 pub mod unit;
 
 pub use self::{
