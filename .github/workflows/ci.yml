@@ -9,6 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: taiki-e/checkout-action@v1
+      - uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Miri
         run: |
           rustup toolchain install nightly --component miri
@@ -38,6 +47,15 @@ jobs:
           cc: aarch64-apple-ios
     steps:
       - uses: taiki-e/checkout-action@v1
+      - uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Rust
         run: |
           rustup set profile minimal
@@ -67,3 +85,6 @@ jobs:
             cargo build "--target=$target"
             cargo build --all-features "--target=$target"
           done
+      - if: ${{ matrix.up }}
+        name: Restoring Cargo.lock
+        run: git restore Cargo.lock
