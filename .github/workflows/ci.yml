@@ -4,16 +4,18 @@ on:
     branches: ['v*']
   pull_request:
 jobs:
-  setup:
-    name: "Setup"
+  update:
+    name: "Try updating dependencies"
     runs-on: ubuntu-slim
     steps:
       - uses: taiki-e/checkout-action@v1
+      - name: Updating dependencies
+        run: cargo update
   miri:
     name: "Miri"
-    needs: setup
     runs-on: ubuntu-latest
     steps:
+      - uses: taiki-e/checkout-action@v1
       - name: Install Miri
         run: |
           rustup toolchain install nightly --component miri
@@ -25,7 +27,8 @@ jobs:
         run: cargo miri test --all --all-features
   checks:
     name: "Checks"
-    needs: setup
+    if: ${{ matrix.up }}
+      needs: ${{ matrix.up }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -33,25 +36,25 @@ jobs:
         tc: [1.85.0, stable, beta, nightly]
         include:
         - tc: stable
-          up: cargo update
+          up: update
         - tc: beta
-          up: cargo update
+          up: update
         - tc: nightly
-          up: cargo update
+          up: update
         - os: ubuntu-latest
           cc: aarch64-linux-android i686-pc-windows-gnu i686-unknown-freebsd i686-unknown-linux-gnu wasm32-wasip1 wasm32-unknown-unknown x86_64-apple-darwin x86_64-unknown-redox x86_64-unknown-illumos
         - os: macos-latest
           cc: aarch64-apple-ios
     steps:
+      - uses: taiki-e/checkout-action@v1
       - name: Install Rust
         run: |
           rustup set profile minimal
           rustup default ${{ matrix.tc }}
           rustup component add clippy rustfmt
       - if: ${{ matrix.up }}
-        name: Updating dependencies & running tests
+        name: Running tests
         run: |
-          ${{ matrix.up }}
           cargo test --all
       - name: Check code formatting
         run: cargo fmt --check
