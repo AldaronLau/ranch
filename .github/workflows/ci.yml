@@ -4,11 +4,16 @@ on:
     branches: ['v*']
   pull_request:
 jobs:
-  miri:
-    name: "Miri"
-    runs-on: ubuntu-latest
+  setup:
+    name: "Setup"
+    runs-on: ubuntu-slim
     steps:
       - uses: taiki-e/checkout-action@v1
+  miri:
+    name: "Miri"
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
       - name: Install Miri
         run: |
           rustup toolchain install nightly --component miri
@@ -20,6 +25,7 @@ jobs:
         run: cargo miri test --all --all-features
   checks:
     name: "Checks"
+    needs: setup
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -37,7 +43,6 @@ jobs:
         - os: macos-latest
           cc: aarch64-apple-ios
     steps:
-      - uses: taiki-e/checkout-action@v1
       - name: Install Rust
         run: |
           rustup set profile minimal
