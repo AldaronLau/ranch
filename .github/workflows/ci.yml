@@ -27,8 +27,8 @@ jobs:
         run: cargo miri test --all --all-features
   checks:
     name: "Checks"
-    - if: ${{ matrix.up }}
-      needs: ${{ matrix.up }}
+    if: ${{ matrix.up }}
+    needs: ${{ matrix.up }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
