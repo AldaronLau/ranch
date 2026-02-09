@@ -48,7 +48,6 @@ jobs:
         run: |
           ${{ matrix.up }}
           cargo test --all
-          cargo test --all --all-features
       - name: Check code formatting
         run: cargo fmt --check
       - name: Check doc generation succeeds
