@@ -1,10 +1,11 @@
-on: [push, pull_request]
-
-name: tests
-
+name: checks
+on:
+  push:
+    branches: ['v*']
+  pull_request:
 jobs:
   miri:
-    name: "Miri"
+    name: "Miri (safety and big-endian testing)"
     runs-on: ubuntu-latest
     steps:
       - uses: taiki-e/checkout-action@v1
@@ -17,8 +18,8 @@ jobs:
         run: cargo miri test --all --all-features
       - name: Test with Miri (big-endian)
         run: cargo miri test --all --all-features --target s390x-unknown-linux-gnu
-  checks:
-    name: "Checks (format, tests, & docs)"
+  verify:
+    name: "Verify (unit tests pass, format correct, & docs generate)"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -88,7 +89,7 @@ jobs:
           rustup default ${{ matrix.tc }}
           rustup component add clippy
           rustup target add ${{ matrix.cc }}
-      - name: Verify no clippy suggestions
+      - name: Assert clippy checks pass
         run: |
           cargo clippy --workspace --all-targets --target=${{ matrix.cc }} -- -D warnings
           cargo clippy --workspace --all-targets --all-features --target=${{ matrix.cc }} -- -D warnings
