@@ -1,11 +1,11 @@
-name: checks
+name: tests
 on:
   push:
     branches: ['v*']
   pull_request:
 jobs:
   miri:
-    name: "Miri (safety and big-endian testing)"
+    name: "Miri"
     runs-on: ubuntu-latest
     steps:
       - uses: taiki-e/checkout-action@v1
@@ -14,12 +14,12 @@ jobs:
           rustup toolchain install nightly --component miri
           rustup override set nightly
           cargo miri setup
-      - name: Test with Miri
-        run: cargo miri test --all --all-features
       - name: Test with Miri (big-endian)
         run: cargo miri test --all --all-features --target s390x-unknown-linux-gnu
-  verify:
-    name: "Verify (unit tests pass, format correct, & docs generate)"
+      - name: Test with Miri (little-endian)
+        run: cargo miri test --all --all-features
+  checks:
+    name: "Checks"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -32,68 +32,39 @@ jobs:
           up: cargo update
         - tc: nightly
           up: cargo update
+        - os: ubuntu-latest
+          cc: aarch64-linux-android i686-pc-windows-gnu i686-unknown-freebsd i686-unknown-linux-gnu wasm32-wasip1 wasm32-unknown-unknown x86_64-apple-darwin x86_64-unknown-redox x86_64-unknown-illumos
+        - os: macos-latest
+          cc: aarch64-apple-ios
     steps:
       - uses: taiki-e/checkout-action@v1
       - name: Install Rust
         run: |
           rustup set profile minimal
           rustup default ${{ matrix.tc }}
-          rustup component add rustfmt
+          rustup component add clippy rustfmt
       - if: ${{ matrix.up }}
-        name: Updating dependencies
-        run: ${{ matrix.up }}
-      - if: ${{ matrix.up }}
-        name: Running tests
+        name: Updating dependencies & running tests
         run: |
+          ${{ matrix.up }}
           cargo test --all
           cargo test --all --all-features
       - name: Check code formatting
         run: cargo fmt --check
       - name: Check doc generation succeeds
         run: cargo doc --all-features
-  cross-compile:
-    name: "Cross-compilation (clippy & builds)"
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        tc: [1.85.0, stable, beta, nightly]
-        cc:
-        - aarch64-linux-android
-        - i686-pc-windows-gnu
-        - i686-unknown-freebsd
-        - i686-unknown-linux-gnu
-        - wasm32-wasip1
-        - wasm32-unknown-unknown
-        - x86_64-apple-darwin
-        - x86_64-unknown-redox
-        - x86_64-unknown-illumos
-        include:
-        - os: macos-latest
-          tc: 1.85.0
-          cc: aarch64-apple-ios
-        - os: macos-latest
-          tc: stable
-          cc: aarch64-apple-ios
-        - os: macos-latest
-          tc: beta
-          cc: aarch64-apple-ios
-        - os: macos-latest
-          tc: nightly
-          cc: aarch64-apple-ios
-    steps:
-      - uses: taiki-e/checkout-action@v1
-      - name: Install Rust
+      - name: Checking clippy for warnings
         run: |
-          rustup set profile minimal
-          rustup default ${{ matrix.tc }}
-          rustup component add clippy
+          cargo clippy --workspace --all-targets "--target=$target" -- -D warnings
+          cargo clippy --workspace --all-targets --all-features "--target=$target" -- -D warnings
+      - if: ${{ matrix.cc }}
+        name: Checking cross-compilation works
+        run: |
           rustup target add ${{ matrix.cc }}
-      - name: Assert clippy checks pass
-        run: |
-          cargo clippy --workspace --all-targets --target=${{ matrix.cc }} -- -D warnings
-          cargo clippy --workspace --all-targets --all-features --target=${{ matrix.cc }} -- -D warnings
-      - name: Build for cross-compilation target
-        run: |
-          cargo build --target=${{ matrix.cc }}
-          cargo build --all-features --target=${{ matrix.cc }}
+          for target in ${{ matrix.cc }}
+          do
+            cargo clippy --workspace --all-targets "--target=$target" -- -D warnings
+            cargo clippy --workspace --all-targets --all-features "--target=$target" -- -D warnings
+            cargo build "--target=$target"
+            cargo build --all-features "--target=$target"
+          done
