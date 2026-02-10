@@ -1,4 +1,7 @@
-use core::ops::{BitAnd, BitOr, BitXor, Not, Shl, Shr};
+use core::ops::{
+    BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not, Shl,
+    ShlAssign, Shr, ShrAssign,
+};
 
 use as_repr::AsRepr;
 
@@ -803,6 +806,102 @@ macro_rules! bitops_impl {
                 };
 
                 value
+            }
+        }
+
+        impl<const MIN: $s, const MAX: $s> BitXorAssign for $signed<MIN, MAX>
+        where
+            Self: BitwiseSigned<$s>,
+        {
+            fn bitxor_assign(&mut self, other: Self) {
+                *self = *self ^ other;
+            }
+        }
+
+        impl<const MIN: $s, const MAX: $s> BitOrAssign for $signed<MIN, MAX>
+        where
+            Self: BitwiseSigned<$s>,
+        {
+            fn bitor_assign(&mut self, other: Self) {
+                *self = *self | other;
+            }
+        }
+
+        impl<const MIN: $s, const MAX: $s> BitAndAssign for $signed<MIN, MAX>
+        where
+            Self: BitwiseSigned<$s>,
+        {
+            fn bitand_assign(&mut self, other: Self) {
+                *self = *self & other;
+            }
+        }
+
+        impl<const MIN: $s, const MAX: $s, T> ShlAssign<T> for $signed<MIN, MAX>
+        where
+            Self: BitwiseSigned<$s>,
+            T: AsRepr<u32>,
+        {
+            fn shl_assign(&mut self, other: T) {
+                *self = *self << other;
+            }
+        }
+
+        impl<const MIN: $s, const MAX: $s, T> ShrAssign<T> for $signed<MIN, MAX>
+        where
+            Self: BitwiseSigned<$s>,
+            T: AsRepr<u32>,
+        {
+            fn shr_assign(&mut self, other: T) {
+                *self = *self >> other;
+            }
+        }
+
+        impl<const MIN: $u, const MAX: $u> BitXorAssign for $unsigned<MIN, MAX>
+        where
+            Self: BitwiseUnsigned<$u>,
+        {
+            fn bitxor_assign(&mut self, other: Self) {
+                *self = *self ^ other;
+            }
+        }
+
+        impl<const MIN: $u, const MAX: $u> BitOrAssign for $unsigned<MIN, MAX>
+        where
+            Self: BitwiseUnsigned<$u>,
+        {
+            fn bitor_assign(&mut self, other: Self) {
+                *self = *self | other;
+            }
+        }
+
+        impl<const MIN: $u, const MAX: $u> BitAndAssign for $unsigned<MIN, MAX>
+        where
+            Self: BitwiseUnsigned<$u>,
+        {
+            fn bitand_assign(&mut self, other: Self) {
+                *self = *self & other;
+            }
+        }
+
+        impl<const MIN: $u, const MAX: $u, T> ShlAssign<T>
+            for $unsigned<MIN, MAX>
+        where
+            Self: BitwiseUnsigned<$u>,
+            T: AsRepr<u32>,
+        {
+            fn shl_assign(&mut self, other: T) {
+                *self = *self << other;
+            }
+        }
+
+        impl<const MIN: $u, const MAX: $u, T> ShrAssign<T>
+            for $unsigned<MIN, MAX>
+        where
+            Self: BitwiseUnsigned<$u>,
+            T: AsRepr<u32>,
+        {
+            fn shr_assign(&mut self, other: T) {
+                *self = *self >> other;
             }
         }
     };
