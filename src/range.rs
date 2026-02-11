@@ -49,7 +49,7 @@ impl From<crate::Error> for Error {
     }
 }
 
-/// A type with multiple valid ranges of value
+/// A type with multiple valid ranges of values
 pub trait MultiRange<T = Self> {
     /// The minimum value of the type
     const MIN: T;
@@ -198,6 +198,47 @@ macro_rules! nonzero_multirange_impl {
     };
 }
 
+macro_rules! nonzero_impl_range {
+    ($p:ty) => {
+        impl Range<$p> for NonZero<$p> {
+            const MAX: $p = <$p>::MAX;
+            const MIN: $p = 1;
+        }
+    };
+}
+
+macro_rules! nonzero_impl_multirange {
+    ($p:ty) => {
+        impl MultiRange for NonZero<$p> {
+            const MAX: Self = Self::MAX;
+            const MIN: Self = Self::MIN;
+
+            fn ranges() -> impl Iterator<Item = RangeInclusive<Self>> {
+                iter::once(RangeInclusive::new(
+                    Self::MIN,
+                    NonZero::new(-1).unwrap(),
+                ))
+                .chain(iter::once(RangeInclusive::new(
+                    NonZero::new(1).unwrap(),
+                    Self::MAX,
+                )))
+                .filter(|range| !range.is_empty())
+            }
+        }
+
+        impl MultiRange<$p> for NonZero<$p> {
+            const MAX: $p = <$p>::MAX;
+            const MIN: $p = <$p>::MIN;
+
+            fn ranges() -> impl Iterator<Item = RangeInclusive<$p>> {
+                iter::once(RangeInclusive::new(<$p>::MIN, -1))
+                    .chain(iter::once(RangeInclusive::new(1, <$p>::MAX)))
+                    .filter(|range| !range.is_empty())
+            }
+        }
+    };
+}
+
 ranged_impl_range!(RangedU8, u8);
 ranged_impl_range!(RangedU16, u16);
 ranged_impl_range!(RangedU32, u32);
@@ -237,3 +278,15 @@ primitive_impl_range!(NonZero<u16>);
 primitive_impl_range!(NonZero<u32>);
 primitive_impl_range!(NonZero<u64>);
 primitive_impl_range!(NonZero<u128>);
+
+nonzero_impl_range!(u8);
+nonzero_impl_range!(u16);
+nonzero_impl_range!(u32);
+nonzero_impl_range!(u64);
+nonzero_impl_range!(u128);
+
+nonzero_impl_multirange!(i8);
+nonzero_impl_multirange!(i16);
+nonzero_impl_multirange!(i32);
+nonzero_impl_multirange!(i64);
+nonzero_impl_multirange!(i128);
