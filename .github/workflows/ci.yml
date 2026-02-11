@@ -20,7 +20,7 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Miri
         run: |
-          rustup toolchain install nightly --profile minimal -c miri --no-self-update
+          rustup toolchain install nightly --profile minimal -c miri -t s390x-unknown-linux-gnu --no-self-update
           rustup override set nightly
           cargo miri setup
       - name: Test with Miri (big-endian)
@@ -42,9 +42,9 @@ jobs:
         - tc: nightly
           up: cargo update
         - os: ubuntu-latest
-          cc: aarch64-linux-android i686-pc-windows-gnu i686-unknown-linux-gnu x86_64-unknown-illumos i686-unknown-freebsd x86_64-unknown-redox
+          cc: -t aarch64-linux-android,i686-pc-windows-gnu,i686-unknown-linux-gnu,x86_64-unknown-illumos,i686-unknown-freebsd,x86_64-unknown-redox
         - os: macos-latest
-          cc: aarch64-apple-ios x86_64-apple-darwin wasm32-wasip1 wasm32-unknown-unknown
+          cc: -t aarch64-apple-ios,x86_64-apple-darwin,wasm32-wasip1,wasm32-unknown-unknown
     steps:
       - uses: taiki-e/checkout-action@v1
       - uses: actions/cache@v5
@@ -58,27 +58,26 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.tc }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Rust
         run: |
-          rustup toolchain install ${{ matrix.tc }} --profile minimal -c clippy,rustfmt --no-self-update
+          rustup toolchain install ${{ matrix.tc }} --profile minimal -c clippy,rustfmt ${{ matrix.cc }} --no-self-update
           rustup override set ${{ matrix.tc }}
       - if: ${{ matrix.up }}
         name: Check code formatting
         run: cargo fmt --check
       - name: Checking clippy for warnings
         run: |
-          cargo build --workspace --all-targets
           cargo build --workspace --all-targets --all-features
-          cargo clippy --workspace --all-targets -- -D warnings
           cargo clippy --workspace --all-targets --all-features -- -D warnings
+          cargo build --workspace --all-targets
+          cargo clippy --workspace --all-targets -- -D warnings
       - if: ${{ matrix.cc }}
         name: Checking cross-compilation works
         run: |
-          rustup target install ${{ matrix.cc }}
-          for target in ${{ matrix.cc }}
+          for target in $(echo ${{ matrix.cc }} | sed 's/-t //g' | sed 's/,/ /g')
           do
-            cargo build --workspace "--target=$target"
             cargo build --workspace --all-features "--target=$target"
-            cargo clippy --workspace "--target=$target" -- -D warnings
             cargo clippy --workspace --all-features "--target=$target" -- -D warnings
+            cargo build --workspace "--target=$target"
+            cargo clippy --workspace "--target=$target" -- -D warnings
           done
       - name: Check doc generation succeeds
         run: cargo doc --all-features
