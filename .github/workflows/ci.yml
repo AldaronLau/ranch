@@ -7,6 +7,14 @@ jobs:
   miri:
     name: "Miri"
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        we: [le, be]
+        include:
+        - we: be
+          cc: --target s390x-unknown-linux-gnu
+        - we: le
+          cc: --target x86_64-unknown-linux-gnu
     steps:
       - uses: taiki-e/checkout-action@v1
       - uses: actions/cache@v5
@@ -17,16 +25,14 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-${{ matrix.we }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Miri
         run: |
-          rustup toolchain install nightly --profile minimal -c miri -t s390x-unknown-linux-gnu --no-self-update
+          rustup toolchain install nightly --profile minimal -c miri ${{ matrix.cc }} --no-self-update
           rustup override set nightly
           cargo miri setup
-      - name: Test with Miri (big-endian)
-        run: cargo miri test --all --all-features --target s390x-unknown-linux-gnu
-      - name: Test with Miri (little-endian)
-        run: cargo miri test --all --all-features
+      - name: Test with Miri
+        run: cargo miri test --all --all-features ${{ matrix.cc }}
   checks:
     name: "Checks"
     runs-on: ${{ matrix.os }}
