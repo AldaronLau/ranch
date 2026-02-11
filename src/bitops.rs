@@ -5,7 +5,7 @@ use core::ops::{
 
 use as_repr::AsRepr;
 
-use crate::{bitwise::*, range::Range, scale::RangedScaleTo, *};
+use crate::{bitwise::*, scale::RangedScaleTo, *};
 
 macro_rules! bitops_impl {
     ($unsigned:ident, $signed:ident, $u:ty, $s:ty) => {
@@ -1087,10 +1087,10 @@ bitops_impl!(RangedU32, RangedI32, u32, i32);
 bitops_impl!(RangedU64, RangedI64, u64, i64);
 bitops_impl!(RangedU128, RangedI128, u128, i128);
 
-pub trait BitwiseUnsigned<T>: RangedScaleTo<T> + Range + Sized {
+pub trait BitwiseUnsigned<T>: RangedScaleTo<T> {
     const USED_BITS: u32;
 }
 
-pub trait BitwiseSigned<T>: RangedScaleTo<T> + Range + Sized {
+pub trait BitwiseSigned<T>: RangedScaleTo<T> {
     const USED_BITS: u32;
 }

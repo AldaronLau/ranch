@@ -4,7 +4,7 @@ use core::{mem, ptr};
 
 use as_repr::AsRepr;
 
-use crate::*;
+use crate::{range::MultiRange, *};
 
 macro_rules! ranged_scale_to {
     ($nonzero:ident, $ranged:ident, $repr:ty, $scaled:ty) => {
@@ -65,7 +65,7 @@ ranged_scale_to!(RangedNonZeroU128, RangedU128, u128, u128);
 ///  - `Self` should be a ranged integer type
 ///  - `Repr` should be either a primitive integer or `R` for `AsRepr<R>`
 pub unsafe trait RangedScaleTo<T>:
-    AsRepr<Self::Repr> + Copy + Clone
+    AsRepr<Self::Repr> + MultiRange + Copy + Clone + Sized
 {
     type Repr: Copy + Clone;
 }
@@ -112,8 +112,8 @@ where
         let output: *mut T = &mut output;
         let input: *const u8 = input.cast();
         let output: *mut u8 = output.cast();
-        let input = unsafe { input.offset(i as isize) };
-        let output = unsafe { output.offset(j as isize) };
+        let input = unsafe { input.add(i) };
+        let output = unsafe { output.add(j) };
 
         unsafe { ptr::copy_nonoverlapping(input, output, 1) };
 

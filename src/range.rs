@@ -2,7 +2,7 @@
 //!
 //! Some convenience utilities for type ranges.
 
-use core::{error, fmt, num::NonZero, ops, result};
+use core::{error, fmt, iter, num::NonZero, ops::RangeInclusive, result};
 
 use super::*;
 
@@ -49,6 +49,32 @@ impl From<crate::Error> for Error {
     }
 }
 
+/// A type with multiple valid ranges of value
+pub trait MultiRange<T = Self> {
+    /// The minimum value of the type
+    const MIN: T;
+    /// The maximum value of the type
+    const MAX: T;
+
+    /// Return an iterator of each valid range.
+    ///
+    /// The ranges should be returned from lowest to highest value, and never
+    /// overlap (although this isn't enforced by the trait).
+    fn ranges() -> impl Iterator<Item = RangeInclusive<T>>;
+}
+
+impl<T, U> MultiRange<T> for U
+where
+    U: Range<T>,
+{
+    const MAX: T = U::MAX;
+    const MIN: T = U::MIN;
+
+    fn ranges() -> impl Iterator<Item = RangeInclusive<T>> {
+        iter::once(range_inclusive::<U, T>())
+    }
+}
+
 /// A type with a valid range of values
 pub trait Range<T = Self> {
     /// The minimum value of the type
@@ -76,11 +102,11 @@ pub trait Range<T = Self> {
 ///     RangeInclusive::new(RangedI32::new::<0>(), RangedI32::new::<10>()),
 /// );
 /// ```
-pub const fn range_inclusive<T, U>() -> ops::RangeInclusive<U>
+pub const fn range_inclusive<T, U>() -> RangeInclusive<U>
 where
     T: Range<U>,
 {
-    ops::RangeInclusive::new(T::MIN, T::MAX)
+    RangeInclusive::new(T::MIN, T::MAX)
 }
 
 /// Convert a result of an option to a range result.
@@ -141,6 +167,37 @@ macro_rules! ranged_impl_range {
     };
 }
 
+macro_rules! nonzero_multirange_impl {
+    ($r:ident, $p:ty) => {
+        impl<const MIN: $p, const MAX: $p> MultiRange<$p> for $r<MIN, MAX> {
+            const MAX: $p = MAX;
+            const MIN: $p = MIN;
+
+            fn ranges() -> impl Iterator<Item = RangeInclusive<$p>> {
+                iter::once(RangeInclusive::new(MIN, -1))
+                    .chain(iter::once(RangeInclusive::new(1, MAX)))
+                    .filter(|range| !range.is_empty())
+            }
+        }
+
+        impl<const MIN: $p, const MAX: $p> MultiRange<$r<MIN, MAX>>
+            for $r<MIN, MAX>
+        {
+            const MAX: $r<MIN, MAX> = Self::MAX;
+            const MIN: $r<MIN, MAX> = Self::MIN;
+
+            fn ranges() -> impl Iterator<Item = RangeInclusive<Self>> {
+                iter::once(RangeInclusive::new(Self::MIN, $r::new::<-1>()))
+                    .chain(iter::once(RangeInclusive::new(
+                        $r::new::<1>(),
+                        Self::MAX,
+                    )))
+                    .filter(|range| !range.is_empty())
+            }
+        }
+    };
+}
+
 ranged_impl_range!(RangedU8, u8);
 ranged_impl_range!(RangedU16, u16);
 ranged_impl_range!(RangedU32, u32);
@@ -168,6 +225,12 @@ ranged_impl_range!(RangedNonZeroU16, u16);
 ranged_impl_range!(RangedNonZeroU32, u32);
 ranged_impl_range!(RangedNonZeroU64, u64);
 ranged_impl_range!(RangedNonZeroU128, u128);
+
+nonzero_multirange_impl!(RangedNonZeroI8, i8);
+nonzero_multirange_impl!(RangedNonZeroI16, i16);
+nonzero_multirange_impl!(RangedNonZeroI32, i32);
+nonzero_multirange_impl!(RangedNonZeroI64, i64);
+nonzero_multirange_impl!(RangedNonZeroI128, i128);
 
 primitive_impl_range!(NonZero<u8>);
 primitive_impl_range!(NonZero<u16>);
