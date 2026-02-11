@@ -21,7 +21,7 @@ jobs:
       - name: Install Miri
         run: |
           rustup override set nightly
-          rustup toolchain install --profile minimal -c miri -t s390x-unknown-linux-gnu --no-self-update
+          rustup toolchain install --profile minimal -c miri --no-self-update
           cargo miri setup
       - name: Test with Miri (big-endian)
         run: cargo miri test --all --all-features --target s390x-unknown-linux-gnu
@@ -42,9 +42,9 @@ jobs:
         - tc: nightly
           up: cargo update
         - os: ubuntu-latest
-          cc: aarch64-linux-android,i686-pc-windows-gnu,i686-unknown-linux-gnu,x86_64-unknown-illumos,i686-unknown-freebsd,x86_64-unknown-redox
+          cc: aarch64-linux-android i686-pc-windows-gnu i686-unknown-linux-gnu x86_64-unknown-illumos i686-unknown-freebsd x86_64-unknown-redox
         - os: macos-latest
-          cc: aarch64-apple-ios,x86_64-apple-darwin,wasm32-wasip1,wasm32-unknown-unknown
+          cc: aarch64-apple-ios x86_64-apple-darwin wasm32-wasip1 wasm32-unknown-unknown
     steps:
       - uses: taiki-e/checkout-action@v1
       - uses: actions/cache@v5
@@ -59,7 +59,7 @@ jobs:
       - name: Install Rust
         run: |
           rustup override set ${{ matrix.tc }}
-          rustup toolchain install --profile minimal -c clippy,rustfmt -t ${{ matrix.cc }} --no-self-update
+          rustup toolchain install --profile minimal -c clippy,rustfmt --no-self-update
       - if: ${{ matrix.up }}
         name: Check code formatting
         run: cargo fmt --check
@@ -72,7 +72,8 @@ jobs:
       - if: ${{ matrix.cc }}
         name: Checking cross-compilation works
         run: |
-          for target in $(echo ${{ matrix.cc }} | sed 's/,/ /g')
+          rustup target install ${{ matrix.cc }}
+          for target in ${{ matrix.cc }}
           do
             cargo build --workspace "--target=$target"
             cargo build --workspace --all-features "--target=$target"
