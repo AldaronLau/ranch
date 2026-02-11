@@ -20,8 +20,8 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Miri
         run: |
+          rustup toolchain install nightly --profile minimal -c miri --no-self-update
           rustup override set nightly
-          rustup toolchain install --profile minimal -c miri --no-self-update
           cargo miri setup
       - name: Test with Miri (big-endian)
         run: cargo miri test --all --all-features --target s390x-unknown-linux-gnu
@@ -58,8 +58,8 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.tc }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Rust
         run: |
+          rustup toolchain install ${{ matrix.tc }} --profile minimal -c clippy,rustfmt --no-self-update
           rustup override set ${{ matrix.tc }}
-          rustup toolchain install --profile minimal -c clippy,rustfmt --no-self-update
       - if: ${{ matrix.up }}
         name: Check code formatting
         run: cargo fmt --check
