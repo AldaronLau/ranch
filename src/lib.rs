@@ -125,6 +125,30 @@
 //! );
 //! ```
 //!
+//! # Indexing arrays
+//!
+//! Ranch can also be used to index arrays with unsigned ranged integers.
+//!
+//! ```rust
+//! # use ranch::{RangedU32, unit::UnitU32};
+//! let a = [1, 2, 3];
+//! let i = RangedU32::<0, 2>::new::<1>();
+//! let j = UnitU32::<1>::default();
+//!
+//! assert_eq!(a[i], 2);
+//! assert_eq!(a[j], 2);
+//! ```
+//!
+//! Won't compile if the range's maximum exceeds the last index:
+//!
+//! ```rust,compile_fail
+//! # use ranch::RangedU32;
+//! let a = [1, 2, 3];
+//! let i = RangedU32::<0, 3>::new::<1>();
+//!
+//! assert_eq!(a[i], 2);
+//! ```
+//!
 //! [deranged]: https://docs.rs/crate/deranged
 //! [ux]: https://docs.rs/crate/ux
 //! [validate the range once]: RangedI32::with_i32()
@@ -210,6 +234,7 @@ mod convert;
 mod error;
 mod format;
 mod impl_ascii;
+mod index;
 mod ops;
 mod ord;
 pub mod parsing;
