@@ -24,6 +24,7 @@ jobs:
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
+            target/
           key: ${{ runner.os }}-${{ matrix.we }}-cargo-${{ hashFiles('**/Cargo.lock') }}
       - name: Install Miri
         run: |
@@ -31,7 +32,7 @@ jobs:
           rustup override set nightly
           cargo miri setup
       - name: Test with Miri
-        run: cargo clean && cargo miri test --all --all-features ${{ matrix.cc }}
+        run: cargo miri test --all --all-features ${{ matrix.cc }}
   checks:
     name: "Checks"
     runs-on: ${{ matrix.os }}
