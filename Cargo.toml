@@ -43,8 +43,12 @@ optional = true
 default-features = false
 
 [features]
-default = []
+"default" = ["full"]
+"full" = []
 
-bytemuck = ["dep:bytemuck"]
-serde = ["dep:serde_core"]
-zeroize = ["dep:zeroize"]
+"bytemuck" = ["bytemuck+v1"]
+"bytemuck+v1" = ["dep:bytemuck"]
+"serde" = ["serde+v1"]
+"serde+v1" = ["dep:serde_core"]
+"zeroize" = ["zeroize+v1"]
+"zeroize+v1" = ["dep:zeroize"]

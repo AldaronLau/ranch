@@ -156,6 +156,7 @@
 //! [`Serialize`]: serde_core::Serialize
 //! [`Deserialize`]: serde_core::Deserialize
 
+#![cfg(feature = "full")]
 #![doc(
     html_logo_url = "https://ardaku.github.io/mm/logo.svg",
     html_favicon_url = "https://ardaku.github.io/mm/icon.svg"
@@ -191,11 +192,11 @@
 )]
 
 mod crates {
-    #[cfg(feature = "bytemuck")]
+    #[cfg(feature = "bytemuck+v1")]
     mod bytemuck;
-    #[cfg(feature = "serde")]
+    #[cfg(feature = "serde+v1")]
     mod serde;
-    #[cfg(feature = "zeroize")]
+    #[cfg(feature = "zeroize+v1")]
     mod zeroize;
 }
 
