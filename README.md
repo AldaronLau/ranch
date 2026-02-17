@@ -34,6 +34,8 @@ Check out the [documentation] for examples.
  - Optional crate support
    - Enable [**_`arbitrary`_**](https://docs.rs/crate/arbitrary) for generating
      ranged integers from raw fuzzing data
+   - Enable [**_`bitflags`_**](https://docs.rs/crate/bitflags) for using
+     `ranch::bitwise` types as bitflags
    - Enable [**_`bytemuck`_**](https://docs.rs/crate/bytemuck) for casting as
      "plain old data"
    - Enable [**_`serde`_**](https://docs.rs/crate/serde) for serialization and

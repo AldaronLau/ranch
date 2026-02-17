@@ -15,6 +15,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23f5c5e71e748a7de64c788b60ec43f61e8c6709ebf006a9700c178ccd629181"
 
 [[package]]
+name = "bitflags"
+version = "2.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "843867be96c8daad0d758b57df9392b6d8d271134fce549de6ce169ff98a92af"
+
+[[package]]
 name = "bytemuck"
 version = "1.25.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -44,6 +50,7 @@ version = "0.6.0"
 dependencies = [
  "arbitrary",
  "as_repr",
+ "bitflags",
  "bytemuck",
  "serde_core",
  "zeroize",
