@@ -86,7 +86,7 @@ jobs:
             cargo clippy --workspace "--target=$target" -- -D warnings
           done
       - name: Check doc generation succeeds
-        run: cargo doc --all-features
+        run: cargo doc --all-features --no-deps
         # Only conditional since the tests MSRV is higher than the library's
       - if: ${{ matrix.up }}
         name: Updating dependencies & running tests
