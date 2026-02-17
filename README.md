@@ -32,6 +32,8 @@ Check out the [documentation] for examples.
  - Conversions between for ranged integers
  - Aliases for arbitrary width integers, unit integers, and ASCII types
  - Optional crate support
+   - Enable [**_`arbitrary`_**](https://docs.rs/crate/arbitrary) for generating
+     ranged integers from raw fuzzing data
    - Enable [**_`bytemuck`_**](https://docs.rs/crate/bytemuck) for casting as
      "plain old data"
    - Enable [**_`serde`_**](https://docs.rs/crate/serde) for serialization and

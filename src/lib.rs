@@ -17,6 +17,8 @@
 //!
 //! Ranch optionally works with a few other crates:
 //!
+//!  - Enable [**_`arbitrary`_**](https://docs.rs/crate/arbitrary) for
+//!    generating ranged integers from raw fuzzing data
 //!  - Enable [**_`bytemuck`_**](https://docs.rs/crate/bytemuck) for casting as
 //!    "plain old data"
 //!  - Enable [**_`serde`_**](https://docs.rs/crate/serde) for serialization and
@@ -192,6 +194,8 @@
 )]
 
 mod crates {
+    #[cfg(feature = "arbitrary+v1")]
+    mod arbitrary;
     #[cfg(feature = "bytemuck+v1")]
     mod bytemuck;
     #[cfg(feature = "serde+v1")]

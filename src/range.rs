@@ -216,10 +216,10 @@ macro_rules! nonzero_impl_multirange {
             fn ranges() -> impl Iterator<Item = RangeInclusive<Self>> {
                 iter::once(RangeInclusive::new(
                     Self::MIN,
-                    NonZero::new(-1).unwrap(),
+                    const { NonZero::new(-1).unwrap() },
                 ))
                 .chain(iter::once(RangeInclusive::new(
-                    NonZero::new(1).unwrap(),
+                    const { NonZero::new(1).unwrap() },
                     Self::MAX,
                 )))
                 .filter(|range| !range.is_empty())
@@ -234,6 +234,38 @@ macro_rules! nonzero_impl_multirange {
                 iter::once(RangeInclusive::new(<$p>::MIN, -1))
                     .chain(iter::once(RangeInclusive::new(1, <$p>::MAX)))
                     .filter(|range| !range.is_empty())
+            }
+        }
+    };
+}
+
+macro_rules! range_nonzero_impl {
+    ($r:ident, $p:ty) => {
+        impl<const MIN: $p, const MAX: $p> Range<NonZero<$p>> for $r<MIN, MAX> {
+            const MAX: NonZero<$p> = const { NonZero::new(MAX).unwrap() };
+            const MIN: NonZero<$p> = const { NonZero::new(MIN).unwrap() };
+        }
+    };
+}
+
+macro_rules! multirange_nonzero_impl {
+    ($r:ident, $p:ty) => {
+        impl<const MIN: $p, const MAX: $p> MultiRange<NonZero<$p>>
+            for $r<MIN, MAX>
+        {
+            const MAX: NonZero<$p> = const { NonZero::new(MAX).unwrap() };
+            const MIN: NonZero<$p> = const { NonZero::new(MIN).unwrap() };
+
+            fn ranges() -> impl Iterator<Item = RangeInclusive<NonZero<$p>>> {
+                iter::once(RangeInclusive::new(
+                    const { NonZero::new(MIN).unwrap() },
+                    const { NonZero::new(-1).unwrap() },
+                ))
+                .chain(iter::once(RangeInclusive::new(
+                    const { NonZero::new(1).unwrap() },
+                    const { NonZero::new(MAX).unwrap() },
+                )))
+                .filter(|range| !range.is_empty())
             }
         }
     };
@@ -290,3 +322,15 @@ nonzero_impl_multirange!(i16);
 nonzero_impl_multirange!(i32);
 nonzero_impl_multirange!(i64);
 nonzero_impl_multirange!(i128);
+
+range_nonzero_impl!(RangedNonZeroU8, u8);
+range_nonzero_impl!(RangedNonZeroU16, u16);
+range_nonzero_impl!(RangedNonZeroU32, u32);
+range_nonzero_impl!(RangedNonZeroU64, u64);
+range_nonzero_impl!(RangedNonZeroU128, u128);
+
+multirange_nonzero_impl!(RangedNonZeroI8, i8);
+multirange_nonzero_impl!(RangedNonZeroI16, i16);
+multirange_nonzero_impl!(RangedNonZeroI32, i32);
+multirange_nonzero_impl!(RangedNonZeroI64, i64);
+multirange_nonzero_impl!(RangedNonZeroI128, i128);
