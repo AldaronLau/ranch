@@ -285,26 +285,31 @@ macro_rules! bitops_impl {
             /// Bitwise shift left.
             ///
             /// ```rust
-            /// # use ranch::{bitwise::I12, unit::UnitU32};
+            /// # use ranch::{bitwise::I12, unit::{UnitU32, UnitU8}};
             /// assert_eq!(
             ///     I12::new::<0b1011>()
             ///         .shl_ranged(UnitU32::<4>::default()),
             ///     I12::new::<0b1011_0000>(),
             /// );
+            /// assert_eq!(
+            ///     I12::new::<0b1011>()
+            ///         .shl_ranged(UnitU8::<4>::default()),
+            ///     I12::new::<0b1011_0000>(),
+            /// );
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn shl_ranged<const RHS_MIN: u32, const RHS_MAX: u32>(
-                self,
-                ranged: RangedU32<RHS_MIN, RHS_MAX>,
-            ) -> Self {
+            pub const fn shl_ranged<R>(self, ranged: R) -> Self
+            where
+                R: RangedScaleTo<u32>,
+            {
                 const {
-                    if RHS_MAX >= Self::USED_BITS {
+                    if scale::ranged_scale_to(R::MAX) >= Self::USED_BITS {
                         panic!("cannot shift left more than size - 1 in bits");
                     }
                 }
 
-                match self.checked_shl(ranged) {
+                match self.checked_shl(scale::ranged_scale_to(ranged)) {
                     Some(value) => value,
                     None => unreachable!(),
                 }
@@ -313,26 +318,31 @@ macro_rules! bitops_impl {
             /// Bitwise shift right.
             ///
             /// ```rust
-            /// # use ranch::{bitwise::I12, unit::UnitU32};
+            /// # use ranch::{bitwise::I12, unit::{UnitU32, UnitU8}};
             /// assert_eq!(
             ///     I12::new::<0b1011_0000>()
             ///         .shr_ranged(UnitU32::<4>::default()),
             ///     I12::new::<0b1011>(),
             /// );
+            /// assert_eq!(
+            ///     I12::new::<0b1011_0000>()
+            ///         .shr_ranged(UnitU8::<4>::default()),
+            ///     I12::new::<0b1011>(),
+            /// );
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn shr_ranged<const RHS_MIN: u32, const RHS_MAX: u32>(
-                self,
-                ranged: RangedU32<RHS_MIN, RHS_MAX>,
-            ) -> Self {
+            pub const fn shr_ranged<R>(self, ranged: R) -> Self
+            where
+                R: RangedScaleTo<u32>,
+            {
                 const {
-                    if RHS_MAX >= Self::USED_BITS {
+                    if scale::ranged_scale_to(R::MAX) >= Self::USED_BITS {
                         panic!("cannot shift right more than size - 1 in bits");
                     }
                 }
 
-                match self.checked_shr(ranged) {
+                match self.checked_shr(scale::ranged_scale_to(ranged)) {
                     Some(value) => value,
                     None => unreachable!(),
                 }
@@ -616,26 +626,31 @@ macro_rules! bitops_impl {
             /// Bitwise shift left.
             ///
             /// ```rust
-            /// # use ranch::{bitwise::U12, unit::UnitU32};
+            /// # use ranch::{bitwise::U12, unit::{UnitU32, UnitU8}};
             /// assert_eq!(
             ///     U12::new::<0b1011>()
             ///         .shl_ranged(UnitU32::<4>::default()),
             ///     U12::new::<0b1011_0000>(),
             /// );
+            /// assert_eq!(
+            ///     U12::new::<0b1011>()
+            ///         .shl_ranged(UnitU8::<4>::default()),
+            ///     U12::new::<0b1011_0000>(),
+            /// );
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn shl_ranged<const RHS_MIN: u32, const RHS_MAX: u32>(
-                self,
-                ranged: RangedU32<RHS_MIN, RHS_MAX>,
-            ) -> Self {
+            pub const fn shl_ranged<R>(self, ranged: R) -> Self
+            where
+                R: RangedScaleTo<u32>,
+            {
                 const {
-                    if RHS_MAX >= Self::USED_BITS {
+                    if scale::ranged_scale_to(R::MAX) >= Self::USED_BITS {
                         panic!("cannot shift left more than size - 1 in bits");
                     }
                 }
 
-                match self.checked_shl(ranged) {
+                match self.checked_shl(scale::ranged_scale_to(ranged)) {
                     Some(value) => value,
                     None => unreachable!(),
                 }
@@ -644,26 +659,31 @@ macro_rules! bitops_impl {
             /// Bitwise shift right.
             ///
             /// ```rust
-            /// # use ranch::{bitwise::U12, unit::UnitU32};
+            /// # use ranch::{bitwise::U12, unit::{UnitU32, UnitU8}};
             /// assert_eq!(
             ///     U12::new::<0b1011_0000>()
             ///         .shr_ranged(UnitU32::<4>::default()),
             ///     U12::new::<0b1011>(),
             /// );
+            /// assert_eq!(
+            ///     U12::new::<0b1011_0000>()
+            ///         .shr_ranged(UnitU8::<4>::default()),
+            ///     U12::new::<0b1011>(),
+            /// );
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn shr_ranged<const RHS_MIN: u32, const RHS_MAX: u32>(
-                self,
-                ranged: RangedU32<RHS_MIN, RHS_MAX>,
-            ) -> Self {
+            pub const fn shr_ranged<R>(self, ranged: R) -> Self
+            where
+                R: RangedScaleTo<u32>,
+            {
                 const {
-                    if RHS_MAX >= Self::USED_BITS {
+                    if scale::ranged_scale_to(R::MAX) >= Self::USED_BITS {
                         panic!("cannot shift right more than size - 1 in bits");
                     }
                 }
 
-                match self.checked_shr(ranged) {
+                match self.checked_shr(scale::ranged_scale_to(ranged)) {
                     Some(value) => value,
                     None => unreachable!(),
                 }
