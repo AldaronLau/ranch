@@ -197,17 +197,17 @@
 )]
 
 mod crates {
-    #[cfg(feature = "arbitrary+v1")]
+    #[cfg(feature = "arbitrary.v1")]
     mod arbitrary;
-    #[cfg(feature = "bitflags+v2")]
+    #[cfg(feature = "bitflags.v2")]
     mod bitflags;
-    #[cfg(feature = "bytemuck+v1")]
+    #[cfg(feature = "bytemuck.v1")]
     mod bytemuck;
-    #[cfg(feature = "fastrand+v2")]
+    #[cfg(feature = "fastrand.v2")]
     mod fastrand;
-    #[cfg(feature = "serde+v1")]
+    #[cfg(feature = "serde.v1")]
     mod serde;
-    #[cfg(feature = "zeroize+v1")]
+    #[cfg(feature = "zeroize.v1")]
     mod zeroize;
 }
 
