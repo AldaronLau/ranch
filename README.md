@@ -38,6 +38,7 @@ Check out the [documentation] for examples.
      `ranch::bitwise` types as bitflags
    - Enable [**_`bytemuck`_**](https://docs.rs/crate/bytemuck) for casting as
      "plain old data"
+   - Enable [**_`fastrand`_**](https://docs.rs/crate/fastrand) for RNG support
    - Enable [**_`serde`_**](https://docs.rs/crate/serde) for serialization and
      deserialization
    - Enable [**_`zeroize`_**](https://docs.rs/crate/zeroize) for secure secret

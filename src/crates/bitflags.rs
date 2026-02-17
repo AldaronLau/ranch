@@ -1,6 +1,9 @@
 use bitflags::Bits;
 
-use crate::{*, bitops::{BitwiseSigned, BitwiseUnsigned}};
+use crate::{
+    bitops::{BitwiseSigned, BitwiseUnsigned},
+    *,
+};
 
 macro_rules! impl_bitflags {
     ($unsigned:ident, $signed:ident, $u:ty, $s:ty) => {
@@ -8,16 +11,16 @@ macro_rules! impl_bitflags {
         where
             Self: BitwiseSigned<$s>,
         {
-            const EMPTY: Self = Self(0);
             const ALL: Self = Self(-1);
+            const EMPTY: Self = Self(0);
         }
 
         impl<const MIN: $u, const MAX: $u> Bits for $unsigned<MIN, MAX>
         where
             Self: BitwiseUnsigned<$u>,
         {
-            const EMPTY: Self = Self(MIN);
             const ALL: Self = Self(MAX);
+            const EMPTY: Self = Self(MIN);
         }
     };
 }

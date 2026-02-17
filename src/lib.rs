@@ -23,6 +23,7 @@
 //!    [`bitwise`] types as bitflags
 //!  - Enable [**_`bytemuck`_**](https://docs.rs/crate/bytemuck) for casting as
 //!    "plain old data"
+//!  - Enable [**_`fastrand`_**](https://docs.rs/crate/fastrand) for RNG support
 //!  - Enable [**_`serde`_**](https://docs.rs/crate/serde) for serialization and
 //!    deserialization
 //!  - Enable [**_`zeroize`_**](https://docs.rs/crate/zeroize) for secure secret
@@ -198,8 +199,12 @@
 mod crates {
     #[cfg(feature = "arbitrary+v1")]
     mod arbitrary;
+    #[cfg(feature = "bitflags+v2")]
+    mod bitflags;
     #[cfg(feature = "bytemuck+v1")]
     mod bytemuck;
+    #[cfg(feature = "fastrand+v2")]
+    mod fastrand;
     #[cfg(feature = "serde+v1")]
     mod serde;
     #[cfg(feature = "zeroize+v1")]
@@ -246,6 +251,7 @@ mod ops;
 mod ord;
 pub mod parsing;
 mod quotient;
+mod random;
 pub mod range;
 mod repr;
 mod scale;

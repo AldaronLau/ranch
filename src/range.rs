@@ -4,6 +4,7 @@
 
 use core::{error, fmt, iter, num::NonZero, ops::RangeInclusive, result};
 
+pub use super::random::*;
 use super::*;
 
 /// Validating an integer is within a range result

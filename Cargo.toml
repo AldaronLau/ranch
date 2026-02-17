@@ -42,6 +42,11 @@ version = "1.25.0"
 optional = true
 default-features = false
 
+[dependencies.fastrand]
+version = "2.3.0"
+optional = true
+default-features = false
+
 [dependencies.serde_core]
 version = "1.0.228"
 optional = true
@@ -62,6 +67,8 @@ default-features = false
 "bitflags+v2" = ["dep:bitflags"]
 "bytemuck" = ["bytemuck+v1"]
 "bytemuck+v1" = ["dep:bytemuck"]
+"fastrand" = ["fastrand+v2"]
+"fastrand+v2" = ["dep:fastrand"]
 "serde" = ["serde+v1"]
 "serde+v1" = ["dep:serde_core"]
 "zeroize" = ["zeroize+v1"]
