@@ -174,8 +174,8 @@ macro_rules! bitops_impl {
 
             /// Bitwise shift left.
             ///
-            /// Returns `None` if `rhs` is greater than or equal to
-            #[doc = concat!(stringify!($bits), ".")]
+            /// Returns `None` if `rhs` is greater than or equal to `N` for
+            /// type `I{N}`.
             ///
             /// ```rust
             /// # use ranch::bitwise::I12;
@@ -205,7 +205,8 @@ macro_rules! bitops_impl {
 
             /// Bitwise shift right.
             ///
-            /// Returns `None` if `rhs` is greater than or equal to
+            /// Returns `None` if `rhs` is greater than or equal to `N` for
+            /// type `I{N}`.
             ///
             /// ```rust
             /// # use ranch::bitwise::I12;
@@ -214,7 +215,6 @@ macro_rules! bitops_impl {
             ///     I12::new::<0b1011>(),
             /// );
             /// ```
-            #[doc = concat!(stringify!($bits), ".")]
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
             pub const fn checked_shr(
@@ -515,8 +515,8 @@ macro_rules! bitops_impl {
 
             /// Bitwise shift left.
             ///
-            /// Returns `None` if `rhs` is greater than or equal to
-            #[doc = concat!(stringify!($bits), ".")]
+            /// Returns `None` if `rhs` is greater than or equal to `N` for
+            /// type `U{N}`.
             ///
             /// ```rust
             /// # use ranch::bitwise::U12;
@@ -546,7 +546,8 @@ macro_rules! bitops_impl {
 
             /// Bitwise shift right.
             ///
-            /// Returns `None` if `rhs` is greater than or equal to
+            /// Returns `None` if `rhs` is greater than or equal to `N` for
+            /// type `U{N}`.
             ///
             /// ```rust
             /// # use ranch::bitwise::U12;
@@ -555,7 +556,6 @@ macro_rules! bitops_impl {
             ///     U12::new::<0b1011>(),
             /// );
             /// ```
-            #[doc = concat!(stringify!($bits), ".")]
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
             pub const fn checked_shr(
