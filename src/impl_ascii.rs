@@ -129,10 +129,7 @@ impl Digit {
     ///
     /// ```rust
     /// # use ranch::{RangedU8, ascii::Digit};
-    /// assert_eq!(
-    ///     Digit::new::<b'5'>().to_digit(),
-    ///     RangedU8::new::<5>(),
-    /// );
+    /// assert_eq!(Digit::new::<b'5'>().to_digit(), 5);
     /// ```
     pub const fn to_digit(self) -> RangedU8<0, 9> {
         self.to_ranged().sub::<0x30, 0, 9>()

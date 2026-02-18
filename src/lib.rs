@@ -120,16 +120,13 @@
 //!
 //! ```rust
 //! # use ranch::RangedI32;
-//! assert_eq!(
-//!     RangedI32::<2, 7>::new::<2>()
-//!         .add_ranged(RangedI32::<6, 7>::new::<6>()),
-//!     RangedI32::<8, 14>::new::<8>(),
-//! );
-//! assert_eq!(
-//!     RangedI32::<2, 7>::new::<2>()
-//!         .add_ranged(RangedI32::<6, 7>::new::<7>()),
-//!     RangedI32::<8, 14>::new::<9>(),
-//! );
+//! let a: RangedI32<8, 14> = RangedI32::<2, 7>::new::<2>()
+//!     .add_ranged(RangedI32::<6, 7>::new::<6>());
+//! let b: RangedI32<8, 14> = RangedI32::<2, 7>::new::<2>()
+//!     .add_ranged(RangedI32::<6, 7>::new::<7>());
+//!
+//! assert_eq!(a, 8);
+//! assert_eq!(b, 9);
 //! ```
 //!
 //! # Indexing arrays

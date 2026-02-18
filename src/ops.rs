@@ -139,8 +139,9 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<15, 85>::new::<16>();")]
-            #[doc = concat!("let output = ", stringify!($type), "::<38, 108>::new::<39>();")]
-            /// assert_eq!(a.add::<23, _, _>(), output);
+            #[doc = concat!("let output: ", stringify!($type), "<38, 108> = a.add::<23, _, _>();")]
+            ///
+            /// assert_eq!(output, 39);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
@@ -161,8 +162,9 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<38, 108>::new::<39>();")]
-            #[doc = concat!("let output = ", stringify!($type), "::<15, 85>::new::<16>();")]
-            /// assert_eq!(a.sub::<23, _, _>(), output);
+            #[doc = concat!("let output: ", stringify!($type), "<15, 85> = a.sub::<23, _, _>();")]
+            ///
+            /// assert_eq!(output, 16);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
@@ -183,8 +185,9 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<23, 42>::new::<30>();")]
-            #[doc = concat!("let output = ", stringify!($type), "::<46, 84>::new::<60>();")]
-            /// assert_eq!(a.mul::<2, _, _>(), output);
+            #[doc = concat!("let output: ", stringify!($type), "<46, 84> = a.mul::<2, _, _>();")]
+            ///
+            /// assert_eq!(output, 60);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
@@ -205,8 +208,9 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<60>();")]
-            #[doc = concat!("let output = ", stringify!($type), "::<23, 42>::new::<30>();")]
-            /// assert_eq!(a.div::<2, _, _>(), output);
+            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div::<2, _, _>();")]
+            ///
+            /// assert_eq!(output, 30);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
@@ -227,8 +231,9 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 9>::new::<8>();")]
-            #[doc = concat!("let output = ", stringify!($type), "::<49, 81>::new::<64>();")]
-            /// assert_eq!(a.pow::<2, _, _>(), output);
+            #[doc = concat!("let output: ", stringify!($type), "<49, 81> = a.pow::<2, _, _>();")]
+            ///
+            /// assert_eq!(output, 64);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
@@ -249,15 +254,17 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 10>::new::<9>();")]
-            #[doc = concat!("let output = ", stringify!($type), "::<7, 8>::new::<8>();")]
-            /// assert_eq!(a.min::<8, _, _>(), output);
+            #[doc = concat!("let output: ", stringify!($type), "<7, 8> = a.min::<8, _, _>();")]
+            ///
+            /// assert_eq!(output, 8);
             /// ```
             ///
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 12>::new::<9>();")]
-            #[doc = concat!("let output = ", stringify!($type), "::<7, 10>::new::<9>();")]
-            /// assert_eq!(a.min::<10, _, _>(), output);
+            #[doc = concat!("let output: ", stringify!($type), "<7, 10> = a.min::<10, _, _>();")]
+            ///
+            /// assert_eq!(output, 9);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
@@ -275,15 +282,17 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 10>::new::<9>();")]
-            #[doc = concat!("let output = ", stringify!($type), "::<8, 10>::new::<9>();")]
-            /// assert_eq!(a.max::<8, _, _>(), output);
+            #[doc = concat!("let output: ", stringify!($type), "<8, 10> = a.max::<8, _, _>();")]
+            ///
+            /// assert_eq!(output, 9);
             /// ```
             ///
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 12>::new::<9>();")]
-            #[doc = concat!("let output = ", stringify!($type), "::<10, 12>::new::<10>();")]
-            /// assert_eq!(a.max::<10, _, _>(), output);
+            #[doc = concat!("let output: ", stringify!($type), "<10, 12> = a.max::<10, _, _>();")]
+            ///
+            /// assert_eq!(output, 10);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
@@ -301,8 +310,9 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<5, 10>::new::<7>();")]
-            #[doc = concat!("let output = ", stringify!($type), "::<8, 10>::new::<8>();")]
-            /// assert_eq!(a.clamp::<8, 12, _, _>(), output);
+            #[doc = concat!("let output: ", stringify!($type), "<8, 10> = a.clamp::<8, 12, _, _>();")]
+            ///
+            /// assert_eq!(output, 8);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
@@ -330,10 +340,7 @@ macro_rules! impl_ops {
             #[doc = concat!("let a = ", stringify!($type), "::<1, 50>::new::<50>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 50>::new::<2>();")]
             ///
-            /// assert_eq!(
-            ///     a.checked_div_nonzero(b).unwrap(),
-            #[doc = concat!("    ", stringify!($type), "::new::<25>(),")]
-            /// );
+            /// assert_eq!(a.checked_div_nonzero(b).unwrap(), 25);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
@@ -356,14 +363,8 @@ macro_rules! impl_ops {
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 50>::new::<2>();")]
             #[doc = concat!("let c = ", stringify!($nonzero), "::<1, 120>::new::<120>();")]
             ///
-            /// assert_eq!(
-            ///     a.saturating_div_nonzero(b),
-            #[doc = concat!("    ", stringify!($type), "::new::<25>(),")]
-            /// );
-            /// assert_eq!(
-            ///     a.saturating_div_nonzero(c),
-            #[doc = concat!("    ", stringify!($type), "::new::<1>(),")]
-            /// );
+            /// assert_eq!(a.saturating_div_nonzero(b), 25);
+            /// assert_eq!(a.saturating_div_nonzero(c), 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
@@ -438,10 +439,7 @@ macro_rules! impl_ops_nonzero_signed {
             #[doc = concat!("let a = ", stringify!($type), "::<1, 50>::new::<50>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 50>::new::<2>();")]
             ///
-            /// assert_eq!(
-            ///     a.checked_div_nonzero(b).unwrap().unwrap(),
-            #[doc = concat!("    ", stringify!($type), "::new::<25>(),")]
-            /// );
+            /// assert_eq!(a.checked_div_nonzero(b).unwrap().unwrap(), 25);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
@@ -505,10 +503,7 @@ macro_rules! impl_ops_nonzero_unsigned {
             #[doc = concat!("let a = ", stringify!($type), "::<1, 50>::new::<50>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 50>::new::<2>();")]
             ///
-            /// assert_eq!(
-            ///     a.checked_div_nonzero(b).unwrap(),
-            #[doc = concat!("    ", stringify!($type), "::new::<25>(),")]
-            /// );
+            /// assert_eq!(a.checked_div_nonzero(b).unwrap(), 25);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]

@@ -12,9 +12,9 @@ macro_rules! const_ord {
             #[doc = concat!("# use ranch::", stringify!($ty), ";")]
             #[doc = concat!("let a = ", stringify!($ty), "::<4, 24>::new::<12>();")]
             #[doc = concat!("let b = ", stringify!($ty), "::<6, 12>::new::<6>();")]
-            #[doc = concat!("let output = ", stringify!($ty), "::<4, 12>::new::<6>();")]
+            #[doc = concat!("let output: ", stringify!($ty), "<4, 12> = a.min_ranged(b);")]
             ///
-            /// assert_eq!(a.min_ranged(b), output);
+            /// assert_eq!(output, 6);
             /// ```
             pub const fn min_ranged<
                 const OTHER_MIN: $p,
@@ -51,9 +51,9 @@ macro_rules! const_ord {
             #[doc = concat!("# use ranch::", stringify!($ty), ";")]
             #[doc = concat!("let a = ", stringify!($ty), "::<4, 24>::new::<12>();")]
             #[doc = concat!("let b = ", stringify!($ty), "::<6, 12>::new::<6>();")]
-            #[doc = concat!("let output = ", stringify!($ty), "::<6, 24>::new::<12>();")]
+            #[doc = concat!("let output: ", stringify!($ty), "<6, 24> = a.max_ranged(b);")]
             ///
-            /// assert_eq!(a.max_ranged(b), output);
+            /// assert_eq!(output, 12);
             /// ```
             pub const fn max_ranged<
                 const OTHER_MIN: $p,
@@ -95,9 +95,9 @@ macro_rules! const_ord {
             #[doc = concat!("let a = ", stringify!($ty), "::<6, 24>::new::<12>();")]
             #[doc = concat!("let min = ", stringify!($ty), "::<4, 12>::new::<8>();")]
             #[doc = concat!("let max = ", stringify!($ty), "::<8, 16>::new::<10>();")]
-            #[doc = concat!("let output = ", stringify!($ty), "::<6, 16>::new::<10>();")]
+            #[doc = concat!("let output: ", stringify!($ty), "<6, 16> = a.clamp_ranged(min, max);")]
             ///
-            /// assert_eq!(a.clamp_ranged(min, max), output);
+            /// assert_eq!(output, 10);
             /// ```
             pub const fn clamp_ranged<
                 const MIN_MIN: $p,
