@@ -5,7 +5,7 @@ use as_repr::AsRepr;
 use crate::{Error, Quotient, RangedI32, RangedU32, Result};
 
 /// [`i32`] not to equal zero with a specified minimum and maximum value
-#[derive(Copy, Clone, Ord, PartialOrd, Hash)]
+#[derive(Copy, Clone, Hash)]
 #[repr(transparent)]
 pub struct RangedNonZeroI32<const MIN: i32, const MAX: i32>(
     pub(crate) NonZero<i32>,

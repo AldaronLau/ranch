@@ -3,7 +3,7 @@ use as_repr::AsRepr;
 use crate::{Error, ParsingError, ParsingResult, Quotient, RangedU32, Result};
 
 /// [`u64`] with a specified minimum and maximum value
-#[derive(Copy, Clone, Ord, PartialOrd, Hash)]
+#[derive(Copy, Clone, Hash)]
 #[repr(transparent)]
 pub struct RangedU64<const MIN: u64, const MAX: u64>(pub(crate) u64);
 

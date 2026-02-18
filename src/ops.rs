@@ -1,4 +1,5 @@
 use core::{
+    cmp::Ordering,
     num::NonZero,
     ops::{Add, Div, Mul, Sub},
 };
@@ -15,9 +16,54 @@ macro_rules! impl_ops {
         $ret:ident,
         $nan_unreachable:ident $(,)?
     ) => {
+        impl<const MIN: $p, const MAX: $p> Ord for $nonzero::<MIN, MAX> {
+            fn cmp(&self, other: &Self) -> Ordering {
+                let this: $p = as_repr::as_repr(*self);
+                let other: $p = as_repr::as_repr(*other);
+
+                this.cmp(&other)
+            }
+        }
+
+        impl<T, const MIN: $p, const MAX: $p> PartialOrd<T>
+            for $nonzero::<MIN, MAX>
+        where
+            T: AsRepr<$p> + Copy + Clone,
+        {
+            fn partial_cmp(&self, other: &T) -> Option<Ordering> {
+                let this: $p = as_repr::as_repr(*self);
+                let other: $p = as_repr::as_repr(*other);
+
+                this.partial_cmp(&other)
+            }
+        }
+
+        impl<const MIN: $p, const MAX: $p> Ord for $type::<MIN, MAX> {
+            fn cmp(&self, other: &Self) -> Ordering {
+                let this: $p = as_repr::as_repr(*self);
+                let other: $p = as_repr::as_repr(*other);
+
+                this.cmp(&other)
+            }
+        }
+
+        impl<T, const MIN: $p, const MAX: $p> PartialOrd<T>
+            for $type::<MIN, MAX>
+        where
+            T: AsRepr<$p> + Copy + Clone,
+        {
+            fn partial_cmp(&self, other: &T) -> Option<Ordering> {
+                let this: $p = as_repr::as_repr(*self);
+                let other: $p = as_repr::as_repr(*other);
+
+                this.partial_cmp(&other)
+            }
+        }
+
         impl<const MIN: $p, const MAX: $p> Eq for $nonzero::<MIN, MAX> { }
 
-        impl<T, const MIN: $p, const MAX: $p> PartialEq<T> for $nonzero::<MIN, MAX>
+        impl<T, const MIN: $p, const MAX: $p> PartialEq<T>
+            for $nonzero::<MIN, MAX>
         where
             T: AsRepr<$p> + Copy + Clone,
         {
@@ -26,13 +72,6 @@ macro_rules! impl_ops {
                 let other: $p = as_repr::as_repr(*other);
 
                 this.eq(&other)
-            }
-
-            fn ne(&self, other: &T) -> bool {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.ne(&other)
             }
         }
 
@@ -47,13 +86,6 @@ macro_rules! impl_ops {
                 let other: $p = as_repr::as_repr(*other);
 
                 this.eq(&other)
-            }
-
-            fn ne(&self, other: &T) -> bool {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.ne(&other)
             }
         }
 
