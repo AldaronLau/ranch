@@ -5,7 +5,7 @@ use as_repr::AsRepr;
 use crate::{Error, Quotient, RangedU8, RangedU32, Result};
 
 /// [`u8`] not to equal zero with a specified minimum and maximum value
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Copy, Clone, Ord, PartialOrd, Hash)]
 #[repr(transparent)]
 pub struct RangedNonZeroU8<const MIN: u8, const MAX: u8>(
     pub(crate) NonZero<u8>,

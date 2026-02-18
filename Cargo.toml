@@ -62,11 +62,6 @@ version = "1.8.2"
 optional = true
 default-features = false
 
-[dev-dependencies.insta]
-version = "1.46.3"
-default-features = false
-features = ["json"]
-
 [dev-dependencies.rand]
 version = "0.10.0"
 default-features = false

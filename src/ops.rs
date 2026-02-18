@@ -15,6 +15,48 @@ macro_rules! impl_ops {
         $ret:ident,
         $nan_unreachable:ident $(,)?
     ) => {
+        impl<const MIN: $p, const MAX: $p> Eq for $nonzero::<MIN, MAX> { }
+
+        impl<T, const MIN: $p, const MAX: $p> PartialEq<T> for $nonzero::<MIN, MAX>
+        where
+            T: AsRepr<$p> + Copy + Clone,
+        {
+            fn eq(&self, other: &T) -> bool {
+                let this: $p = as_repr::as_repr(*self);
+                let other: $p = as_repr::as_repr(*other);
+
+                this.eq(&other)
+            }
+
+            fn ne(&self, other: &T) -> bool {
+                let this: $p = as_repr::as_repr(*self);
+                let other: $p = as_repr::as_repr(*other);
+
+                this.ne(&other)
+            }
+        }
+
+        impl<const MIN: $p, const MAX: $p> Eq for $type::<MIN, MAX> { }
+
+        impl<T, const MIN: $p, const MAX: $p> PartialEq<T> for $type::<MIN, MAX>
+        where
+            T: AsRepr<$p> + Copy + Clone,
+        {
+            fn eq(&self, other: &T) -> bool {
+                let this: $p = as_repr::as_repr(*self);
+                let other: $p = as_repr::as_repr(*other);
+
+                this.eq(&other)
+            }
+
+            fn ne(&self, other: &T) -> bool {
+                let this: $p = as_repr::as_repr(*self);
+                let other: $p = as_repr::as_repr(*other);
+
+                this.ne(&other)
+            }
+        }
+
         impl<T, const MIN: $p, const MAX: $p> Add<T> for $type::<MIN, MAX>
         where
             T: AsRepr<$p>,

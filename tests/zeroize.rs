@@ -24,5 +24,8 @@ fn zeroize() {
     let d: RangedNonZeroU64<1, 5> =
         RangedNonZeroU64::with_u64(d).unwrap().unwrap();
 
-    insta::assert_json_snapshot!((a, b, c, d));
+    assert_eq!(a, 0);
+    assert_eq!(b, 1);
+    assert_eq!(c, 0);
+    assert_eq!(d, 1);
 }
