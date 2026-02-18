@@ -1,0 +1,10 @@
+---
+source: tests/zeroize.rs
+expression: "(a, b, c, d)"
+---
+[
+  0,
+  1,
+  0,
+  1
+]
