@@ -724,7 +724,8 @@ macro_rules! impl_ops_unsigned {
             /// assert_eq!(c.checked_next_power_of_two().unwrap().get(), 32);
             /// assert_eq!(d.checked_next_power_of_two(), None);
             /// ```
-            #[must_use]
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn checked_next_power_of_two(self) -> Option<Self> {
                 let Some(value) = self.get().checked_next_power_of_two() else {
                     return None;
@@ -753,7 +754,8 @@ macro_rules! impl_ops_unsigned {
             /// assert_eq!(c.next_power_of_two::<1, 64>().get(), 32);
             /// assert_eq!(d.next_power_of_two::<1, 64>().get(), 64);
             /// ```
-            #[must_use]
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn next_power_of_two<
                 const OUT_MIN: $p,
                 const OUT_MAX: $p,
@@ -792,7 +794,8 @@ macro_rules! impl_ops_unsigned {
             /// assert!(c.is_power_of_two());
             /// assert!(d.is_power_of_two());
             /// ```
-            #[must_use]
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn is_power_of_two(self) -> bool {
                 self.get().is_power_of_two()
             }
@@ -813,7 +816,8 @@ macro_rules! impl_ops_unsigned {
             /// assert!(c.checked_next_multiple_of(8).is_none());
             /// assert!(a.checked_next_multiple_of(0).is_none());
             /// ```
-            #[must_use]
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn checked_next_multiple_of(self, rhs: impl AsRepr<$p>) -> Option<Self> {
                 let rhs = as_repr::as_repr(rhs);
                 let Some(value) = self.get().checked_next_multiple_of(rhs) else {
@@ -841,7 +845,8 @@ macro_rules! impl_ops_unsigned {
             /// assert_eq!(b.next_multiple_of::<8, 0, 40>().get(), 24);
             /// assert_eq!(c.next_multiple_of::<8, 0, 40>().get(), 40);
             /// ```
-            #[must_use]
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn next_multiple_of<
                 const RHS: $p,
                 const OUT_MIN: $p,
@@ -884,7 +889,8 @@ macro_rules! impl_ops_unsigned {
             /// assert!(!b.is_multiple_of(0));
             /// assert!(!c.is_multiple_of(0));
             /// ```
-            #[must_use]
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
             pub const fn is_multiple_of(self, rhs: impl AsRepr<$p>) -> bool {
                 let rhs = as_repr::as_repr(rhs);
 
@@ -892,6 +898,214 @@ macro_rules! impl_ops_unsigned {
                     0 => self.get() == 0,
                     _ => self.get() % rhs == 0,
                 }
+            }
+
+            /// Get the remainder from dividing `self` by a number.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_ranged(b).number().unwrap();")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            ///
+            /// Does not compile:
+            //
+            /// ```compile_fail
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_ranged(b).number().unwrap();")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn rem_ranged<
+                const RHS_MIN: $p,
+                const RHS_MAX: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+                rhs: $type<RHS_MIN, RHS_MAX>,
+            ) -> Quotient<$type<0, OUTPUT_MAX>> {
+                const {
+                    if OUTPUT_MAX != RHS_MAX - 1 {
+                        panic!("Max mismatch");
+                    }
+                }
+
+                if rhs.get() == 0 {
+                    Quotient::Nan
+                } else {
+                    Quotient::Number($type(self.get() % rhs.get()))
+                }
+            }
+
+            /// Get the least remainder of `self (mod rhs)`.
+            ///
+            /// Since, for the positive integers, all common definitions of
+            /// division are equal, this is exactly equal to
+            /// [`Self::rem_ranged()`].
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_euclid_ranged(b).number().unwrap();")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            ///
+            /// Does not compile:
+            //
+            /// ```compile_fail
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_ranged(b).number().unwrap();")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn rem_euclid_ranged<
+                const RHS_MIN: $p,
+                const RHS_MAX: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+                rhs: $type<RHS_MIN, RHS_MAX>,
+            ) -> Quotient<$type<0, OUTPUT_MAX>> {
+                self.rem_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MAX>(rhs)
+            }
+
+            /// Get the remainder from dividing `self` by a non-zero number.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_ranged_nonzero(b);")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            ///
+            /// Does not compile:
+            //
+            /// ```compile_fail
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_ranged_nonzero(b);")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn rem_ranged_nonzero<
+                const RHS_MIN: $p,
+                const RHS_MAX: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+                rhs: $nonzero<RHS_MIN, RHS_MAX>,
+            ) -> $type<0, OUTPUT_MAX> {
+                const {
+                    if OUTPUT_MAX != RHS_MAX - 1 {
+                        panic!("Max mismatch");
+                    }
+                }
+
+                $type(self.get() % rhs.get())
+            }
+
+            /// Get the least remainder of `self (mod rhs)`.
+            ///
+            /// Since, for the positive integers, all common definitions of
+            /// division are equal, this is exactly equal to
+            /// [`Self::rem_ranged_nonzero()`].
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_euclid_ranged_nonzero(b);")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            ///
+            /// Does not compile:
+            //
+            /// ```compile_fail
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_ranged_nonzero(b);")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn rem_euclid_ranged_nonzero<
+                const RHS_MIN: $p,
+                const RHS_MAX: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+                rhs: $nonzero<RHS_MIN, RHS_MAX>,
+            ) -> $type<0, OUTPUT_MAX> {
+                self.rem_ranged_nonzero::<RHS_MIN, RHS_MAX, OUTPUT_MAX>(rhs)
+            }
+
+            /// Get the least remainder of `self (mod rhs)`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<65>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem::<3, _>();")]
+            ///
+            /// assert_eq!(output, 2);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn rem<
+                const RHS: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+            ) -> $type<0, OUTPUT_MAX> {
+                let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
+
+                self.rem_ranged_nonzero(rhs)
+            }
+
+            /// Get the least remainder of `self (mod RHS)`.
+            ///
+            /// Since, for the positive integers, all common definitions of
+            /// division are equal, this is exactly equal to
+            /// [`Self::rem()`].
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<65>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid::<3, _>();")]
+            ///
+            /// assert_eq!(output, 2);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn rem_euclid<
+                const RHS: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+            ) -> $type<0, OUTPUT_MAX> {
+                let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
+
+                self.rem_euclid_ranged_nonzero(rhs)
             }
         }
     };
