@@ -1,5 +1,5 @@
-use rand::RngExt;
 use ranch::*;
+use rand::RngExt;
 
 #[test]
 fn rand() {

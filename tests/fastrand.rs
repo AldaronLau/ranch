@@ -1,5 +1,5 @@
 use fastrand::Rng;
-use ranch::{*, range::RngRanged};
+use ranch::{range::RngRanged, *};
 
 #[test]
 fn fastrand() {
