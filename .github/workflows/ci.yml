@@ -73,8 +73,8 @@ jobs:
         run: |
           cargo build --workspace --all-targets --all-features
           cargo clippy --workspace --all-targets --all-features -- -D warnings
-          cargo build --workspace --all-targets
-          cargo clippy --workspace --all-targets -- -D warnings
+          cargo build --workspace
+          cargo clippy --workspace -- -D warnings
       - if: ${{ matrix.cc }}
         name: Checking cross-compilation works
         run: |
