@@ -4,7 +4,7 @@ use crate::*;
 
 macro_rules! impl_neg {
     ($type:ident, $p:ty) => {
-        impl<const MIN: $p, const MAX: $p> Neg for $type::<MIN, MAX> {
+        impl<const MIN: $p, const MAX: $p> Neg for $type<MIN, MAX> {
             type Output = Self;
 
             fn neg(self) -> Self::Output {
@@ -17,7 +17,7 @@ macro_rules! impl_neg {
                 Self(-self.0)
             }
         }
-    }
+    };
 }
 
 impl_neg!(RangedI8, i8);
