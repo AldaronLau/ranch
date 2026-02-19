@@ -1107,8 +1107,115 @@ macro_rules! impl_ops_unsigned {
 
                 self.rem_euclid_ranged_nonzero(rhs)
             }
+
+            /// Perform Euclidean division.
+            ///
+            /// Since, for the positive integers, all common definitions of
+            /// division are equal, this is exactly equal to
+            /// [`Self::div()`].
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<60>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div_euclid::<2, _, _>();")]
+            ///
+            /// assert_eq!(output, 30);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn div_euclid<
+                const RHS: $p,
+                const OUTPUT_MIN: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+                self.div::<RHS, OUTPUT_MIN, OUTPUT_MAX>()
+            }
+
+            /// Perform Euclidean division.
+            ///
+            /// Since, for the positive integers, all common definitions of
+            /// division are equal, this is exactly equal to
+            /// [`Self::div_ranged_nonzero()`].
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<1, 2> = a.div_euclid_ranged_nonzero(b);")]
+            ///
+            /// assert_eq!(output.get(), 1);
+            /// ```
+            ///
+            /// Does not compile:
+            //
+            /// ```compile_fail
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<1>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.div_euclid_ranged_nonzero(b);")]
+            ///
+            /// assert_eq!(output.get(), 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn div_euclid_ranged_nonzero<
+                const RHS_MIN: $p,
+                const RHS_MAX: $p,
+                const OUTPUT_MIN: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+                rhs: $nonzero::<RHS_MIN, RHS_MAX>,
+            ) -> $type::<OUTPUT_MIN, OUTPUT_MAX> {
+                self.div_ranged_nonzero::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
+            }
+
+            /// Divide `self` by a number.
+            ///
+            /// Since, for the positive integers, all common definitions of
+            /// division are equal, this is exactly equal to
+            /// [`Self::div_ranged()`].
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "::<1, 2> = a.div_euclid_ranged(b).number().unwrap();")]
+            ///
+            /// assert_eq!(output.get(), 1);
+            /// ```
+            ///
+            /// Does not compile:
+            //
+            /// ```compile_fail
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<1>();")]
+            #[doc = concat!("let output: ", stringify!($type), "::<0, 2> = a.div_euclid_ranged(b).number().unwrap();")]
+            ///
+            /// assert_eq!(output.get(), 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn div_euclid_ranged<
+                const RHS_MIN: $p,
+                const RHS_MAX: $p,
+                const OUTPUT_MIN: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+                rhs: $type<RHS_MIN, RHS_MAX>,
+            ) -> Quotient<$type<OUTPUT_MIN, OUTPUT_MAX>> {
+                self.div_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
+            }
         }
     };
+}
+
+macro_rules! impl_ops_signed {
+    ($type:ident, $p:ty, $nonzero:ident, $with:ident $(,)?) => {};
 }
 
 impl_ops!(
@@ -1200,6 +1307,12 @@ impl_ops_unsigned!(RangedU16, u16, RangedNonZeroU16, with_u16);
 impl_ops_unsigned!(RangedU32, u32, RangedNonZeroU32, with_u32);
 impl_ops_unsigned!(RangedU64, u64, RangedNonZeroU64, with_u64);
 impl_ops_unsigned!(RangedU128, u128, RangedNonZeroU128, with_u128);
+
+impl_ops_signed!(RangedI8, i8, RangedNonZeroI8, with_i8);
+impl_ops_signed!(RangedI16, i16, RangedNonZeroI16, with_i16);
+impl_ops_signed!(RangedI32, i32, RangedNonZeroI32, with_i32);
+impl_ops_signed!(RangedI64, i64, RangedNonZeroI64, with_i64);
+impl_ops_signed!(RangedI128, i128, RangedNonZeroI128, with_i128);
 
 const fn signed_nan_unreachable<T>(result: Result<Quotient<T>>) -> Result<T>
 where
