@@ -1523,6 +1523,250 @@ macro_rules! impl_ops_signed {
                     Quotient::Number($type(self.get().div_euclid(rhs.get())))
                 }
             }
+
+            /// Get the remainder from dividing `self` by a number.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_ranged(b).number().unwrap();")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            ///
+            /// Does not compile:
+            //
+            /// ```compile_fail
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_ranged(b).number().unwrap();")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn rem_ranged<
+                const RHS_MIN: $p,
+                const RHS_MAX: $p,
+                const OUTPUT_MIN: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+                rhs: $type<RHS_MIN, RHS_MAX>,
+            ) -> Quotient<$type<OUTPUT_MIN, OUTPUT_MAX>> {
+                const {
+                    let (min, max) = match
+                        (RHS_MIN < 0, RHS_MAX > 0, MIN < 0, MAX > 0)
+                    {
+                        (true, true, _, _)
+                            | (_, _, true, true)
+                            | (true, false, false, true)
+                            | (false, true, true, false)
+                        => {
+                            let min = RHS_MIN.abs();
+                            let max = RHS_MAX.abs();
+                            let bounds = if max > min { max } else { min };
+
+                            (-(bounds - 1), bounds - 1)
+                        }
+                        (false, true, false, true) => (0, RHS_MAX - 1),
+                        (true, false, true, false) => (RHS_MIN + 1, 0),
+                        (false, false, _, _) | (_, _, false, false) => (0, 0),
+                    };
+
+                    if min != OUTPUT_MIN {
+                        panic!("Max mismatch");
+                    }
+
+                    if max != OUTPUT_MAX {
+                        panic!("Max mismatch");
+                    }
+                }
+
+                if rhs.get() == 0 {
+                    Quotient::Nan
+                } else {
+                    Quotient::Number($type(self.get() % rhs.get()))
+                }
+            }
+
+            /// Get the least remainder of `self (mod rhs)`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_euclid_ranged(b).number().unwrap();")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            ///
+            /// Does not compile:
+            //
+            /// ```compile_fail
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_ranged(b).number().unwrap();")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn rem_euclid_ranged<
+                const RHS_MIN: $p,
+                const RHS_MAX: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+                rhs: $type<RHS_MIN, RHS_MAX>,
+            ) -> Quotient<$type<0, OUTPUT_MAX>> {
+                const {
+                    let max_abs = RHS_MAX.abs();
+                    let min_abs = RHS_MIN.abs();
+                    let rhs_limit = if max_abs > min_abs {
+                        max_abs
+                    } else {
+                        min_abs
+                    };
+
+                    if OUTPUT_MAX != rhs_limit - 1 {
+                        panic!("Max mismatch");
+                    }
+                }
+
+                if rhs.get() == 0 {
+                    Quotient::Nan
+                } else {
+                    Quotient::Number($type(self.get().rem_euclid(rhs.get())))
+                }
+            }
+
+            /// Get the remainder from dividing `self` by a non-zero number.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_ranged_nonzero(b);")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            ///
+            /// Does not compile:
+            //
+            /// ```compile_fail
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_ranged_nonzero(b);")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn rem_ranged_nonzero<
+                const RHS_MIN: $p,
+                const RHS_MAX: $p,
+                const OUTPUT_MIN: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+                rhs: $nonzero<RHS_MIN, RHS_MAX>,
+            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+                match self.rem_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(
+                    rhs.to_ranged()
+                ) {
+                    Quotient::Number(n) => n,
+                    Quotient::Nan => unimplemented!(),
+                }
+            }
+
+            /// Get the least remainder of `self (mod rhs)`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_euclid_ranged_nonzero(b);")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            ///
+            /// Does not compile:
+            //
+            /// ```compile_fail
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_ranged_nonzero(b);")]
+            ///
+            /// assert_eq!(output, 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn rem_euclid_ranged_nonzero<
+                const RHS_MIN: $p,
+                const RHS_MAX: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+                rhs: $nonzero<RHS_MIN, RHS_MAX>,
+            ) -> $type<0, OUTPUT_MAX> {
+                match self.rem_euclid_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MAX>(
+                    rhs.to_ranged()
+                ) {
+                    Quotient::Number(n) => n,
+                    Quotient::Nan => unimplemented!(),
+                }
+            }
+
+            /// Get the least remainder of `self (mod rhs)`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<65>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem::<3, _, _>();")]
+            ///
+            /// assert_eq!(output, 2);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn rem<
+                const RHS: $p,
+                const OUTPUT_MIN: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+                let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
+
+                self.rem_ranged_nonzero(rhs)
+            }
+
+            /// Get the least remainder of `self (mod RHS)`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<65>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid::<3, _>();")]
+            ///
+            /// assert_eq!(output, 2);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn rem_euclid<
+                const RHS: $p,
+                const OUTPUT_MAX: $p,
+            >(
+                self,
+            ) -> $type<0, OUTPUT_MAX> {
+                let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
+
+                self.rem_euclid_ranged_nonzero(rhs)
+            }
         }
     };
 }
