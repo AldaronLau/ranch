@@ -307,49 +307,6 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
         }
     }
 
-    /// Checked integer division.
-    ///
-    /// Returns an [`Error`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
-    ///
-    /// ```rust
-    /// # use ranch::{Error, RangedI64, Quotient};
-    /// let a = RangedI64::<-100, 10>::new::<-50>();
-    /// let b = RangedI64::<-10, 100>::new::<50>();
-    ///
-    /// assert_eq!(
-    ///     a.checked_div(2),
-    ///     Ok(Quotient::Number(RangedI64::new::<-25>())),
-    /// );
-    /// assert_eq!(a.checked_div(0), Ok(Quotient::Nan));
-    /// assert_eq!(a.checked_div(-1), Err(Error::PosOverflow));
-    /// assert_eq!(b.checked_div(-2), Err(Error::NegOverflow));
-    /// ```
-    #[must_use = "this returns the result of the operation, \
-                  without modifying the original"]
-    pub const fn checked_div(
-        self,
-        rhs: impl AsRepr<i64>,
-    ) -> Result<Quotient<Self>> {
-        let rhs = as_repr::as_repr(rhs);
-
-        if rhs == 0 {
-            return Ok(Quotient::Nan);
-        }
-
-        let Some(value) = self.get().checked_div(rhs) else {
-            return Err(if self.is_negative() ^ rhs.is_negative() {
-                Error::PosOverflow
-            } else {
-                Error::NegOverflow
-            });
-        };
-
-        match Self::with_i64(value) {
-            Ok(v) => Ok(Quotient::Number(v)),
-            Err(e) => Err(e),
-        }
-    }
-
     /// Saturating integer division.
     ///
     /// Returns [`Self::MIN`] on negative overflow, [`Self::MAX`] on positive

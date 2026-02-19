@@ -290,39 +290,6 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
         }
     }
 
-    /// Checked integer division.
-    ///
-    /// Returns [`None`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
-    ///
-    /// ```rust
-    /// # use ranch::{Error, RangedU128, Quotient};
-    /// let a = RangedU128::<1, 50>::new::<50>();
-    /// let b = RangedU128::<1, 50>::new::<1>();
-    ///
-    /// assert_eq!(
-    ///     a.checked_div(2),
-    ///     Some(Quotient::Number(RangedU128::new::<25>())),
-    /// );
-    /// assert_eq!(a.checked_div(0), Some(Quotient::Nan));
-    /// assert_eq!(b.checked_div(2), None);
-    /// ```
-    #[must_use = "this returns the result of the operation, \
-                  without modifying the original"]
-    pub const fn checked_div(
-        self,
-        rhs: impl AsRepr<u128>,
-    ) -> Option<Quotient<Self>> {
-        let rhs = as_repr::as_repr(rhs);
-        let Some(value) = self.get().checked_div(rhs) else {
-            return Some(Quotient::Nan);
-        };
-
-        match Self::with_u128(value) {
-            Ok(value) => Some(Quotient::Number(value)),
-            Err(_) => None,
-        }
-    }
-
     /// Saturating integer division.
     ///
     /// Returns [`Self::MIN`] on overflow, and [`Quotient::Nan`] if `rhs` is 0.

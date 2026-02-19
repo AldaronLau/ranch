@@ -1210,12 +1210,90 @@ macro_rules! impl_ops_unsigned {
             ) -> Quotient<$type<OUTPUT_MIN, OUTPUT_MAX>> {
                 self.div_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
             }
+
+            /// Checked integer division.
+            ///
+            /// Returns [`None`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{Error, ", stringify!($type), ", Quotient };")]
+            #[doc = concat!("let a = ", stringify!($type), "::<1, 50>::new::<50>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<1, 50>::new::<1>();")]
+            ///
+            /// assert_eq!(
+            ///     a.checked_div(2),
+            #[doc = concat!("    Some(Quotient::Number(", stringify!($type), "::new::<25>())),")]
+            /// );
+            /// assert_eq!(a.checked_div(0), Some(Quotient::Nan));
+            /// assert_eq!(b.checked_div(2), None);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn checked_div(
+                self,
+                rhs: impl AsRepr<$p>,
+            ) -> Option<Quotient<Self>> {
+                let rhs = as_repr::as_repr(rhs);
+                let Some(value) = self.get().checked_div(rhs) else {
+                    return Some(Quotient::Nan);
+                };
+
+                match Self::$with(value) {
+                    Ok(value) => Some(Quotient::Number(value)),
+                    Err(_) => None,
+                }
+            }
         }
     };
 }
 
 macro_rules! impl_ops_signed {
-    ($type:ident, $p:ty, $nonzero:ident, $with:ident $(,)?) => {};
+    ($type:ident, $p:ty, $nonzero:ident, $with:ident $(,)?) => {
+        impl<const MIN: $p, const MAX: $p> $type<MIN, MAX> {
+            /// Checked integer division.
+            ///
+            /// Returns an [`Error`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{Error, ", stringify!($type), ", Quotient };")]
+            #[doc = concat!("let a = ", stringify!($type), "::<-100, 10>::new::<-50>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<-10, 100>::new::<50>();")]
+            ///
+            /// assert_eq!(
+            ///     a.checked_div(2),
+            #[doc = concat!("    Ok(Quotient::Number(", stringify!($type), "::new::<-25>())),")]
+            /// );
+            /// assert_eq!(a.checked_div(0), Ok(Quotient::Nan));
+            /// assert_eq!(a.checked_div(-1), Err(Error::PosOverflow));
+            /// assert_eq!(b.checked_div(-2), Err(Error::NegOverflow));
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn checked_div(
+                self,
+                rhs: impl AsRepr<$p>,
+            ) -> Result<Quotient<Self>> {
+                let rhs = as_repr::as_repr(rhs);
+
+                if rhs == 0 {
+                    return Ok(Quotient::Nan);
+                }
+
+                let Some(value) = self.get().checked_div(rhs) else {
+                    return Err(if self.is_negative() ^ rhs.is_negative() {
+                        Error::PosOverflow
+                    } else {
+                        Error::NegOverflow
+                    });
+                };
+
+                match Self::$with(value) {
+                    Ok(v) => Ok(Quotient::Number(v)),
+                    Err(e) => Err(e),
+                }
+            }
+        }
+    };
 }
 
 impl_ops!(
