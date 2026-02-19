@@ -353,6 +353,31 @@ macro_rules! impl_ops {
                 $nan_unreachable(self.checked_div(rhs))
             }
 
+            /// Checked euclidean integer division by a non-zero number.
+            ///
+            /// This is the same as non-euclidean division for unsigned
+            /// integers.
+            ///
+            /// Returns [`None`] on overflow.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{Error, ", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<1, 50>::new::<50>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 50>::new::<2>();")]
+            ///
+            /// assert_eq!(a.checked_div_euclid_nonzero(b).unwrap(), 25);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn checked_div_euclid_nonzero(
+                self,
+                rhs: impl AsRepr<NonZero<$p>>,
+            ) -> $ret::<Self> {
+                let rhs = as_repr::as_repr(rhs);
+
+                $nan_unreachable(self.checked_div_euclid(rhs))
+            }
+
             /// Saturating integer division by a non-zero number.
             ///
             /// Returns [`Self::MIN`] on overflow.
@@ -1243,6 +1268,35 @@ macro_rules! impl_ops_unsigned {
                     Err(_) => None,
                 }
             }
+
+            /// Checked euclidean integer division.
+            ///
+            /// Since, for the positive integers, all common definitions of
+            /// division are equal, this is exactly equal to
+            /// [`Self::checked_div()`].
+            ///
+            /// Returns [`None`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{Error, ", stringify!($type), ", Quotient };")]
+            #[doc = concat!("let a = ", stringify!($type), "::<1, 50>::new::<50>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<1, 50>::new::<1>();")]
+            ///
+            /// assert_eq!(
+            ///     a.checked_div_euclid(2),
+            #[doc = concat!("    Some(Quotient::Number(", stringify!($type), "::new::<25>())),")]
+            /// );
+            /// assert_eq!(a.checked_div(0), Some(Quotient::Nan));
+            /// assert_eq!(b.checked_div(2), None);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn checked_div_euclid(
+                self,
+                rhs: impl AsRepr<$p>,
+            ) -> Option<Quotient<Self>> {
+                self.checked_div(rhs)
+            }
         }
     };
 }
@@ -1280,6 +1334,56 @@ macro_rules! impl_ops_signed {
                 }
 
                 let Some(value) = self.get().checked_div(rhs) else {
+                    return Err(if self.is_negative() ^ rhs.is_negative() {
+                        Error::PosOverflow
+                    } else {
+                        Error::NegOverflow
+                    });
+                };
+
+                match Self::$with(value) {
+                    Ok(v) => Ok(Quotient::Number(v)),
+                    Err(e) => Err(e),
+                }
+            }
+
+            /// Checked euclidean integer division.
+            ///
+            /// Returns an [`Error`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{Error, ", stringify!($type), ", Quotient };")]
+            #[doc = concat!("let a = ", stringify!($type), "::<-100, 10>::new::<-50>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<-10, 100>::new::<50>();")]
+            #[doc = concat!("let c = ", stringify!($type), "::<-10, 10>::new::<7>();")]
+            #[doc = concat!("let d = ", stringify!($type), "::<-10, 10>::new::<4>();")]
+            ///
+            /// assert_eq!(
+            ///     a.checked_div_euclid(2),
+            #[doc = concat!("    Ok(Quotient::Number(", stringify!($type), "::new::<-25>())),")]
+            /// );
+            /// assert_eq!(a.checked_div_euclid(0), Ok(Quotient::Nan));
+            /// assert_eq!(a.checked_div_euclid(-1), Err(Error::PosOverflow));
+            /// assert_eq!(b.checked_div_euclid(-2), Err(Error::NegOverflow));
+            ///
+            /// assert_eq!(c.checked_div_euclid(d).unwrap().number().unwrap(), 1);
+            /// assert_eq!(c.checked_div_euclid(-d).unwrap().number().unwrap(), -1);
+            /// assert_eq!((-c).checked_div_euclid(d).unwrap().number().unwrap(), -2);
+            /// assert_eq!((-c).checked_div_euclid(-d).unwrap().number().unwrap(), 2);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn checked_div_euclid(
+                self,
+                rhs: impl AsRepr<$p>,
+            ) -> Result<Quotient<Self>> {
+                let rhs = as_repr::as_repr(rhs);
+
+                if rhs == 0 {
+                    return Ok(Quotient::Nan);
+                }
+
+                let Some(value) = self.get().checked_div_euclid(rhs) else {
                     return Err(if self.is_negative() ^ rhs.is_negative() {
                         Error::PosOverflow
                     } else {

@@ -249,6 +249,7 @@ mod format;
 mod impl_ascii;
 mod index;
 mod ops;
+mod neg;
 mod ord;
 pub mod parsing;
 mod quotient;
