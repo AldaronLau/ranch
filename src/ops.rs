@@ -1,7 +1,7 @@
 use core::{
     cmp::Ordering,
     num::NonZero,
-    ops::{Add, Div, Mul, Sub},
+    ops::{Add, Div, Mul, Rem, Sub},
 };
 
 use as_repr::AsRepr;
@@ -129,7 +129,24 @@ macro_rules! impl_ops {
             type Output = Self;
 
             fn div(self, other: T) -> Self {
-                self.checked_div(other).expect("out of range").number().expect("cannot divide by zero")
+                self.checked_div(other)
+                    .expect("out of range")
+                    .number()
+                    .expect("cannot divide by zero")
+            }
+        }
+
+        impl<T, const MIN: $p, const MAX: $p> Rem<T> for $type::<MIN, MAX>
+        where
+            T: AsRepr<$p>,
+        {
+            type Output = Self;
+
+            fn rem(self, other: T) -> Self {
+                self.checked_rem(other)
+                    .expect("out of range")
+                    .number()
+                    .expect("cannot divide by zero")
             }
         }
 
