@@ -333,8 +333,6 @@ macro_rules! impl_ops {
 
             /// Checked integer division by a non-zero number.
             ///
-            /// Returns [`None`] on overflow.
-            ///
             /// ```rust
             #[doc = concat!("# use ranch::{Error, ", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<1, 50>::new::<50>();")]
@@ -358,8 +356,6 @@ macro_rules! impl_ops {
             /// This is the same as non-euclidean division for unsigned
             /// integers.
             ///
-            /// Returns [`None`] on overflow.
-            ///
             /// ```rust
             #[doc = concat!("# use ranch::{Error, ", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<1, 50>::new::<50>();")]
@@ -376,6 +372,49 @@ macro_rules! impl_ops {
                 let rhs = as_repr::as_repr(rhs);
 
                 $nan_unreachable(self.checked_div_euclid(rhs))
+            }
+
+            /// Checked integer remainder by a non-zero number.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{Error, ", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<1, 51>::new::<51>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
+            ///
+            /// assert_eq!(a.checked_rem_nonzero(b).unwrap(), 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn checked_rem_nonzero(
+                self,
+                rhs: impl AsRepr<NonZero<$p>>,
+            ) -> $ret::<Self> {
+                let rhs = as_repr::as_repr(rhs);
+
+                $nan_unreachable(self.checked_rem(rhs))
+            }
+
+            /// Checked euclidean integer remainder by a non-zero number.
+            ///
+            /// This is the same as non-euclidean remainder for unsigned
+            /// integers.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{Error, ", stringify!($type), ", ", stringify!($nonzero), "};")]
+            #[doc = concat!("let a = ", stringify!($type), "::<1, 51>::new::<51>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
+            ///
+            /// assert_eq!(a.checked_rem_euclid_nonzero(b).unwrap(), 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn checked_rem_euclid_nonzero(
+                self,
+                rhs: impl AsRepr<NonZero<$p>>,
+            ) -> Option<Self> {
+                let rhs = as_repr::as_repr(rhs);
+
+                unsigned_nan_unreachable(self.checked_rem_euclid(rhs))
             }
 
             /// Saturating integer division by a non-zero number.
@@ -1260,7 +1299,11 @@ macro_rules! impl_ops_unsigned {
             ) -> Option<Quotient<Self>> {
                 let rhs = as_repr::as_repr(rhs);
                 let Some(value) = self.get().checked_div(rhs) else {
-                    return Some(Quotient::Nan);
+                    return if rhs == 0 {
+                        Some(Quotient::Nan)
+                    } else {
+                        None
+                    };
                 };
 
                 match Self::$with(value) {
@@ -1297,6 +1340,72 @@ macro_rules! impl_ops_unsigned {
             ) -> Option<Quotient<Self>> {
                 self.checked_div(rhs)
             }
+
+            /// Checked integer remainder.
+            ///
+            /// Returns [`None`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{Error, ", stringify!($type), ", Quotient };")]
+            #[doc = concat!("let a = ", stringify!($type), "::<0, 50>::new::<50>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<0, 50>::new::<1>();")]
+            ///
+            /// assert_eq!(
+            ///     a.checked_rem(2),
+            #[doc = concat!("    Some(Quotient::Number(", stringify!($type), "::new::<0>())),")]
+            /// );
+            /// assert_eq!(a.checked_rem(0), Some(Quotient::Nan));
+            /// assert_eq!(b.checked_rem(2).unwrap().number().unwrap(), 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn checked_rem(
+                self,
+                rhs: impl AsRepr<$p>,
+            ) -> Option<Quotient<Self>> {
+                let rhs = as_repr::as_repr(rhs);
+                let Some(value) = self.get().checked_rem(rhs) else {
+                    return if rhs == 0 {
+                        Some(Quotient::Nan)
+                    } else {
+                        None
+                    };
+                };
+
+                match Self::$with(value) {
+                    Ok(value) => Some(Quotient::Number(value)),
+                    Err(_) => None,
+                }
+            }
+
+            /// Checked integer euclidean remainder.
+            ///
+            /// Since, for the positive integers, all common definitions of
+            /// division are equal, this is exactly equal to
+            /// [`Self::checked_rem()`].
+            ///
+            /// Returns [`None`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{Error, ", stringify!($type), ", Quotient };")]
+            #[doc = concat!("let a = ", stringify!($type), "::<0, 50>::new::<50>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<0, 50>::new::<1>();")]
+            ///
+            /// assert_eq!(
+            ///     a.checked_rem_euclid(2),
+            #[doc = concat!("    Some(Quotient::Number(", stringify!($type), "::new::<0>())),")]
+            /// );
+            /// assert_eq!(a.checked_rem_euclid(0), Some(Quotient::Nan));
+            /// assert_eq!(b.checked_rem_euclid(2).unwrap().number().unwrap(), 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn checked_rem_euclid(
+                self,
+                rhs: impl AsRepr<$p>,
+            ) -> Option<Quotient<Self>> {
+                self.checked_rem(rhs)
+            }
         }
     };
 }
@@ -1304,6 +1413,86 @@ macro_rules! impl_ops_unsigned {
 macro_rules! impl_ops_signed {
     ($type:ident, $p:ty, $nonzero:ident, $with:ident $(,)?) => {
         impl<const MIN: $p, const MAX: $p> $type<MIN, MAX> {
+            /// Checked integer remainder.
+            ///
+            /// Returns [`Err`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{Error, ", stringify!($type), ", Quotient };")]
+            #[doc = concat!("let a = ", stringify!($type), "::<0, 5>::new::<5>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<0, 5>::new::<1>();")]
+            ///
+            /// assert_eq!(
+            ///     a.checked_rem(2),
+            #[doc = concat!("    Ok(Quotient::Number(", stringify!($type), "::new::<1>())),")]
+            /// );
+            /// assert_eq!(a.checked_rem(0), Ok(Quotient::Nan));
+            /// assert_eq!(b.checked_rem(2).unwrap().number().unwrap(), 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn checked_rem(
+                self,
+                rhs: impl AsRepr<$p>,
+            ) -> Result<Quotient<Self>> {
+                let rhs = as_repr::as_repr(rhs);
+
+                if rhs == 0 {
+                    return Ok(Quotient::Nan);
+                }
+
+                let Some(value) = self.get().checked_rem(rhs) else {
+                    return Err(if self.is_negative() ^ rhs.is_negative() {
+                        Error::PosOverflow
+                    } else {
+                        Error::NegOverflow
+                    });
+                };
+
+                match Self::$with(value) {
+                    Ok(v) => Ok(Quotient::Number(v)),
+                    Err(e) => Err(e),
+                }
+            }
+
+            /// Checked integer euclidean remainder.
+            ///
+            /// Returns [`None`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::{Error, ", stringify!($type), ", Quotient };")]
+            #[doc = concat!("let a = ", stringify!($type), "::<0, 5>::new::<5>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<0, 5>::new::<1>();")]
+            ///
+            /// assert_eq!(
+            ///     a.checked_rem_euclid(2),
+            #[doc = concat!("    Some(Quotient::Number(", stringify!($type), "::new::<1>())),")]
+            /// );
+            /// assert_eq!(a.checked_rem_euclid(0), Some(Quotient::Nan));
+            /// assert_eq!(b.checked_rem_euclid(2).unwrap().number().unwrap(), 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn checked_rem_euclid(
+                self,
+                rhs: impl AsRepr<$p>,
+            ) -> Option<Quotient<Self>> {
+                let rhs = as_repr::as_repr(rhs);
+
+                if rhs == 0 {
+                    return Some(Quotient::Nan);
+                }
+
+                let Some(value) = self.get().checked_rem_euclid(rhs) else {
+                    return None;
+                };
+                let Ok(value) = Self::$with(value) else {
+                    return None;
+                };
+
+                Some(Quotient::Number(value))
+            }
+
             /// Checked integer division.
             ///
             /// Returns an [`Error`] on overflow; [`Quotient::Nan`] if `rhs == 0`.
