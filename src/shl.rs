@@ -2,6 +2,10 @@
 
 use core::{any::Any, mem};
 
+/// # Safety
+///
+///  - Must be able to cast to one of the unsigned primitive integers and back
+///    without introducing UB
 pub unsafe trait DowncastShl: Copy + Clone + Any {}
 
 unsafe impl DowncastShl for u8 {}

@@ -6,6 +6,9 @@ use as_repr::AsRepr;
 
 use crate::*;
 
+/// # Safety
+/// 
+///  - Must be able to transmute from representation type without UB
 pub unsafe trait FromRepr: AsRepr<Self::Repr> + Copy + Clone {
     type Repr: Copy + Clone;
 }
