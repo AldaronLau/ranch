@@ -1,5 +1,7 @@
 use core::{error, fmt};
 
+use crate::range::MultiRange;
+
 /// Creating ranged integer result
 pub type Result<T = (), E = Error> = core::result::Result<T, E>;
 
@@ -36,26 +38,21 @@ impl Error {
     /// # use ranch::{RangedU8, Error};
     /// assert_eq!(
     ///     RangedU8::<1, 3>::with_u8(0).unwrap_or_else(Error::clamp),
-    ///     RangedU8::<1, 3>::new::<1>(),
+    ///     RangedU8::<1, 3>::MIN,
     /// );
     /// assert_eq!(
     ///     RangedU8::<1, 3>::with_u8(4).unwrap_or_else(Error::clamp),
-    ///     RangedU8::<1, 3>::new::<3>(),
+    ///     RangedU8::<1, 3>::MAX,
     /// );
     /// ```
     #[must_use]
     pub const fn clamp<T>(self) -> T
     where
-        T: Clamp,
+        T: MultiRange,
     {
         match self {
             Self::PosOverflow => T::MAX,
             Self::NegOverflow => T::MIN,
         }
     }
-}
-
-pub trait Clamp {
-    const MIN: Self;
-    const MAX: Self;
 }

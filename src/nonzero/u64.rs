@@ -453,10 +453,3 @@ impl<const MIN: u64, const MAX: u64> RangedNonZeroU64<MIN, MAX> {
         value
     }
 }
-
-impl<const MIN: u64, const MAX: u64> error::Clamp
-    for RangedNonZeroU64<MIN, MAX>
-{
-    const MAX: Self = Self::MAX;
-    const MIN: Self = Self::MIN;
-}

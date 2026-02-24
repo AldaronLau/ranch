@@ -630,8 +630,3 @@ impl<const MIN: u128, const MAX: u128> core::str::FromStr
         Self::with_u128(parsed).map_err(From::from)
     }
 }
-
-impl<const MIN: u128, const MAX: u128> error::Clamp for RangedU128<MIN, MAX> {
-    const MAX: Self = Self::MAX;
-    const MIN: Self = Self::MIN;
-}

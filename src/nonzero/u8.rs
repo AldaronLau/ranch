@@ -453,8 +453,3 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
         value
     }
 }
-
-impl<const MIN: u8, const MAX: u8> error::Clamp for RangedNonZeroU8<MIN, MAX> {
-    const MAX: Self = Self::MAX;
-    const MIN: Self = Self::MIN;
-}

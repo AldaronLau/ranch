@@ -719,11 +719,6 @@ impl<const MIN: i16, const MAX: i16> core::str::FromStr
     }
 }
 
-impl<const MIN: i16, const MAX: i16> error::Clamp for RangedI16<MIN, MAX> {
-    const MAX: Self = Self::MAX;
-    const MIN: Self = Self::MIN;
-}
-
 // polyfill for midpoint (Added in Rust 1.87.0, MSRV is Rust 1.85.0)
 const fn midpoint(a: i16, b: i16) -> i16 {
     let t = ((a ^ b) >> 1) + (a & b);

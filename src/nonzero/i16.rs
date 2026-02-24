@@ -427,10 +427,3 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
             .unwrap()
     }
 }
-
-impl<const MIN: i16, const MAX: i16> error::Clamp
-    for RangedNonZeroI16<MIN, MAX>
-{
-    const MAX: Self = Self::MAX;
-    const MIN: Self = Self::MIN;
-}

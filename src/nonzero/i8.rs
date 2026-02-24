@@ -427,8 +427,3 @@ impl<const MIN: i8, const MAX: i8> RangedNonZeroI8<MIN, MAX> {
             .unwrap()
     }
 }
-
-impl<const MIN: i8, const MAX: i8> error::Clamp for RangedNonZeroI8<MIN, MAX> {
-    const MAX: Self = Self::MAX;
-    const MIN: Self = Self::MIN;
-}
