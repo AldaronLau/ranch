@@ -1,20 +1,8 @@
 use as_repr::AsRepr;
 
-use crate::{Error, ParsingError, ParsingResult, Quotient, RangedU32, Result};
-
-/// [`i16`] with a specified minimum and maximum value
-#[derive(Copy, Clone, Hash)]
-#[repr(transparent)]
-pub struct RangedI16<const MIN: i16, const MAX: i16>(pub(crate) i16);
+use crate::*;
 
 impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
-    /// The size of this integer type in bits.
-    pub const BITS: u32 = i16::BITS;
-    /// The largest value that can be represented by this integer type.
-    pub const MAX: Self = Self(MAX);
-    /// The smallest value that can be represented by this integer type.
-    pub const MIN: Self = Self(MIN);
-
     /// Create a new ranged integer.
     ///
     /// Won't compile if out of bounds.
@@ -47,7 +35,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        Self(N)
+        Self::from_unchecked(N)
     }
 
     /// Try to create a new ranged integer.
@@ -74,7 +62,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             return Err(Error::PosOverflow);
         }
 
-        Ok(Self(value))
+        Ok(Self::from_unchecked(value))
     }
 
     /// Return the contained value as a primitive type.
@@ -99,7 +87,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// ```
     #[must_use]
     pub const fn leading_zeros(self) -> RangedU32<0, { i16::BITS }> {
-        RangedU32(self.get().leading_zeros())
+        RangedU32::from_unchecked(self.get().leading_zeros())
     }
 
     /// Return the number of trailing zeros in the binary representation of
@@ -113,7 +101,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// ```
     #[must_use]
     pub const fn trailing_zeros(self) -> RangedU32<0, { i16::BITS }> {
-        RangedU32(self.get().trailing_zeros())
+        RangedU32::from_unchecked(self.get().trailing_zeros())
     }
 
     /// Return the number of ones in the binary representation of `self`.
@@ -128,7 +116,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     /// ```
     #[must_use]
     pub const fn count_ones(self) -> RangedU32<0, { i16::BITS }> {
-        RangedU32(self.get().count_ones())
+        RangedU32::from_unchecked(self.get().count_ones())
     }
 
     /// Add two ranged integers together.
@@ -496,7 +484,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() + rhs.get())
+        RangedI16::from_unchecked(self.get() + rhs.get())
     }
 
     /// Subtract a number from `self`.
@@ -541,7 +529,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() - rhs.get())
+        RangedI16::from_unchecked(self.get() - rhs.get())
     }
 
     /// Multiply two numbers together.
@@ -591,7 +579,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() * rhs.get())
+        RangedI16::from_unchecked(self.get() * rhs.get())
     }
 
     /// Divide `self` by a number.
@@ -648,7 +636,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
         if rhs.get() == 0 {
             Quotient::Nan
         } else {
-            Quotient::Number(RangedI16(self.get() / rhs.get()))
+            Quotient::Number(RangedI16::from_unchecked(self.get() / rhs.get()))
         }
     }
 
@@ -715,7 +703,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get().pow(rhs.get()))
+        RangedI16::from_unchecked(self.get().pow(rhs.get()))
     }
 }
 
@@ -731,9 +719,7 @@ impl<const MIN: i16, const MAX: i16> core::str::FromStr
     }
 }
 
-impl<const MIN: i16, const MAX: i16> crate::error::Clamp
-    for RangedI16<MIN, MAX>
-{
+impl<const MIN: i16, const MAX: i16> error::Clamp for RangedI16<MIN, MAX> {
     const MAX: Self = Self::MAX;
     const MIN: Self = Self::MIN;
 }

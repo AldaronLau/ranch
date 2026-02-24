@@ -15,7 +15,9 @@ impl Uppercase {
     /// assert_eq!(Lowercase::new::<97>(), uppercase_a.to_ascii_lowercase());
     /// ```
     pub const fn to_ascii_lowercase(self) -> Lowercase {
-        RangedNonZeroU8::from_ranged(RangedU8(self.get().to_ascii_lowercase()))
+        RangedNonZeroU8::from_ranged(RangedU8::from_unchecked(
+            self.get().to_ascii_lowercase(),
+        ))
     }
 
     /// Convert to [`char`].
@@ -43,7 +45,9 @@ impl Lowercase {
     /// assert_eq!(Uppercase::new::<65>(), lowercase_a.to_ascii_uppercase());
     /// ```
     pub const fn to_ascii_uppercase(self) -> Uppercase {
-        RangedNonZeroU8::from_ranged(RangedU8(self.get().to_ascii_uppercase()))
+        RangedNonZeroU8::from_ranged(RangedU8::from_unchecked(
+            self.get().to_ascii_uppercase(),
+        ))
     }
 
     /// Convert to [`char`].
@@ -76,7 +80,9 @@ impl Graphic {
     /// assert_eq!(Graphic::new::<b'1'>(), non_alphabetic.to_ascii_uppercase());
     /// ```
     pub const fn to_ascii_uppercase(self) -> Self {
-        Self::from_ranged(RangedU8(self.get().to_ascii_uppercase()))
+        Self::from_ranged(RangedU8::from_unchecked(
+            self.get().to_ascii_uppercase(),
+        ))
     }
 
     /// Convert to ASCII lowercase.
@@ -93,7 +99,9 @@ impl Graphic {
     /// assert_eq!(Graphic::new::<b'1'>(), non_alphabetic.to_ascii_lowercase());
     /// ```
     pub const fn to_ascii_lowercase(self) -> Self {
-        Self::from_ranged(RangedU8(self.get().to_ascii_lowercase()))
+        Self::from_ranged(RangedU8::from_unchecked(
+            self.get().to_ascii_lowercase(),
+        ))
     }
 
     /// Convert to [`char`].
@@ -165,7 +173,9 @@ impl NonNul {
     /// assert_eq!(NonNul::new::<b'1'>(), non_alphabetic.to_ascii_uppercase());
     /// ```
     pub const fn to_ascii_uppercase(self) -> Self {
-        Self::from_ranged(RangedU8(self.get().to_ascii_uppercase()))
+        Self::from_ranged(RangedU8::from_unchecked(
+            self.get().to_ascii_uppercase(),
+        ))
     }
 
     /// Convert to ASCII lowercase.
@@ -182,7 +192,9 @@ impl NonNul {
     /// assert_eq!(NonNul::new::<b'1'>(), non_alphabetic.to_ascii_lowercase());
     /// ```
     pub const fn to_ascii_lowercase(self) -> Self {
-        Self::from_ranged(RangedU8(self.get().to_ascii_lowercase()))
+        Self::from_ranged(RangedU8::from_unchecked(
+            self.get().to_ascii_lowercase(),
+        ))
     }
 
     /// Convert to [`char`].
@@ -213,7 +225,7 @@ impl Char {
     /// assert_eq!(Char::new::<b'1'>(), non_alphabetic.to_ascii_uppercase());
     /// ```
     pub const fn to_ascii_uppercase(self) -> Self {
-        Self(self.get().to_ascii_uppercase())
+        Self::from_unchecked(self.get().to_ascii_uppercase())
     }
 
     /// Convert to ASCII lowercase.
@@ -230,7 +242,7 @@ impl Char {
     /// assert_eq!(Char::new::<b'1'>(), non_alphabetic.to_ascii_lowercase());
     /// ```
     pub const fn to_ascii_lowercase(self) -> Self {
-        Self(self.get().to_ascii_lowercase())
+        Self::from_unchecked(self.get().to_ascii_lowercase())
     }
 
     /// Convert to [`char`].

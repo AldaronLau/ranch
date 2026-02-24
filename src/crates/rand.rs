@@ -13,7 +13,7 @@ macro_rules! impl_rand {
             for StandardUniform
         {
             fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> $r<MIN, MAX> {
-                $r::<MIN, MAX>(
+                $r::<MIN, MAX>::from_unchecked(
                     Uniform::new_inclusive(MIN, MAX).unwrap().sample(rng),
                 )
             }
@@ -33,7 +33,7 @@ macro_rules! impl_rand_nonzero_unsigned {
                     }
                 }
 
-                $r::<MIN, MAX>(
+                $r::<MIN, MAX>::from_unchecked(
                     NonZero::new(
                         Uniform::new_inclusive(MIN, MAX).unwrap().sample(rng),
                     )
@@ -61,7 +61,7 @@ macro_rules! impl_rand_nonzero_signed {
                     )
                 };
 
-                $r::<MIN, MAX>(
+                $r::<MIN, MAX>::from_unchecked(
                     NonZero::new(if range.contains(&0) {
                         let value = Uniform::new(MIN, MAX).unwrap().sample(rng);
 

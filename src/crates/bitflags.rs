@@ -11,16 +11,16 @@ macro_rules! impl_bitflags {
         where
             Self: BitwiseSigned<$s>,
         {
-            const ALL: Self = Self(-1);
-            const EMPTY: Self = Self(0);
+            const ALL: Self = Self::from_unchecked(-1);
+            const EMPTY: Self = Self::from_unchecked(0);
         }
 
         impl<const MIN: $u, const MAX: $u> Bits for $unsigned<MIN, MAX>
         where
             Self: BitwiseUnsigned<$u>,
         {
-            const ALL: Self = Self(MAX);
-            const EMPTY: Self = Self(MIN);
+            const ALL: Self = Self::from_unchecked(MAX);
+            const EMPTY: Self = Self::from_unchecked(MIN);
         }
     };
 }

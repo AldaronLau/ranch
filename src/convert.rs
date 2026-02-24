@@ -62,7 +62,7 @@ macro_rules! impl_unsigned_nonzero_conversion {
     ($type:ident, $p:ty $(,)?) => {
         impl From<NonZero<$p>> for $type<1, { <$p>::MAX }> {
             fn from(non_zero: NonZero<$p>) -> Self {
-                Self(non_zero.get())
+                Self::from_unchecked(non_zero.get())
             }
         }
 
@@ -121,7 +121,7 @@ macro_rules! impl_nonzero_from_ranged {
                     unreachable!()
                 };
 
-                $nonzero(value)
+                $nonzero::from_unchecked(value)
             }
         }
 
@@ -169,7 +169,7 @@ macro_rules! impl_nonzero_from_ranged {
                 }
 
                 match NonZero::new(self.get()) {
-                    Some(value) => Some($nonzero(value)),
+                    Some(value) => Some($nonzero::from_unchecked(value)),
                     None => None,
                 }
             }
@@ -244,7 +244,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             }
         }
 
-        RangedU8(self.get())
+        RangedU8::from_unchecked(self.get())
     }
 
     /// Convert to [`RangedU16`].
@@ -269,7 +269,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             }
         }
 
-        RangedU16(self.get() as u16)
+        RangedU16::from_unchecked(self.get() as u16)
     }
 
     /// Convert to [`RangedU32`].
@@ -294,7 +294,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             }
         }
 
-        RangedU32(self.get() as u32)
+        RangedU32::from_unchecked(self.get() as u32)
     }
 
     /// Convert to [`RangedU64`].
@@ -319,7 +319,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             }
         }
 
-        RangedU64(self.get() as u64)
+        RangedU64::from_unchecked(self.get() as u64)
     }
 
     /// Convert to [`RangedU128`].
@@ -344,7 +344,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             }
         }
 
-        RangedU128(self.get() as u128)
+        RangedU128::from_unchecked(self.get() as u128)
     }
 }
 
@@ -371,7 +371,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
             }
         }
 
-        RangedU8(self.get() as u8)
+        RangedU8::from_unchecked(self.get() as u8)
     }
 
     /// Convert to [`RangedU16`].
@@ -396,7 +396,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
             }
         }
 
-        RangedU16(self.get())
+        RangedU16::from_unchecked(self.get())
     }
 
     /// Convert to [`RangedU32`].
@@ -421,7 +421,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
             }
         }
 
-        RangedU32(self.get() as u32)
+        RangedU32::from_unchecked(self.get() as u32)
     }
 
     /// Convert to [`RangedU64`].
@@ -446,7 +446,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
             }
         }
 
-        RangedU64(self.get() as u64)
+        RangedU64::from_unchecked(self.get() as u64)
     }
 
     /// Convert to [`RangedU128`].
@@ -471,7 +471,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
             }
         }
 
-        RangedU128(self.get() as u128)
+        RangedU128::from_unchecked(self.get() as u128)
     }
 }
 
@@ -498,7 +498,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
             }
         }
 
-        RangedU8(self.get() as u8)
+        RangedU8::from_unchecked(self.get() as u8)
     }
 
     /// Convert to [`RangedU16`].
@@ -523,7 +523,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
             }
         }
 
-        RangedU16(self.get() as u16)
+        RangedU16::from_unchecked(self.get() as u16)
     }
 
     /// Convert to [`RangedU32`].
@@ -548,7 +548,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
             }
         }
 
-        RangedU32(self.get())
+        RangedU32::from_unchecked(self.get())
     }
 
     /// Convert to [`RangedU64`].
@@ -573,7 +573,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
             }
         }
 
-        RangedU64(self.get() as u64)
+        RangedU64::from_unchecked(self.get() as u64)
     }
 
     /// Convert to [`RangedU128`].
@@ -598,7 +598,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
             }
         }
 
-        RangedU128(self.get() as u128)
+        RangedU128::from_unchecked(self.get() as u128)
     }
 }
 
@@ -625,7 +625,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             }
         }
 
-        RangedU8(self.get() as u8)
+        RangedU8::from_unchecked(self.get() as u8)
     }
 
     /// Convert to [`RangedU16`].
@@ -650,7 +650,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             }
         }
 
-        RangedU16(self.get() as u16)
+        RangedU16::from_unchecked(self.get() as u16)
     }
 
     /// Convert to [`RangedU32`].
@@ -675,7 +675,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             }
         }
 
-        RangedU32(self.get() as u32)
+        RangedU32::from_unchecked(self.get() as u32)
     }
 
     /// Convert to [`RangedU64`].
@@ -700,7 +700,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             }
         }
 
-        RangedU64(self.get())
+        RangedU64::from_unchecked(self.get())
     }
 
     /// Convert to [`RangedU128`].
@@ -725,7 +725,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             }
         }
 
-        RangedU128(self.get() as u128)
+        RangedU128::from_unchecked(self.get() as u128)
     }
 }
 
@@ -752,7 +752,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
             }
         }
 
-        RangedU8(self.get() as u8)
+        RangedU8::from_unchecked(self.get() as u8)
     }
 
     /// Convert to [`RangedU16`].
@@ -777,7 +777,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
             }
         }
 
-        RangedU16(self.get() as u16)
+        RangedU16::from_unchecked(self.get() as u16)
     }
 
     /// Convert to [`RangedU32`].
@@ -802,7 +802,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
             }
         }
 
-        RangedU32(self.get() as u32)
+        RangedU32::from_unchecked(self.get() as u32)
     }
 
     /// Convert to [`RangedU64`].
@@ -827,7 +827,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
             }
         }
 
-        RangedU64(self.get() as u64)
+        RangedU64::from_unchecked(self.get() as u64)
     }
 
     /// Convert to [`RangedU128`].
@@ -852,7 +852,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
             }
         }
 
-        RangedU128(self.get())
+        RangedU128::from_unchecked(self.get())
     }
 }
 
@@ -879,7 +879,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
             }
         }
 
-        RangedI8(self.get())
+        RangedI8::from_unchecked(self.get())
     }
 
     /// Convert to [`RangedI16`].
@@ -904,7 +904,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() as i16)
+        RangedI16::from_unchecked(self.get() as i16)
     }
 
     /// Convert to [`RangedI32`].
@@ -929,7 +929,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
             }
         }
 
-        RangedI32(self.get() as i32)
+        RangedI32::from_unchecked(self.get() as i32)
     }
 
     /// Convert to [`RangedI64`].
@@ -954,7 +954,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
             }
         }
 
-        RangedI64(self.get() as i64)
+        RangedI64::from_unchecked(self.get() as i64)
     }
 
     /// Convert to [`RangedI128`].
@@ -979,7 +979,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
             }
         }
 
-        RangedI128(self.get() as i128)
+        RangedI128::from_unchecked(self.get() as i128)
     }
 }
 
@@ -1006,7 +1006,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI8(self.get() as i8)
+        RangedI8::from_unchecked(self.get() as i8)
     }
 
     /// Convert to [`RangedI16`].
@@ -1031,7 +1031,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get())
+        RangedI16::from_unchecked(self.get())
     }
 
     /// Convert to [`RangedI32`].
@@ -1056,7 +1056,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI32(self.get() as i32)
+        RangedI32::from_unchecked(self.get() as i32)
     }
 
     /// Convert to [`RangedI64`].
@@ -1081,7 +1081,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI64(self.get() as i64)
+        RangedI64::from_unchecked(self.get() as i64)
     }
 
     /// Convert to [`RangedI128`].
@@ -1106,7 +1106,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedI128(self.get() as i128)
+        RangedI128::from_unchecked(self.get() as i128)
     }
 }
 
@@ -1133,7 +1133,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
             }
         }
 
-        RangedI8(self.get() as i8)
+        RangedI8::from_unchecked(self.get() as i8)
     }
 
     /// Convert to [`RangedI16`].
@@ -1158,7 +1158,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() as i16)
+        RangedI16::from_unchecked(self.get() as i16)
     }
 
     /// Convert to [`RangedI32`].
@@ -1183,7 +1183,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
             }
         }
 
-        RangedI32(self.get())
+        RangedI32::from_unchecked(self.get())
     }
 
     /// Convert to [`RangedI64`].
@@ -1208,7 +1208,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
             }
         }
 
-        RangedI64(self.get() as i64)
+        RangedI64::from_unchecked(self.get() as i64)
     }
 
     /// Convert to [`RangedI128`].
@@ -1233,7 +1233,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
             }
         }
 
-        RangedI128(self.get() as i128)
+        RangedI128::from_unchecked(self.get() as i128)
     }
 }
 
@@ -1260,7 +1260,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
             }
         }
 
-        RangedI8(self.get() as i8)
+        RangedI8::from_unchecked(self.get() as i8)
     }
 
     /// Convert to [`RangedI16`].
@@ -1285,7 +1285,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() as i16)
+        RangedI16::from_unchecked(self.get() as i16)
     }
 
     /// Convert to [`RangedI32`].
@@ -1310,7 +1310,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
             }
         }
 
-        RangedI32(self.get() as i32)
+        RangedI32::from_unchecked(self.get() as i32)
     }
 
     /// Convert to [`RangedI64`].
@@ -1335,7 +1335,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
             }
         }
 
-        RangedI64(self.get())
+        RangedI64::from_unchecked(self.get())
     }
 
     /// Convert to [`RangedI128`].
@@ -1360,7 +1360,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
             }
         }
 
-        RangedI128(self.get() as i128)
+        RangedI128::from_unchecked(self.get() as i128)
     }
 }
 
@@ -1387,7 +1387,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             }
         }
 
-        RangedI8(self.get() as i8)
+        RangedI8::from_unchecked(self.get() as i8)
     }
 
     /// Convert to [`RangedI16`].
@@ -1412,7 +1412,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() as i16)
+        RangedI16::from_unchecked(self.get() as i16)
     }
 
     /// Convert to [`RangedI32`].
@@ -1437,7 +1437,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             }
         }
 
-        RangedI32(self.get() as i32)
+        RangedI32::from_unchecked(self.get() as i32)
     }
 
     /// Convert to [`RangedI64`].
@@ -1462,7 +1462,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             }
         }
 
-        RangedI64(self.get() as i64)
+        RangedI64::from_unchecked(self.get() as i64)
     }
 
     /// Convert to [`RangedI128`].
@@ -1487,7 +1487,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             }
         }
 
-        RangedI128(self.get())
+        RangedI128::from_unchecked(self.get())
     }
 }
 
@@ -1514,7 +1514,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
             }
         }
 
-        RangedU8(self.get() as _)
+        RangedU8::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU16`].
@@ -1541,7 +1541,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
             }
         }
 
-        RangedU16(self.get() as _)
+        RangedU16::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU32`].
@@ -1568,7 +1568,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
             }
         }
 
-        RangedU32(self.get() as _)
+        RangedU32::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU64`].
@@ -1595,7 +1595,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
             }
         }
 
-        RangedU64(self.get() as _)
+        RangedU64::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU128`].
@@ -1622,7 +1622,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
             }
         }
 
-        RangedU128(self.get() as _)
+        RangedU128::from_unchecked(self.get() as _)
     }
 }
 
@@ -1649,7 +1649,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedU8(self.get() as _)
+        RangedU8::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU16`].
@@ -1674,7 +1674,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedU16(self.get() as _)
+        RangedU16::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU32`].
@@ -1701,7 +1701,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedU32(self.get() as _)
+        RangedU32::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU64`].
@@ -1728,7 +1728,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedU64(self.get() as _)
+        RangedU64::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU128`].
@@ -1755,7 +1755,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
             }
         }
 
-        RangedU128(self.get() as _)
+        RangedU128::from_unchecked(self.get() as _)
     }
 }
 
@@ -1782,7 +1782,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
             }
         }
 
-        RangedU8(self.get() as _)
+        RangedU8::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU16`].
@@ -1807,7 +1807,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
             }
         }
 
-        RangedU16(self.get() as _)
+        RangedU16::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU32`].
@@ -1832,7 +1832,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
             }
         }
 
-        RangedU32(self.get() as _)
+        RangedU32::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU64`].
@@ -1859,7 +1859,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
             }
         }
 
-        RangedU64(self.get() as _)
+        RangedU64::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU128`].
@@ -1886,7 +1886,7 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
             }
         }
 
-        RangedU128(self.get() as _)
+        RangedU128::from_unchecked(self.get() as _)
     }
 }
 
@@ -1913,7 +1913,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
             }
         }
 
-        RangedU8(self.get() as _)
+        RangedU8::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU16`].
@@ -1938,7 +1938,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
             }
         }
 
-        RangedU16(self.get() as _)
+        RangedU16::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU32`].
@@ -1963,7 +1963,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
             }
         }
 
-        RangedU32(self.get() as _)
+        RangedU32::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU64`].
@@ -1988,7 +1988,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
             }
         }
 
-        RangedU64(self.get() as _)
+        RangedU64::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU128`].
@@ -2015,7 +2015,7 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
             }
         }
 
-        RangedU128(self.get() as _)
+        RangedU128::from_unchecked(self.get() as _)
     }
 }
 
@@ -2042,7 +2042,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             }
         }
 
-        RangedU8(self.get() as _)
+        RangedU8::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU16`].
@@ -2067,7 +2067,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             }
         }
 
-        RangedU16(self.get() as _)
+        RangedU16::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU32`].
@@ -2092,7 +2092,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             }
         }
 
-        RangedU32(self.get() as _)
+        RangedU32::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU64`].
@@ -2117,7 +2117,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             }
         }
 
-        RangedU64(self.get() as _)
+        RangedU64::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedU128`].
@@ -2142,7 +2142,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
             }
         }
 
-        RangedU128(self.get() as _)
+        RangedU128::from_unchecked(self.get() as _)
     }
 }
 
@@ -2169,7 +2169,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             }
         }
 
-        RangedI8(self.get() as _)
+        RangedI8::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI16`].
@@ -2196,7 +2196,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() as _)
+        RangedI16::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI32`].
@@ -2223,7 +2223,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             }
         }
 
-        RangedI32(self.get() as _)
+        RangedI32::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI64`].
@@ -2250,7 +2250,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             }
         }
 
-        RangedI64(self.get() as _)
+        RangedI64::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI128`].
@@ -2277,7 +2277,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
             }
         }
 
-        RangedI128(self.get() as _)
+        RangedI128::from_unchecked(self.get() as _)
     }
 }
 
@@ -2304,7 +2304,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
             }
         }
 
-        RangedI8(self.get() as _)
+        RangedI8::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI16`].
@@ -2329,7 +2329,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() as _)
+        RangedI16::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI32`].
@@ -2356,7 +2356,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
             }
         }
 
-        RangedI32(self.get() as _)
+        RangedI32::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI64`].
@@ -2383,7 +2383,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
             }
         }
 
-        RangedI64(self.get() as _)
+        RangedI64::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI128`].
@@ -2410,7 +2410,7 @@ impl<const MIN: u16, const MAX: u16> RangedU16<MIN, MAX> {
             }
         }
 
-        RangedI128(self.get() as _)
+        RangedI128::from_unchecked(self.get() as _)
     }
 }
 
@@ -2437,7 +2437,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
             }
         }
 
-        RangedI8(self.get() as _)
+        RangedI8::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI16`].
@@ -2462,7 +2462,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() as _)
+        RangedI16::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI32`].
@@ -2487,7 +2487,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
             }
         }
 
-        RangedI32(self.get() as _)
+        RangedI32::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI64`].
@@ -2514,7 +2514,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
             }
         }
 
-        RangedI64(self.get() as _)
+        RangedI64::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI128`].
@@ -2541,7 +2541,7 @@ impl<const MIN: u32, const MAX: u32> RangedU32<MIN, MAX> {
             }
         }
 
-        RangedI128(self.get() as _)
+        RangedI128::from_unchecked(self.get() as _)
     }
 }
 
@@ -2568,7 +2568,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             }
         }
 
-        RangedI8(self.get() as _)
+        RangedI8::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI16`].
@@ -2593,7 +2593,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() as _)
+        RangedI16::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI32`].
@@ -2618,7 +2618,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             }
         }
 
-        RangedI32(self.get() as _)
+        RangedI32::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI64`].
@@ -2643,7 +2643,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             }
         }
 
-        RangedI64(self.get() as _)
+        RangedI64::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI128`].
@@ -2670,7 +2670,7 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
             }
         }
 
-        RangedI128(self.get() as _)
+        RangedI128::from_unchecked(self.get() as _)
     }
 }
 
@@ -2697,7 +2697,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
             }
         }
 
-        RangedI8(self.get() as _)
+        RangedI8::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI16`].
@@ -2722,7 +2722,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
             }
         }
 
-        RangedI16(self.get() as _)
+        RangedI16::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI32`].
@@ -2747,7 +2747,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
             }
         }
 
-        RangedI32(self.get() as _)
+        RangedI32::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI64`].
@@ -2772,7 +2772,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
             }
         }
 
-        RangedI64(self.get() as _)
+        RangedI64::from_unchecked(self.get() as _)
     }
 
     /// Convert to [`RangedI128`].
@@ -2797,7 +2797,7 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
             }
         }
 
-        RangedI128(self.get() as _)
+        RangedI128::from_unchecked(self.get() as _)
     }
 }
 

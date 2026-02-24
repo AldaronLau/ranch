@@ -664,7 +664,7 @@ macro_rules! impl_ops_nonzero_unsigned {
                     unreachable!()
                 };
 
-                $type(value)
+                $type::from_unchecked(value)
             }
 
             /// Returns true if and only if `self == (1 << k)` for some `k`.
@@ -751,7 +751,7 @@ macro_rules! impl_ops_nonzero_unsigned {
                     unreachable!()
                 };
 
-                $type(value)
+                $type::from_unchecked(value)
             }
 
             /// Return `true` if `self` is an integer multiple of `rhs`, and
@@ -858,7 +858,7 @@ macro_rules! impl_ops_unsigned {
                     unreachable!()
                 };
 
-                $nonzero(value)
+                $nonzero::from_unchecked(value)
             }
 
             /// Returns true if and only if `self == (1 << k)` for some `k`.
@@ -945,7 +945,7 @@ macro_rules! impl_ops_unsigned {
                     }
                 }
 
-                $type(self.get().next_multiple_of(RHS))
+                $type::from_unchecked(self.get().next_multiple_of(RHS))
             }
 
             /// Return `true` if `self` is an integer multiple of `rhs`, and
@@ -1021,7 +1021,7 @@ macro_rules! impl_ops_unsigned {
                 if rhs.get() == 0 {
                     Quotient::Nan
                 } else {
-                    Quotient::Number($type(self.get() % rhs.get()))
+                    Quotient::Number($type::from_unchecked(self.get() % rhs.get()))
                 }
             }
 
@@ -1100,7 +1100,7 @@ macro_rules! impl_ops_unsigned {
                     }
                 }
 
-                $type(self.get() % rhs.get())
+                $type::from_unchecked(self.get() % rhs.get())
             }
 
             /// Get the least remainder of `self (mod rhs)`.
@@ -1726,7 +1726,7 @@ macro_rules! impl_ops_signed {
                 if rhs.get() == 0 {
                     Quotient::Nan
                 } else {
-                    Quotient::Number($type(self.get().div_euclid(rhs.get())))
+                    Quotient::Number($type::from_unchecked(self.get().div_euclid(rhs.get())))
                 }
             }
 
@@ -1794,7 +1794,7 @@ macro_rules! impl_ops_signed {
                 if rhs.get() == 0 {
                     Quotient::Nan
                 } else {
-                    Quotient::Number($type(self.get() % rhs.get()))
+                    Quotient::Number($type::from_unchecked(self.get() % rhs.get()))
                 }
             }
 
@@ -1846,7 +1846,7 @@ macro_rules! impl_ops_signed {
                 if rhs.get() == 0 {
                     Quotient::Nan
                 } else {
-                    Quotient::Number($type(self.get().rem_euclid(rhs.get())))
+                    Quotient::Number($type::from_unchecked(self.get().rem_euclid(rhs.get())))
                 }
             }
 

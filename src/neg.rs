@@ -14,7 +14,7 @@ macro_rules! impl_neg {
                     }
                 }
 
-                Self(-self.0)
+                Self::from_unchecked(-self.0)
             }
         }
     };

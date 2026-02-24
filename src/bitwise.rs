@@ -1172,7 +1172,7 @@ macro_rules! from_primitive {
             /// ```
             #[must_use]
             pub fn $name(value: $primitive) -> Self {
-                Self(value)
+                Self::from_unchecked(value)
             }
         }
     }
@@ -1204,7 +1204,7 @@ macro_rules! from_nonzero {
             /// );
             /// ```
             pub const fn from_nonzero(nonzero: NonZero<$primitive>) -> Self {
-                Self(nonzero)
+                Self::from_unchecked(nonzero)
             }
         }
     }

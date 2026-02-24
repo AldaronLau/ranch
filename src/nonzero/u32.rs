@@ -2,18 +2,9 @@ use core::num::NonZero;
 
 use as_repr::AsRepr;
 
-use crate::{Error, Quotient, RangedU32, Result};
-
-/// [`u32`] not to equal zero with a specified minimum and maximum value
-#[derive(Copy, Clone, Hash)]
-#[repr(transparent)]
-pub struct RangedNonZeroU32<const MIN: u32, const MAX: u32>(
-    pub(crate) NonZero<u32>,
-);
+use crate::*;
 
 impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
-    /// The size of this integer type in bits.
-    pub const BITS: u32 = u32::BITS;
     /// The largest value that can be represented by this integer type.
     pub const MAX: Self = Self::new::<MAX>();
     /// The smallest value that can be represented by this integer type.
@@ -50,7 +41,7 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
                 panic!("Out of bounds");
             }
 
-            Self(NonZero::new(N).unwrap())
+            Self::from_unchecked(NonZero::new(N).unwrap())
         }
     }
 
@@ -105,7 +96,7 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
             return Err(Error::PosOverflow);
         }
 
-        Ok(Self(nonzero))
+        Ok(Self::from_unchecked(nonzero))
     }
 
     /// Return the contained value as a primitive type.
@@ -145,7 +136,7 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
     /// ```
     #[must_use]
     pub const fn to_ranged(self) -> RangedU32<MIN, MAX> {
-        RangedU32(self.get())
+        RangedU32::from_unchecked(self.get())
     }
 
     /// Return the number of leading zeros in the binary representation of
@@ -159,7 +150,7 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
     /// ```
     #[must_use]
     pub const fn leading_zeros(self) -> RangedU32<0, { u32::BITS }> {
-        RangedU32(self.get().leading_zeros())
+        RangedU32::from_unchecked(self.get().leading_zeros())
     }
 
     /// Return the number of trailing zeros in the binary representation of
@@ -173,7 +164,7 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
     /// ```
     #[must_use]
     pub const fn trailing_zeros(self) -> RangedU32<0, { u32::BITS }> {
-        RangedU32(self.get().trailing_zeros())
+        RangedU32::from_unchecked(self.get().trailing_zeros())
     }
 
     /// Return the number of ones in the binary representation of `self`.
@@ -188,7 +179,7 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
     /// ```
     #[must_use]
     pub const fn count_ones(self) -> RangedU32<0, { u32::BITS }> {
-        RangedU32(self.get().count_ones())
+        RangedU32::from_unchecked(self.get().count_ones())
     }
 
     /// Add two ranged integers together.
@@ -463,7 +454,7 @@ impl<const MIN: u32, const MAX: u32> RangedNonZeroU32<MIN, MAX> {
     }
 }
 
-impl<const MIN: u32, const MAX: u32> crate::error::Clamp
+impl<const MIN: u32, const MAX: u32> error::Clamp
     for RangedNonZeroU32<MIN, MAX>
 {
     const MAX: Self = Self::MAX;

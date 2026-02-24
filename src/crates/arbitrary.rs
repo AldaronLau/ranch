@@ -11,7 +11,7 @@ macro_rules! impl_arbitrary {
         {
             fn arbitrary(u: &mut Unstructured<'a>) -> Result<Self> {
                 u.int_in_range(range::range_inclusive::<Self, _>())
-                    .map(Self)
+                    .map(Self::from_unchecked)
             }
         }
     };
@@ -43,7 +43,7 @@ macro_rules! impl_arbitrary_nonzero {
                     };
                     let value = u.int_in_range(range)?;
 
-                    Ok(Self(
+                    Ok(Self::from_unchecked(
                         NonZero::new(if value <= 0 {
                             value - 1
                         } else {
@@ -53,7 +53,7 @@ macro_rules! impl_arbitrary_nonzero {
                     ))
                 } else {
                     u.int_in_range(range)
-                        .map(|i| Self(NonZero::new(i).unwrap()))
+                        .map(|i| Self::from_unchecked(NonZero::new(i).unwrap()))
                 }
             }
         }

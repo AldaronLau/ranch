@@ -38,11 +38,11 @@ macro_rules! const_ord {
                     }
                 }
 
-                if self.get() < other.get() {
-                    $ty(self.get())
+                $ty::from_unchecked(if self.get() < other.get() {
+                    self.get()
                 } else {
-                    $ty(other.get())
-                }
+                    other.get()
+                })
             }
 
             /// Return the maximum of two ranged integers.
@@ -77,11 +77,11 @@ macro_rules! const_ord {
                     }
                 }
 
-                if self.get() > other.get() {
-                    $ty(self.get())
+                $ty::from_unchecked(if self.get() > other.get() {
+                    self.get()
                 } else {
-                    $ty(other.get())
-                }
+                    other.get()
+                })
             }
 
             /// Restrict a value to a certain interval.
@@ -128,13 +128,13 @@ macro_rules! const_ord {
                     panic!("min > max")
                 }
 
-                if self.get() < min.get() {
-                    $ty(min.get())
+                $ty::from_unchecked(if self.get() < min.get() {
+                    min.get()
                 } else if self.get() > max.get() {
-                    $ty(max.get())
+                    max.get()
                 } else {
-                    $ty(self.get())
-                }
+                    self.get()
+                })
             }
         }
     };

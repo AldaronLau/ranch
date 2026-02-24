@@ -27,7 +27,7 @@ macro_rules! bitops_impl {
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
             pub const fn bitnot(self) -> Self {
-                Self(!self.get()).clear_invalid_bits()
+                Self::from_unchecked(!self.get()).clear_invalid_bits()
             }
 
             /// Bitwise AND.
@@ -74,8 +74,10 @@ macro_rules! bitops_impl {
                     }
                 }
 
-                Self(self.get() & scale::ranged_scale_to(ranged))
-                    .clear_invalid_bits()
+                Self::from_unchecked(
+                    self.get() & scale::ranged_scale_to(ranged),
+                )
+                .clear_invalid_bits()
             }
 
             /// Bitwise OR.
@@ -122,8 +124,10 @@ macro_rules! bitops_impl {
                     }
                 }
 
-                Self(self.get() | scale::ranged_scale_to(ranged))
-                    .clear_invalid_bits()
+                Self::from_unchecked(
+                    self.get() | scale::ranged_scale_to(ranged),
+                )
+                .clear_invalid_bits()
             }
 
             /// Bitwise XOR.
@@ -170,8 +174,10 @@ macro_rules! bitops_impl {
                     }
                 }
 
-                Self(self.get() ^ scale::ranged_scale_to(ranged))
-                    .clear_invalid_bits()
+                Self::from_unchecked(
+                    self.get() ^ scale::ranged_scale_to(ranged),
+                )
+                .clear_invalid_bits()
             }
 
             /// Bitwise shift left.
@@ -202,7 +208,7 @@ macro_rules! bitops_impl {
                     return None;
                 };
 
-                Some(Self(value).clear_invalid_bits())
+                Some(Self::from_unchecked(value).clear_invalid_bits())
             }
 
             /// Expanding bitwise shift left.
@@ -264,7 +270,7 @@ macro_rules! bitops_impl {
                     return None;
                 };
 
-                Some(Self(value).clear_invalid_bits())
+                Some(Self::from_unchecked(value).clear_invalid_bits())
             }
 
             /// Bitwise shift left.
@@ -384,7 +390,7 @@ macro_rules! bitops_impl {
             const fn clear_invalid_bits(self) -> Self {
                 let unused_bits = const { Self::BITS - Self::USED_BITS };
 
-                Self((self.get() << unused_bits) >> unused_bits)
+                Self::from_unchecked((self.get() << unused_bits) >> unused_bits)
             }
         }
 
@@ -402,7 +408,7 @@ macro_rules! bitops_impl {
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
             pub const fn bitnot(self) -> Self {
-                Self(!self.get()).clear_invalid_bits()
+                Self::from_unchecked(!self.get()).clear_invalid_bits()
             }
 
             /// Bitwise AND.
@@ -449,7 +455,9 @@ macro_rules! bitops_impl {
                     }
                 }
 
-                Self(self.get() & scale::ranged_scale_to(ranged))
+                Self::from_unchecked(
+                    self.get() & scale::ranged_scale_to(ranged),
+                )
             }
 
             /// Bitwise OR.
@@ -496,7 +504,9 @@ macro_rules! bitops_impl {
                     }
                 }
 
-                Self(self.get() | scale::ranged_scale_to(ranged))
+                Self::from_unchecked(
+                    self.get() | scale::ranged_scale_to(ranged),
+                )
             }
 
             /// Bitwise XOR.
@@ -543,7 +553,9 @@ macro_rules! bitops_impl {
                     }
                 }
 
-                Self(self.get() ^ scale::ranged_scale_to(ranged))
+                Self::from_unchecked(
+                    self.get() ^ scale::ranged_scale_to(ranged),
+                )
             }
 
             /// Bitwise shift left.
@@ -574,7 +586,7 @@ macro_rules! bitops_impl {
                     return None;
                 };
 
-                Some(Self(value).clear_invalid_bits())
+                Some(Self::from_unchecked(value).clear_invalid_bits())
             }
 
             /// Bitwise shift right.
@@ -605,7 +617,7 @@ macro_rules! bitops_impl {
                     return None;
                 };
 
-                Some(Self(value).clear_invalid_bits())
+                Some(Self::from_unchecked(value).clear_invalid_bits())
             }
 
             /// Expanding bitwise shift left.
@@ -756,7 +768,7 @@ macro_rules! bitops_impl {
             const fn clear_invalid_bits(self) -> Self {
                 let unused_bits = const { Self::BITS - Self::USED_BITS };
 
-                Self((self.get() << unused_bits) >> unused_bits)
+                Self::from_unchecked((self.get() << unused_bits) >> unused_bits)
             }
         }
 

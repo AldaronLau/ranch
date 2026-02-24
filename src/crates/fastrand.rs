@@ -12,14 +12,16 @@ impl RngRanged for Rng {
     fn ranged_u8<const MIN: u8, const MAX: u8>(
         &mut self,
     ) -> RangedU8<MIN, MAX> {
-        RangedU8(self.u8(range::range_inclusive::<RangedU8<MIN, MAX>, u8>()))
+        RangedU8::from_unchecked(
+            self.u8(range::range_inclusive::<RangedU8<MIN, MAX>, u8>()),
+        )
     }
 
     /// Generate a random [`RangedU16`].
     fn ranged_u16<const MIN: u16, const MAX: u16>(
         &mut self,
     ) -> RangedU16<MIN, MAX> {
-        RangedU16(
+        RangedU16::from_unchecked(
             self.u16(range::range_inclusive::<RangedU16<MIN, MAX>, u16>()),
         )
     }
@@ -28,7 +30,7 @@ impl RngRanged for Rng {
     fn ranged_u32<const MIN: u32, const MAX: u32>(
         &mut self,
     ) -> RangedU32<MIN, MAX> {
-        RangedU32(
+        RangedU32::from_unchecked(
             self.u32(range::range_inclusive::<RangedU32<MIN, MAX>, u32>()),
         )
     }
@@ -37,7 +39,7 @@ impl RngRanged for Rng {
     fn ranged_u64<const MIN: u64, const MAX: u64>(
         &mut self,
     ) -> RangedU64<MIN, MAX> {
-        RangedU64(
+        RangedU64::from_unchecked(
             self.u64(range::range_inclusive::<RangedU64<MIN, MAX>, u64>()),
         )
     }
@@ -46,7 +48,7 @@ impl RngRanged for Rng {
     fn ranged_u128<const MIN: u128, const MAX: u128>(
         &mut self,
     ) -> RangedU128<MIN, MAX> {
-        RangedU128(
+        RangedU128::from_unchecked(
             self.u128(range::range_inclusive::<RangedU128<MIN, MAX>, u128>()),
         )
     }
@@ -55,14 +57,16 @@ impl RngRanged for Rng {
     fn ranged_i8<const MIN: i8, const MAX: i8>(
         &mut self,
     ) -> RangedI8<MIN, MAX> {
-        RangedI8(self.i8(range::range_inclusive::<RangedI8<MIN, MAX>, i8>()))
+        RangedI8::from_unchecked(
+            self.i8(range::range_inclusive::<RangedI8<MIN, MAX>, i8>()),
+        )
     }
 
     /// Generate a random [`RangedI16`].
     fn ranged_i16<const MIN: i16, const MAX: i16>(
         &mut self,
     ) -> RangedI16<MIN, MAX> {
-        RangedI16(
+        RangedI16::from_unchecked(
             self.i16(range::range_inclusive::<RangedI16<MIN, MAX>, i16>()),
         )
     }
@@ -71,7 +75,7 @@ impl RngRanged for Rng {
     fn ranged_i32<const MIN: i32, const MAX: i32>(
         &mut self,
     ) -> RangedI32<MIN, MAX> {
-        RangedI32(
+        RangedI32::from_unchecked(
             self.i32(range::range_inclusive::<RangedI32<MIN, MAX>, i32>()),
         )
     }
@@ -80,7 +84,7 @@ impl RngRanged for Rng {
     fn ranged_i64<const MIN: i64, const MAX: i64>(
         &mut self,
     ) -> RangedI64<MIN, MAX> {
-        RangedI64(
+        RangedI64::from_unchecked(
             self.i64(range::range_inclusive::<RangedI64<MIN, MAX>, i64>()),
         )
     }
@@ -89,7 +93,7 @@ impl RngRanged for Rng {
     fn ranged_i128<const MIN: i128, const MAX: i128>(
         &mut self,
     ) -> RangedI128<MIN, MAX> {
-        RangedI128(
+        RangedI128::from_unchecked(
             self.i128(range::range_inclusive::<RangedI128<MIN, MAX>, i128>()),
         )
     }
@@ -106,7 +110,7 @@ impl RngRanged for Rng {
             RangeInclusive::new(MIN, MAX)
         };
 
-        RangedNonZeroI8(
+        RangedNonZeroI8::from_unchecked(
             NonZero::new(if range.contains(&0) {
                 let range = const { RangeInclusive::new(MIN + 1, MAX) };
                 let value = self.i8(range);
@@ -131,7 +135,7 @@ impl RngRanged for Rng {
             RangeInclusive::new(MIN, MAX)
         };
 
-        RangedNonZeroI16(
+        RangedNonZeroI16::from_unchecked(
             NonZero::new(if range.contains(&0) {
                 let range = const { RangeInclusive::new(MIN + 1, MAX) };
                 let value = self.i16(range);
@@ -156,7 +160,7 @@ impl RngRanged for Rng {
             RangeInclusive::new(MIN, MAX)
         };
 
-        RangedNonZeroI32(
+        RangedNonZeroI32::from_unchecked(
             NonZero::new(if range.contains(&0) {
                 let range = const { RangeInclusive::new(MIN + 1, MAX) };
                 let value = self.i32(range);
@@ -181,7 +185,7 @@ impl RngRanged for Rng {
             RangeInclusive::new(MIN, MAX)
         };
 
-        RangedNonZeroI64(
+        RangedNonZeroI64::from_unchecked(
             NonZero::new(if range.contains(&0) {
                 let range = const { RangeInclusive::new(MIN + 1, MAX) };
                 let value = self.i64(range);
@@ -206,7 +210,7 @@ impl RngRanged for Rng {
             RangeInclusive::new(MIN, MAX)
         };
 
-        RangedNonZeroI128(NonZero::new(if range.contains(&0) {
+        RangedNonZeroI128::from_unchecked(NonZero::new(if range.contains(&0) {
             let range = const { RangeInclusive::new(MIN + 1, MAX) };
             let value = self.i128(range);
 

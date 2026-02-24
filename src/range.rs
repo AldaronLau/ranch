@@ -4,8 +4,11 @@
 
 use core::{error, fmt, iter, num::NonZero, ops::RangeInclusive, result};
 
-pub use super::random::*;
-use super::*;
+pub use super::{
+    num::{marker::*, ranged::*},
+    random::*,
+};
+use crate::*;
 
 /// Validating an integer is within a range result
 pub type Result<T = (), E = Error> = result::Result<T, E>;
