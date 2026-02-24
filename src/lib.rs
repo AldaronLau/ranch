@@ -246,6 +246,7 @@ pub mod bitwise;
 mod convert;
 mod error;
 mod format;
+mod from_repr;
 mod impl_ascii;
 mod index;
 mod neg;
@@ -257,6 +258,7 @@ mod random;
 pub mod range;
 mod repr;
 mod scale;
+mod shl;
 pub mod unit;
 
 pub use self::{

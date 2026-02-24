@@ -5,7 +5,9 @@ use core::ops::{
 
 use as_repr::AsRepr;
 
-use crate::{bitwise::*, scale::RangedScaleTo, *};
+use crate::{
+    bitwise::*, from_repr::FromRepr, scale::RangedScaleTo, shl::DowncastShl, *,
+};
 
 macro_rules! bitops_impl {
     ($unsigned:ident, $signed:ident, $u:ty, $s:ty) => {
@@ -201,6 +203,37 @@ macro_rules! bitops_impl {
                 };
 
                 Some(Self(value).clear_invalid_bits())
+            }
+
+            /// Expanding bitwise shift left.
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::{I7, I13};
+            /// assert_eq!(
+            ///     I7::new::<0b10_1011>().expanding_shl::<6, I13>(),
+            ///     I13::new::<0b1010_1100_0000>(),
+            /// );
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn expanding_shl<const N: u32, T>(self) -> T
+            where
+                <T as FromRepr>::Repr: DowncastShl,
+                T: FromRepr + BitwiseSigned<<T as FromRepr>::Repr>,
+                Self: RangedScaleTo<<T as FromRepr>::Repr>,
+            {
+                const {
+                    if T::USED_BITS != Self::USED_BITS + N {
+                        panic!("bit size plus shift must equal result bit size")
+                    }
+                }
+
+                let scaled: <T as FromRepr>::Repr =
+                    scale::ranged_scale_to(self);
+                let shifted: <T as FromRepr>::Repr =
+                    shl::downcast_shl::<N, <T as FromRepr>::Repr>(scaled);
+
+                from_repr::from_repr(shifted)
             }
 
             /// Bitwise shift right.
@@ -573,6 +606,37 @@ macro_rules! bitops_impl {
                 };
 
                 Some(Self(value).clear_invalid_bits())
+            }
+
+            /// Expanding bitwise shift left.
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::{U6, U12};
+            /// assert_eq!(
+            ///     U6::new::<0b10_1011>().expanding_shl::<6, U12>(),
+            ///     U12::new::<0b1010_1100_0000>(),
+            /// );
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn expanding_shl<const N: u32, T>(self) -> T
+            where
+                <T as FromRepr>::Repr: DowncastShl,
+                T: FromRepr + BitwiseUnsigned<<T as FromRepr>::Repr>,
+                Self: RangedScaleTo<<T as FromRepr>::Repr>,
+            {
+                const {
+                    if T::USED_BITS != Self::USED_BITS + N {
+                        panic!("bit size plus shift must equal result bit size")
+                    }
+                }
+
+                let scaled: <T as FromRepr>::Repr =
+                    scale::ranged_scale_to(self);
+                let shifted: <T as FromRepr>::Repr =
+                    shl::downcast_shl::<N, <T as FromRepr>::Repr>(scaled);
+
+                from_repr::from_repr(shifted)
             }
 
             /// Bitwise shift left.
