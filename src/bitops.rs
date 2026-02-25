@@ -6,7 +6,11 @@ use core::ops::{
 use as_repr::AsRepr;
 
 use crate::{
-    bitwise::*, from_repr::FromRepr, scale::RangedScaleTo, shl::DowncastShl, *,
+    bitwise::*,
+    cast::as_primitive::{self, AsPrimitive},
+    from_repr::FromRepr,
+    shl::DowncastShl,
+    *,
 };
 
 macro_rules! bitops_impl {
@@ -69,13 +73,15 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if scale::ranged_scale_to(R::MAX) > Self::MAX.get() {
+                    if as_primitive::as_primitive_expanding(R::MAX)
+                        > Self::MAX.get()
+                    {
                         panic!("cannot bitwise AND with a larger type")
                     }
                 }
 
                 Self::from_unchecked(
-                    self.get() & scale::ranged_scale_to(ranged),
+                    self.get() & as_primitive::as_primitive_expanding(ranged),
                 )
                 .clear_invalid_bits()
             }
@@ -119,13 +125,15 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if scale::ranged_scale_to(R::MAX) > Self::MAX.get() {
+                    if as_primitive::as_primitive_expanding(R::MAX)
+                        > Self::MAX.get()
+                    {
                         panic!("cannot bitwise AND with a larger type")
                     }
                 }
 
                 Self::from_unchecked(
-                    self.get() | scale::ranged_scale_to(ranged),
+                    self.get() | as_primitive::as_primitive_expanding(ranged),
                 )
                 .clear_invalid_bits()
             }
@@ -169,13 +177,15 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if scale::ranged_scale_to(R::MAX) > Self::MAX.get() {
+                    if as_primitive::as_primitive_expanding(R::MAX)
+                        > Self::MAX.get()
+                    {
                         panic!("cannot bitwise AND with a larger type")
                     }
                 }
 
                 Self::from_unchecked(
-                    self.get() ^ scale::ranged_scale_to(ranged),
+                    self.get() ^ as_primitive::as_primitive_expanding(ranged),
                 )
                 .clear_invalid_bits()
             }
@@ -226,7 +236,7 @@ macro_rules! bitops_impl {
             where
                 <T as FromRepr>::Repr: DowncastShl,
                 T: FromRepr + BitwiseSigned<<T as FromRepr>::Repr>,
-                Self: RangedScaleTo<<T as FromRepr>::Repr>,
+                Self: AsPrimitive<<T as FromRepr>::Repr>,
             {
                 const {
                     if T::USED_BITS != Self::USED_BITS + N {
@@ -235,7 +245,7 @@ macro_rules! bitops_impl {
                 }
 
                 let scaled: <T as FromRepr>::Repr =
-                    scale::ranged_scale_to(self);
+                    as_primitive::as_primitive_expanding(self);
                 let shifted: <T as FromRepr>::Repr =
                     shl::downcast_shl::<N, <T as FromRepr>::Repr>(scaled);
 
@@ -340,15 +350,19 @@ macro_rules! bitops_impl {
                           without modifying the original"]
             pub const fn shl_ranged<R>(self, ranged: R) -> Self
             where
-                R: RangedScaleTo<u32>,
+                R: AsPrimitive<u32>,
             {
                 const {
-                    if scale::ranged_scale_to(R::MAX) >= Self::USED_BITS {
+                    if as_primitive::as_primitive_expanding(R::MAX)
+                        >= Self::USED_BITS
+                    {
                         panic!("cannot shift left more than size - 1 in bits");
                     }
                 }
 
-                match self.checked_shl(scale::ranged_scale_to(ranged)) {
+                match self
+                    .checked_shl(as_primitive::as_primitive_expanding(ranged))
+                {
                     Some(value) => value,
                     None => unreachable!(),
                 }
@@ -373,15 +387,19 @@ macro_rules! bitops_impl {
                           without modifying the original"]
             pub const fn shr_ranged<R>(self, ranged: R) -> Self
             where
-                R: RangedScaleTo<u32>,
+                R: AsPrimitive<u32>,
             {
                 const {
-                    if scale::ranged_scale_to(R::MAX) >= Self::USED_BITS {
+                    if as_primitive::as_primitive_expanding(R::MAX)
+                        >= Self::USED_BITS
+                    {
                         panic!("cannot shift right more than size - 1 in bits");
                     }
                 }
 
-                match self.checked_shr(scale::ranged_scale_to(ranged)) {
+                match self
+                    .checked_shr(as_primitive::as_primitive_expanding(ranged))
+                {
                     Some(value) => value,
                     None => unreachable!(),
                 }
@@ -450,13 +468,15 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if scale::ranged_scale_to(R::MAX) > Self::MAX.get() {
+                    if as_primitive::as_primitive_expanding(R::MAX)
+                        > Self::MAX.get()
+                    {
                         panic!("cannot bitwise AND with a larger type")
                     }
                 }
 
                 Self::from_unchecked(
-                    self.get() & scale::ranged_scale_to(ranged),
+                    self.get() & as_primitive::as_primitive_expanding(ranged),
                 )
             }
 
@@ -499,13 +519,15 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if scale::ranged_scale_to(R::MAX) > Self::MAX.get() {
+                    if as_primitive::as_primitive_expanding(R::MAX)
+                        > Self::MAX.get()
+                    {
                         panic!("cannot bitwise AND with a larger type")
                     }
                 }
 
                 Self::from_unchecked(
-                    self.get() | scale::ranged_scale_to(ranged),
+                    self.get() | as_primitive::as_primitive_expanding(ranged),
                 )
             }
 
@@ -548,13 +570,15 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if scale::ranged_scale_to(R::MAX) > Self::MAX.get() {
+                    if as_primitive::as_primitive_expanding(R::MAX)
+                        > Self::MAX.get()
+                    {
                         panic!("cannot bitwise AND with a larger type")
                     }
                 }
 
                 Self::from_unchecked(
-                    self.get() ^ scale::ranged_scale_to(ranged),
+                    self.get() ^ as_primitive::as_primitive_expanding(ranged),
                 )
             }
 
@@ -635,7 +659,7 @@ macro_rules! bitops_impl {
             where
                 <T as FromRepr>::Repr: DowncastShl,
                 T: FromRepr + BitwiseUnsigned<<T as FromRepr>::Repr>,
-                Self: RangedScaleTo<<T as FromRepr>::Repr>,
+                Self: AsPrimitive<<T as FromRepr>::Repr>,
             {
                 const {
                     if T::USED_BITS != Self::USED_BITS + N {
@@ -644,7 +668,7 @@ macro_rules! bitops_impl {
                 }
 
                 let scaled: <T as FromRepr>::Repr =
-                    scale::ranged_scale_to(self);
+                    as_primitive::as_primitive_expanding(self);
                 let shifted: <T as FromRepr>::Repr =
                     shl::downcast_shl::<N, <T as FromRepr>::Repr>(scaled);
 
@@ -718,15 +742,19 @@ macro_rules! bitops_impl {
                           without modifying the original"]
             pub const fn shl_ranged<R>(self, ranged: R) -> Self
             where
-                R: RangedScaleTo<u32>,
+                R: AsPrimitive<u32>,
             {
                 const {
-                    if scale::ranged_scale_to(R::MAX) >= Self::USED_BITS {
+                    if as_primitive::as_primitive_expanding(R::MAX)
+                        >= Self::USED_BITS
+                    {
                         panic!("cannot shift left more than size - 1 in bits");
                     }
                 }
 
-                match self.checked_shl(scale::ranged_scale_to(ranged)) {
+                match self
+                    .checked_shl(as_primitive::as_primitive_expanding(ranged))
+                {
                     Some(value) => value,
                     None => unreachable!(),
                 }
@@ -751,15 +779,19 @@ macro_rules! bitops_impl {
                           without modifying the original"]
             pub const fn shr_ranged<R>(self, ranged: R) -> Self
             where
-                R: RangedScaleTo<u32>,
+                R: AsPrimitive<u32>,
             {
                 const {
-                    if scale::ranged_scale_to(R::MAX) >= Self::USED_BITS {
+                    if as_primitive::as_primitive_expanding(R::MAX)
+                        >= Self::USED_BITS
+                    {
                         panic!("cannot shift right more than size - 1 in bits");
                     }
                 }
 
-                match self.checked_shr(scale::ranged_scale_to(ranged)) {
+                match self
+                    .checked_shr(as_primitive::as_primitive_expanding(ranged))
+                {
                     Some(value) => value,
                     None => unreachable!(),
                 }
@@ -1034,14 +1066,14 @@ macro_rules! bitops {
     ($u:ty, $s:ty, $unsigned:ty, $signed:ty, $bits:literal) => {
         impl<T> BitwiseSigned<T> for $signed
         where
-            $signed: RangedScaleTo<T>,
+            $signed: AsPrimitive<T>,
         {
             const USED_BITS: u32 = $bits;
         }
 
         impl<T> BitwiseUnsigned<T> for $unsigned
         where
-            $unsigned: RangedScaleTo<T>,
+            $unsigned: AsPrimitive<T>,
         {
             const USED_BITS: u32 = $bits;
         }
@@ -1183,10 +1215,10 @@ bitops_impl!(RangedU32, RangedI32, u32, i32);
 bitops_impl!(RangedU64, RangedI64, u64, i64);
 bitops_impl!(RangedU128, RangedI128, u128, i128);
 
-pub trait BitwiseUnsigned<T>: RangedScaleTo<T> {
+pub trait BitwiseUnsigned<T>: AsPrimitive<T> {
     const USED_BITS: u32;
 }
 
-pub trait BitwiseSigned<T>: RangedScaleTo<T> {
+pub trait BitwiseSigned<T>: AsPrimitive<T> {
     const USED_BITS: u32;
 }

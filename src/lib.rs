@@ -196,6 +196,7 @@
 )]
 
 mod cast {
+    pub(super) mod as_primitive;
     mod as_repr;
 }
 
@@ -267,7 +268,6 @@ pub mod parsing;
 mod quotient;
 mod random;
 pub mod range;
-mod scale;
 mod shl;
 mod to;
 pub mod unit;
