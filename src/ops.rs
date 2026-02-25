@@ -150,7 +150,48 @@ macro_rules! impl_ops {
             }
         }
 
+        impl<const MIN: $p, const MAX: $p> $nonzero<MIN, MAX> {
+            /// Convert to a ranged type with a fully expanded range.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($nonzero), ";")]
+            #[doc = concat!("let a = ", stringify!($nonzero), "::<48, 96>::new::<0b_0100_0000>();")]
+            #[doc = concat!("let b = ", stringify!($nonzero), "::<48, 96>::new::<0b_0100_0011>();")]
+            ///
+            /// assert_eq!(a.to_full().count_ones().get(), 1);
+            /// assert_eq!(b.to_full().count_ones().get(), 3);
+            /// assert_eq!(a.to_full().trailing_zeros().get(), 6);
+            /// assert_eq!(b.to_full().trailing_zeros().get(), 0);
+            #[doc = concat!("assert_eq!(a.to_full().leading_zeros().get(), ", stringify!($p), "::BITS - 7);")]
+            #[doc = concat!("assert_eq!(b.to_full().leading_zeros().get(), ", stringify!($p), "::BITS - 7);")]
+            /// ```
+            pub fn to_full(self) -> $nonzero<
+                { NonZero::<$p>::MIN.get() },
+                { NonZero::<$p>::MAX.get() },
+            > {
+                $nonzero::from_unchecked(self.to_nonzero())
+            }
+        }
+
         impl<const MIN: $p, const MAX: $p> $type<MIN, MAX> {
+            /// Convert to a ranged type with a fully expanded range.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($type), ";")]
+            #[doc = concat!("let a = ", stringify!($type), "::<48, 96>::new::<0b_0100_0000>();")]
+            #[doc = concat!("let b = ", stringify!($type), "::<48, 96>::new::<0b_0100_0011>();")]
+            ///
+            /// assert_eq!(a.to_full().count_ones().get(), 1);
+            /// assert_eq!(b.to_full().count_ones().get(), 3);
+            /// assert_eq!(a.to_full().trailing_zeros().get(), 6);
+            /// assert_eq!(b.to_full().trailing_zeros().get(), 0);
+            #[doc = concat!("assert_eq!(a.to_full().leading_zeros().get(), ", stringify!($p), "::BITS - 7);")]
+            #[doc = concat!("assert_eq!(b.to_full().leading_zeros().get(), ", stringify!($p), "::BITS - 7);")]
+            /// ```
+            pub fn to_full(self) -> $type<{ <$p>::MIN }, { <$p>::MAX }> {
+                $type::from_unchecked(self.get())
+            }
+
             /// Add a number to `self`.
             ///
             /// ```rust
