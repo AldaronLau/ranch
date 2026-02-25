@@ -195,6 +195,10 @@
     rustdoc::redundant_explicit_links
 )]
 
+mod cast {
+    mod as_repr;
+}
+
 mod crates {
     #[cfg(feature = "arbitrary.v1")]
     mod arbitrary;
@@ -263,7 +267,6 @@ pub mod parsing;
 mod quotient;
 mod random;
 pub mod range;
-mod repr;
 mod scale;
 mod shl;
 mod to;
