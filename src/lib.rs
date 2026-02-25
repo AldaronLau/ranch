@@ -266,6 +266,7 @@ pub mod range;
 mod repr;
 mod scale;
 mod shl;
+mod to;
 pub mod unit;
 
 pub use self::{
