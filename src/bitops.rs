@@ -252,6 +252,39 @@ macro_rules! bitops_impl {
                 from_repr::from_repr(shifted)
             }
 
+            /// Shrinking bitwise shift right.
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::{I7, I13};
+            /// assert_eq!(
+            ///     I13::new::<0b1010_1100_0000>().shrinking_shr::<6, I7>(),
+            ///     I7::new::<0b10_1011>(),
+            /// );
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn shrinking_shr<const N: u32, T>(self) -> T
+            where
+                T: FromRepr + BitwiseSigned<<T as FromRepr>::Repr>,
+                Self: AsPrimitive<<T as FromRepr>::Repr>,
+            {
+                const {
+                    if T::USED_BITS != Self::USED_BITS - N {
+                        panic!(
+                            "bit size minus shift must equal result bit size"
+                        )
+                    }
+                }
+
+                let repr: $s = as_repr::as_repr(self);
+                let shifted: $s = shr::downcast_shr_signed::<N, _>(repr);
+                let wrapped = Self::from_unchecked(shifted);
+                let scaled: <T as FromRepr>::Repr =
+                    as_primitive::as_primitive_shrinking(wrapped);
+
+                from_repr::from_repr(scaled)
+            }
+
             /// Bitwise shift right.
             ///
             /// Returns `None` if `rhs` is greater than or equal to `N` for
@@ -673,6 +706,39 @@ macro_rules! bitops_impl {
                     shl::downcast_shl::<N, <T as FromRepr>::Repr>(scaled);
 
                 from_repr::from_repr(shifted)
+            }
+
+            /// Shrinking bitwise shift right.
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::{U6, U12};
+            /// assert_eq!(
+            ///     U12::new::<0b1010_1100_0000>().shrinking_shr::<6, U6>(),
+            ///     U6::new::<0b10_1011>(),
+            /// );
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn shrinking_shr<const N: u32, T>(self) -> T
+            where
+                T: FromRepr + BitwiseUnsigned<<T as FromRepr>::Repr>,
+                Self: AsPrimitive<<T as FromRepr>::Repr>,
+            {
+                const {
+                    if T::USED_BITS != Self::USED_BITS - N {
+                        panic!(
+                            "bit size minus shift must equal result bit size"
+                        )
+                    }
+                }
+
+                let repr: $u = as_repr::as_repr(self);
+                let shifted: $u = shr::downcast_shr_unsigned::<N, _>(repr);
+                let wrapped = Self::from_unchecked(shifted);
+                let scaled: <T as FromRepr>::Repr =
+                    as_primitive::as_primitive_shrinking(wrapped);
+
+                from_repr::from_repr(scaled)
             }
 
             /// Bitwise shift left.
