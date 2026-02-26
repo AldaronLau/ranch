@@ -34,6 +34,53 @@ macro_rules! bitops_impl {
                 Self::from_unchecked(!self.get()).clear_invalid_bits()
             }
 
+            /// Bitwise mask (AND).
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::{I12, I6};
+            /// assert_eq!(
+            ///     I12::new::<0b1011>().bitmask::<0b1110, I6>(),
+            ///     I6::new::<0b1010>(),
+            /// );
+            /// assert_eq!(
+            ///     I12::new::<0b1011>().bitmask::<0b1110, I12>(),
+            ///     I12::new::<0b1010>(),
+            /// );
+            /// ```
+            ///
+            /// Fails to compile if you try to expand the type:
+            ///
+            /// ```rust,compile_fail
+            /// # use ranch::bitwise::{I12, I6};
+            /// assert_eq!(
+            ///     I6::new::<0b1011>().bitmask::<0b1110, I12>(),
+            ///     I12::new::<0b1010>(),
+            /// );
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn bitmask<const N: $s, T>(self) -> T
+            where
+                T: FromRepr
+                    + BitwiseSigned<<T as FromRepr>::Repr>
+                    + AsPrimitive<$s>,
+                Self: AsPrimitive<<T as FromRepr>::Repr>,
+            {
+                const {
+                    if N > as_primitive::as_primitive_expanding(T::MAX)
+                        || N < as_primitive::as_primitive_expanding(T::MIN)
+                    {
+                        panic!("Mask must fit within bounds of output range");
+                    }
+                }
+
+                let masked = self.bitand::<N>();
+                let scaled: <T as FromRepr>::Repr =
+                    as_primitive::as_primitive_shrinking(masked);
+
+                from_repr::from_repr(scaled)
+            }
+
             /// Bitwise AND.
             ///
             /// ```rust
@@ -460,6 +507,53 @@ macro_rules! bitops_impl {
                           without modifying the original"]
             pub const fn bitnot(self) -> Self {
                 Self::from_unchecked(!self.get()).clear_invalid_bits()
+            }
+
+            /// Bitwise mask (AND).
+            ///
+            /// ```rust
+            /// # use ranch::bitwise::{U12, U4};
+            /// assert_eq!(
+            ///     U12::new::<0b1011>().bitmask::<0b1110, U4>(),
+            ///     U4::new::<0b1010>(),
+            /// );
+            /// assert_eq!(
+            ///     U12::new::<0b1011>().bitmask::<0b1110, U12>(),
+            ///     U12::new::<0b1010>(),
+            /// );
+            /// ```
+            ///
+            /// Fails to compile if you try to expand the type:
+            ///
+            /// ```rust,compile_fail
+            /// # use ranch::bitwise::{U12, U4};
+            /// assert_eq!(
+            ///     U4::new::<0b1011>().bitmask::<0b1110, U12>(),
+            ///     U12::new::<0b1010>(),
+            /// );
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn bitmask<const N: $u, T>(self) -> T
+            where
+                T: FromRepr
+                    + BitwiseUnsigned<<T as FromRepr>::Repr>
+                    + AsPrimitive<$u>,
+                Self: AsPrimitive<<T as FromRepr>::Repr>,
+            {
+                const {
+                    if N > as_primitive::as_primitive_expanding(T::MAX)
+                        || N < as_primitive::as_primitive_expanding(T::MIN)
+                    {
+                        panic!("Mask must fit within bounds of output range");
+                    }
+                }
+
+                let masked = self.bitand::<N>();
+                let scaled: <T as FromRepr>::Repr =
+                    as_primitive::as_primitive_shrinking(masked);
+
+                from_repr::from_repr(scaled)
             }
 
             /// Bitwise AND.
