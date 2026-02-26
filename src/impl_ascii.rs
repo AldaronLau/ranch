@@ -29,7 +29,7 @@ impl Uppercase {
     /// assert_eq!(uppercase_a.to_char(), 'A');
     /// ```
     pub const fn to_char(self) -> char {
-        let chr: Char = self.to_ranged().to_ranged_u8();
+        let chr: Char = self.to_ranged().to_ranged();
 
         chr.to_char()
     }
@@ -59,7 +59,7 @@ impl Lowercase {
     /// assert_eq!(lowercase_a.to_char(), 'a');
     /// ```
     pub const fn to_char(self) -> char {
-        let chr: Char = self.to_ranged().to_ranged_u8();
+        let chr: Char = self.to_ranged().to_ranged();
 
         chr.to_char()
     }
@@ -113,7 +113,7 @@ impl Graphic {
     /// assert_eq!(lowercase_a.to_char(), 'a');
     /// ```
     pub const fn to_char(self) -> char {
-        let chr: Char = self.to_ranged().to_ranged_u8();
+        let chr: Char = self.to_ranged().to_ranged();
 
         chr.to_char()
     }
@@ -152,7 +152,7 @@ impl Digit {
     /// assert_eq!(one.to_char(), '1');
     /// ```
     pub const fn to_char(self) -> char {
-        let chr: Char = self.to_ranged().to_ranged_u8();
+        let chr: Char = self.to_ranged().to_ranged();
 
         chr.to_char()
     }
