@@ -200,7 +200,7 @@ where
 ///  - `T` must be a primitive value
 const unsafe fn not<T>(input: T) -> T
 where
-    T: Copy + Clone
+    T: Copy + Clone,
 {
     const {
         if !matches!(size_of::<T>(), 1 | 2 | 4 | 8 | 16) {
@@ -254,7 +254,7 @@ where
 ///  - `T` must be a signed primitive value
 const unsafe fn is_negative<T>(input: T) -> bool
 where
-    T: Copy + Clone
+    T: Copy + Clone,
 {
     const {
         if !matches!(size_of::<T>(), 1 | 2 | 4 | 8 | 16) {
