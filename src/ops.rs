@@ -165,7 +165,7 @@ macro_rules! impl_ops {
             #[doc = concat!("assert_eq!(a.to_full().leading_zeros().get(), ", stringify!($p), "::BITS - 7);")]
             #[doc = concat!("assert_eq!(b.to_full().leading_zeros().get(), ", stringify!($p), "::BITS - 7);")]
             /// ```
-            pub fn to_full(self) -> $nonzero<
+            pub const fn to_full(self) -> $nonzero<
                 { NonZero::<$p>::MIN.get() },
                 { NonZero::<$p>::MAX.get() },
             > {
@@ -188,7 +188,7 @@ macro_rules! impl_ops {
             #[doc = concat!("assert_eq!(a.to_full().leading_zeros().get(), ", stringify!($p), "::BITS - 7);")]
             #[doc = concat!("assert_eq!(b.to_full().leading_zeros().get(), ", stringify!($p), "::BITS - 7);")]
             /// ```
-            pub fn to_full(self) -> $type<{ <$p>::MIN }, { <$p>::MAX }> {
+            pub const fn to_full(self) -> $type<{ <$p>::MIN }, { <$p>::MAX }> {
                 $type::from_unchecked(self.get())
             }
 
