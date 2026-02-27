@@ -1,13 +1,8 @@
-//! Range utilities
-//!
-//! Some convenience utilities for type ranges.
+//! Utilities for ranged types
 
-use core::{error, fmt, iter, num::NonZero, ops::RangeInclusive, result};
+use core::{error, fmt, num::NonZero, ops::RangeInclusive, result};
 
-pub use super::{
-    num::{marker::*, ranged::*},
-    random::*,
-};
+pub use super::{num::marker::*, random::*};
 use crate::*;
 
 /// Validating an integer is within a range result
@@ -50,32 +45,6 @@ impl From<crate::Error> for Error {
             crate::Error::PosOverflow => Self::PosOverflow,
             crate::Error::NegOverflow => Self::NegOverflow,
         }
-    }
-}
-
-/// A type with multiple valid ranges of values
-pub trait MultiRange<T = Self> {
-    /// The minimum value of the type
-    const MIN: T;
-    /// The maximum value of the type
-    const MAX: T;
-
-    /// Return an iterator of each valid range.
-    ///
-    /// The ranges should be returned from lowest to highest value, and never
-    /// overlap (although this isn't enforced by the trait).
-    fn ranges() -> impl Iterator<Item = RangeInclusive<T>>;
-}
-
-impl<T, U> MultiRange<T> for U
-where
-    U: Range<T>,
-{
-    const MAX: T = U::MAX;
-    const MIN: T = U::MIN;
-
-    fn ranges() -> impl Iterator<Item = RangeInclusive<T>> {
-        iter::once(range_inclusive::<U, T>())
     }
 }
 
@@ -171,37 +140,6 @@ macro_rules! ranged_impl_range {
     };
 }
 
-macro_rules! nonzero_multirange_impl {
-    ($r:ident, $p:ty) => {
-        impl<const MIN: $p, const MAX: $p> MultiRange<$p> for $r<MIN, MAX> {
-            const MAX: $p = MAX;
-            const MIN: $p = MIN;
-
-            fn ranges() -> impl Iterator<Item = RangeInclusive<$p>> {
-                iter::once(RangeInclusive::new(MIN, -1))
-                    .chain(iter::once(RangeInclusive::new(1, MAX)))
-                    .filter(|range| !range.is_empty())
-            }
-        }
-
-        impl<const MIN: $p, const MAX: $p> MultiRange<$r<MIN, MAX>>
-            for $r<MIN, MAX>
-        {
-            const MAX: $r<MIN, MAX> = Self::MAX;
-            const MIN: $r<MIN, MAX> = Self::MIN;
-
-            fn ranges() -> impl Iterator<Item = RangeInclusive<Self>> {
-                iter::once(RangeInclusive::new(Self::MIN, $r::new::<-1>()))
-                    .chain(iter::once(RangeInclusive::new(
-                        $r::new::<1>(),
-                        Self::MAX,
-                    )))
-                    .filter(|range| !range.is_empty())
-            }
-        }
-    };
-}
-
 macro_rules! nonzero_impl_range {
     ($p:ty) => {
         impl Range<$p> for NonZero<$p> {
@@ -211,66 +149,11 @@ macro_rules! nonzero_impl_range {
     };
 }
 
-macro_rules! nonzero_impl_multirange {
-    ($p:ty) => {
-        impl MultiRange for NonZero<$p> {
-            const MAX: Self = Self::MAX;
-            const MIN: Self = Self::MIN;
-
-            fn ranges() -> impl Iterator<Item = RangeInclusive<Self>> {
-                iter::once(RangeInclusive::new(
-                    Self::MIN,
-                    const { NonZero::new(-1).unwrap() },
-                ))
-                .chain(iter::once(RangeInclusive::new(
-                    const { NonZero::new(1).unwrap() },
-                    Self::MAX,
-                )))
-                .filter(|range| !range.is_empty())
-            }
-        }
-
-        impl MultiRange<$p> for NonZero<$p> {
-            const MAX: $p = <$p>::MAX;
-            const MIN: $p = <$p>::MIN;
-
-            fn ranges() -> impl Iterator<Item = RangeInclusive<$p>> {
-                iter::once(RangeInclusive::new(<$p>::MIN, -1))
-                    .chain(iter::once(RangeInclusive::new(1, <$p>::MAX)))
-                    .filter(|range| !range.is_empty())
-            }
-        }
-    };
-}
-
 macro_rules! range_nonzero_impl {
     ($r:ident, $p:ty) => {
         impl<const MIN: $p, const MAX: $p> Range<NonZero<$p>> for $r<MIN, MAX> {
             const MAX: NonZero<$p> = const { NonZero::new(MAX).unwrap() };
             const MIN: NonZero<$p> = const { NonZero::new(MIN).unwrap() };
-        }
-    };
-}
-
-macro_rules! multirange_nonzero_impl {
-    ($r:ident, $p:ty) => {
-        impl<const MIN: $p, const MAX: $p> MultiRange<NonZero<$p>>
-            for $r<MIN, MAX>
-        {
-            const MAX: NonZero<$p> = const { NonZero::new(MAX).unwrap() };
-            const MIN: NonZero<$p> = const { NonZero::new(MIN).unwrap() };
-
-            fn ranges() -> impl Iterator<Item = RangeInclusive<NonZero<$p>>> {
-                iter::once(RangeInclusive::new(
-                    const { NonZero::new(MIN).unwrap() },
-                    const { NonZero::new(-1).unwrap() },
-                ))
-                .chain(iter::once(RangeInclusive::new(
-                    const { NonZero::new(1).unwrap() },
-                    const { NonZero::new(MAX).unwrap() },
-                )))
-                .filter(|range| !range.is_empty())
-            }
         }
     };
 }
@@ -303,12 +186,6 @@ ranged_impl_range!(RangedNonZeroU32, u32);
 ranged_impl_range!(RangedNonZeroU64, u64);
 ranged_impl_range!(RangedNonZeroU128, u128);
 
-nonzero_multirange_impl!(RangedNonZeroI8, i8);
-nonzero_multirange_impl!(RangedNonZeroI16, i16);
-nonzero_multirange_impl!(RangedNonZeroI32, i32);
-nonzero_multirange_impl!(RangedNonZeroI64, i64);
-nonzero_multirange_impl!(RangedNonZeroI128, i128);
-
 primitive_impl_range!(NonZero<u8>);
 primitive_impl_range!(NonZero<u16>);
 primitive_impl_range!(NonZero<u32>);
@@ -321,20 +198,8 @@ nonzero_impl_range!(u32);
 nonzero_impl_range!(u64);
 nonzero_impl_range!(u128);
 
-nonzero_impl_multirange!(i8);
-nonzero_impl_multirange!(i16);
-nonzero_impl_multirange!(i32);
-nonzero_impl_multirange!(i64);
-nonzero_impl_multirange!(i128);
-
 range_nonzero_impl!(RangedNonZeroU8, u8);
 range_nonzero_impl!(RangedNonZeroU16, u16);
 range_nonzero_impl!(RangedNonZeroU32, u32);
 range_nonzero_impl!(RangedNonZeroU64, u64);
 range_nonzero_impl!(RangedNonZeroU128, u128);
-
-multirange_nonzero_impl!(RangedNonZeroI8, i8);
-multirange_nonzero_impl!(RangedNonZeroI16, i16);
-multirange_nonzero_impl!(RangedNonZeroI32, i32);
-multirange_nonzero_impl!(RangedNonZeroI64, i64);
-multirange_nonzero_impl!(RangedNonZeroI128, i128);

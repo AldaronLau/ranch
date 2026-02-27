@@ -1,6 +1,6 @@
 use core::num::NonZero;
 
-use crate::range::*;
+use crate::{multirange::*, range::*};
 
 macro_rules! ranged_nonzero_alias {
     ($name:ident, $range:ident, $p:ty) => {

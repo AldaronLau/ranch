@@ -1,8 +1,9 @@
 use crate::{
     cast::as_primitive::{self, AsPrimitive},
     cmp::Cmp,
+    multirange::Ranged,
     num::rangeable_primitive::RangeablePrimitive,
-    range::{Range, Ranged},
+    range::Range,
     *,
 };
 

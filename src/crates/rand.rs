@@ -5,7 +5,7 @@ use rand::{
     distr::{Distribution, StandardUniform, Uniform},
 };
 
-use crate::{range::MultiRange, *};
+use crate::{multirange::MultiRange, *};
 
 macro_rules! impl_rand {
     ($r:ident, $p:ty) => {

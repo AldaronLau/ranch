@@ -5,7 +5,7 @@ use core::{mem, ptr};
 use as_repr::AsRepr;
 
 use crate::{
-    num::rangeable_primitive::RangeablePrimitive, range::MultiRange, *,
+    multirange::MultiRange, num::rangeable_primitive::RangeablePrimitive, *,
 };
 
 trait Primitive {}

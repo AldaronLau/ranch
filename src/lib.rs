@@ -263,6 +263,7 @@ mod format;
 mod from_repr;
 mod impl_ascii;
 mod index;
+pub mod multirange;
 mod neg;
 mod ops;
 mod ord;

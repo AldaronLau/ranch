@@ -5,8 +5,8 @@ use core::num::NonZero;
 use as_repr::AsRepr;
 
 use crate::{
+    multirange::{MultiRange, Ranged},
     num::rangeable_primitive::RangeablePrimitive,
-    range::{Range, Ranged},
     *,
 };
 
@@ -14,7 +14,7 @@ use crate::{
 unsafe impl<T, R> AsRepr<T> for Ranged<T, R>
 where
     T: RangeablePrimitive,
-    R: Range<T::ZeroablePrimitive>,
+    R: MultiRange<T::ZeroablePrimitive>,
 {
 }
 

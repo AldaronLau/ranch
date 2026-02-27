@@ -1,6 +1,6 @@
 use core::{error, fmt};
 
-use crate::range::MultiRange;
+use crate::multirange::MultiRange;
 
 /// Creating ranged integer result
 pub type Result<T = (), E = Error> = core::result::Result<T, E>;

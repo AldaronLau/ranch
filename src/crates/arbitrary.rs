@@ -2,7 +2,7 @@ use core::{num::NonZero, ops::RangeInclusive};
 
 use arbitrary::{Arbitrary, Result, Unstructured};
 
-use crate::{range::MultiRange, *};
+use crate::{multirange::MultiRange, *};
 
 macro_rules! impl_arbitrary {
     ($type:ident, $p:ty) => {
