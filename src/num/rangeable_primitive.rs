@@ -1,9 +1,11 @@
 use core::{hash::Hash, num::NonZero};
 
-pub trait RangeablePrimitive: Hash + Copy + Clone + Sized {
+use crate::multirange::Rangeable;
+
+pub trait RangeablePrimitive: Hash + Sized + Rangeable {
     const BITS: u32;
 
-    type ZeroablePrimitive: Sized;
+    type ZeroablePrimitive: Sized + Rangeable;
 }
 
 macro_rules! rangeable_primitive {

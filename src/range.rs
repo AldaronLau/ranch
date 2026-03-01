@@ -3,7 +3,7 @@
 use core::{error, fmt, num::NonZero, ops::RangeInclusive, result};
 
 pub use super::{num::marker::*, random::*};
-use crate::*;
+use crate::{multirange::Rangeable, *};
 
 /// Validating an integer is within a range result
 pub type Result<T = (), E = Error> = result::Result<T, E>;
@@ -49,7 +49,7 @@ impl From<crate::Error> for Error {
 }
 
 /// A type with a valid range of values
-pub trait Range<T = Self> {
+pub trait Range<T: Rangeable = Self>: Rangeable {
     /// The minimum value of the type
     const MIN: T;
     /// The maximum value of the type
@@ -78,6 +78,7 @@ pub trait Range<T = Self> {
 pub const fn range_inclusive<T, U>() -> RangeInclusive<U>
 where
     T: Range<U>,
+    U: Rangeable,
 {
     RangeInclusive::new(T::MIN, T::MAX)
 }
