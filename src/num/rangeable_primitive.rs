@@ -1,11 +1,11 @@
 use core::{hash::Hash, num::NonZero};
 
-use crate::multirange::Rangeable;
+use crate::{cmp::Cmp, multirange::Rangeable};
 
 pub trait RangeablePrimitive: Hash + Sized + Rangeable {
     const BITS: u32;
 
-    type ZeroablePrimitive: Sized + Rangeable;
+    type ZeroablePrimitive: Sized + Rangeable + Cmp;
 }
 
 macro_rules! rangeable_primitive {

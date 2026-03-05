@@ -1,3 +1,7 @@
+use core::num::NonZero;
+
+use as_repr::AsRepr;
+
 use crate::{
     cast::as_primitive::{self, AsPrimitive},
     cmp::Cmp,
@@ -7,10 +11,15 @@ use crate::{
     *,
 };
 
+pub trait IsNonZero {}
+
 macro_rules! to {
-    ($type:ident, $p:ty) => {
+    ($nonzero:ident, $type:ident, $p:ty) => {
+        impl IsNonZero for NonZero<$p> {}
+
         impl<const MIN: $p, const MAX: $p> $type<MIN, MAX> {
-            /// Convert to a different [`Ranged`] type.
+            /// Convert to a new [`Ranged`] type, optionally expanding the
+            /// range.
             ///
             /// The output type's range must include the range of `Self`.
             ///
@@ -76,8 +85,12 @@ macro_rules! to {
                         }
                     } else {
                         // expanding - expand the input range for comparison
-                        let min = as_primitive::as_primitive_expanding(Self::MIN);
-                        let max = as_primitive::as_primitive_expanding(Self::MAX);
+                        let min = as_primitive::as_primitive_expanding(
+                            Self::MIN,
+                        );
+                        let max = as_primitive::as_primitive_expanding(
+                            Self::MAX,
+                        );
 
                         if cmp::gt(R::MIN, min) {
                             panic!("minimum must be lower or match");
@@ -91,18 +104,135 @@ macro_rules! to {
 
                 Ranged::<T, R>::from_unchecked(as_primitive::as_primitive(self))
             }
+
+            /// Convert to a new non-zero [`Ranged`] type, optionally expanding
+            /// the range.
+            ///
+            /// The output type's range must include the range of `Self`.
+            ///
+            /// If you don't need to change the range (range neither includes
+            /// zero nor needs to be expanded), try using
+            #[doc = concat!("[`", stringify!($nonzero), "::from_ranged()`].")]
+            ///
+            /// ```rust
+            /// # use ranch::*;
+            #[doc = concat!("let ranged = ", stringify!($type), "::<0, 2>::new::<2>();")]
+            ///
+            /// let expanded_u8: RangedNonZeroU8<1, 4> = ranged.to_ranged_nonzero().unwrap();
+            /// let expanded_u16: RangedNonZeroU16<1, 4> = ranged.to_ranged_nonzero().unwrap();
+            /// let expanded_u32: RangedNonZeroU32<1, 4> = ranged.to_ranged_nonzero().unwrap();
+            /// let expanded_u64: RangedNonZeroU64<1, 4> = ranged.to_ranged_nonzero().unwrap();
+            /// let expanded_u128: RangedNonZeroU128<1, 4> = ranged.to_ranged_nonzero().unwrap();
+            /// let expanded_i8: RangedNonZeroI8<1, 4> = ranged.to_ranged_nonzero().unwrap();
+            /// let expanded_i16: RangedNonZeroI16<1, 4> = ranged.to_ranged_nonzero().unwrap();
+            /// let expanded_i32: RangedNonZeroI32<1, 4> = ranged.to_ranged_nonzero().unwrap();
+            /// let expanded_i64: RangedNonZeroI64<1, 4> = ranged.to_ranged_nonzero().unwrap();
+            /// let expanded_i128: RangedNonZeroI128<1, 4> = ranged.to_ranged_nonzero().unwrap();
+            ///
+            /// assert_eq!(ranged.get(), expanded_u8.get() as _);
+            /// assert_eq!(ranged.get(), expanded_u16.get() as _);
+            /// assert_eq!(ranged.get(), expanded_u32.get() as _);
+            /// assert_eq!(ranged.get(), expanded_u64.get() as _);
+            /// assert_eq!(ranged.get(), expanded_u128.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i8.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i16.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i32.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i64.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i128.get() as _);
+            /// ```
+            pub const fn to_ranged_nonzero<T, R>(self)
+            -> Option<Ranged<T, R>>
+            where
+                T: RangeablePrimitive + IsNonZero,
+                T::ZeroablePrimitive:
+                    RangeablePrimitive<ZeroablePrimitive = T::ZeroablePrimitive>
+                    + Cmp,
+                R: Range<T::ZeroablePrimitive>,
+                Self: AsPrimitive<T::ZeroablePrimitive>,
+                Ranged<T::ZeroablePrimitive, R>: AsPrimitive<$p>,
+                Ranged<T::ZeroablePrimitive, R>: AsRepr<Option<Ranged<T, R>>>,
+            {
+                const {
+                    if cmp::is_zero(R::MIN) {
+                        panic!("A non-zero integer's minimum cannot be zero");
+                    }
+
+                    if cmp::is_zero(R::MAX) {
+                        panic!("A non-zero integer's maximum cannot be zero");
+                    }
+
+                    // validate range
+                    if size_of::<T::ZeroablePrimitive>() < size_of::<Self>() {
+                        // shrinking - expand the output range for comparison
+                        let min = as_primitive::as_primitive_expanding(
+                            Ranged::<T::ZeroablePrimitive, R>::MIN,
+                        );
+                        let max = as_primitive::as_primitive_expanding(
+                            Ranged::<T::ZeroablePrimitive, R>::MAX,
+                        );
+
+                        if cmp::gt(min, MIN) && MIN != 0 && min - 1 != 0 {
+                            panic!(
+                                "minimum must be lower or match or exclude \
+                                 zero",
+                            );
+                        }
+
+                        if cmp::lt(max, MAX) && MAX != 0 && max + 1 != 0 {
+                            panic!(
+                                "maximum must be higher or match or exclude \
+                                 zero",
+                            );
+                        }
+                    } else {
+                        // expanding - expand the input range for comparison
+                        let min = as_primitive::as_primitive_expanding(
+                            Self::MIN,
+                        );
+                        let max = as_primitive::as_primitive_expanding(
+                            Self::MAX,
+                        );
+
+                        if cmp::gt(R::MIN, min)
+                            && MIN != 0
+                            && !cmp::is_one(R::MIN)
+                        {
+                            panic!(
+                                "minimum must be lower or match or exclude \
+                                 zero",
+                            );
+                        }
+
+                        if cmp::lt(R::MAX, max)
+                            && MAX != 0
+                            && !cmp::is_minus_one(R::MAX)
+                        {
+                            panic!(
+                                "maximum must be higher or match or exclude \
+                                 zero",
+                            );
+                        }
+                    }
+                }
+
+                let ranged = Ranged::<T::ZeroablePrimitive, R>::from_unchecked(
+                    as_primitive::as_primitive(self),
+                );
+
+                as_repr::as_repr(ranged)
+            }
         }
     };
 }
 
 // FIXME: NonZero
-to!(RangedU8, u8);
-to!(RangedU16, u16);
-to!(RangedU32, u32);
-to!(RangedU64, u64);
-to!(RangedU128, u128);
-to!(RangedI8, i8);
-to!(RangedI16, i16);
-to!(RangedI32, i32);
-to!(RangedI64, i64);
-to!(RangedI128, i128);
+to!(RangedNonZeroU8, RangedU8, u8);
+to!(RangedNonZeroU16, RangedU16, u16);
+to!(RangedNonZeroU32, RangedU32, u32);
+to!(RangedNonZeroU64, RangedU64, u64);
+to!(RangedNonZeroU128, RangedU128, u128);
+to!(RangedNonZeroI8, RangedI8, i8);
+to!(RangedNonZeroI16, RangedI16, i16);
+to!(RangedNonZeroI32, RangedI32, i32);
+to!(RangedNonZeroI64, RangedI64, i64);
+to!(RangedNonZeroI128, RangedI128, i128);

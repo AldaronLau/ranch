@@ -124,56 +124,6 @@ macro_rules! impl_nonzero_from_ranged {
                 $nonzero::from_unchecked(value)
             }
         }
-
-        impl<const MIN: $p, const MAX: $p> $type::<MIN, MAX> {
-            #[doc = concat!("Convert from [`", stringify!($nonzero), "`],")]
-            /// optionally expanding the range.
-            ///
-            /// If you don't need to change the range (range neither includes zero nor needs to be
-            /// expanded), try using
-            #[doc = concat!("[`", stringify!($nonzero), "::from_ranged()`].")]
-            ///
-            /// ```rust
-            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
-            #[doc = concat!("let ranged = ", stringify!($type), "::<0, 2>::new::<1>();")]
-            #[doc = concat!("let expanded: ", stringify!($nonzero), "<1, 4> =")]
-            ///     ranged.to_ranged_nonzero().unwrap();
-            ///
-            /// assert_eq!(expanded.get(), ranged.get());
-            /// ```
-            pub const fn to_ranged_nonzero<
-                const OUT_MIN: $p,
-                const OUT_MAX: $p,
-            >(self) -> Option<$nonzero::<OUT_MIN, OUT_MAX>>
-            {
-                const {
-                    if OUT_MIN > MIN && MIN != 0 && (OUT_MIN - 1) != 0 {
-                        panic!(
-                            "minimum must be lower or match or exclude zero",
-                        );
-                    }
-
-                    if OUT_MAX < MAX && MAX != 0 && (OUT_MAX + 1) != 0 {
-                        panic!(
-                            "maximum must be higher or match or exclude zero",
-                        );
-                    }
-
-                    if OUT_MIN == 0 {
-                        panic!("minimum of a non-zero number cannot be zero");
-                    }
-
-                    if OUT_MAX == 0 {
-                        panic!("maximum of a non-zero number cannot be zero");
-                    }
-                }
-
-                match NonZero::new(self.get()) {
-                    Some(value) => Some($nonzero::from_unchecked(value)),
-                    None => None,
-                }
-            }
-        }
     }
 }
 

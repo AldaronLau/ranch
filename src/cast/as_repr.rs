@@ -31,6 +31,18 @@ macro_rules! as_repr {
             for $nonzero<MIN, MAX>
         {
         }
+
+        // unsafe: `repr(primitive)` implies `repr(Option<NonZero<primitive>>)`
+        unsafe impl<const MIN: $p, const MAX: $p>
+            AsRepr<Option<$nonzero<MIN, MAX>>> for $ranged<MIN, MAX>
+        {
+        }
+
+        // unsafe: `repr(NonZero<primitive>)` implies `repr(primitive)`
+        unsafe impl<const MIN: $p, const MAX: $p> AsRepr<$ranged<MIN, MAX>>
+            for $nonzero<MIN, MAX>
+        {
+        }
     };
 }
 

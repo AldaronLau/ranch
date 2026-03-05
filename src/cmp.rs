@@ -9,26 +9,32 @@ use core::cmp::Ordering;
 ///  - `T` must be a primitive `i*` or `u*`
 pub unsafe trait Cmp: Copy + Clone {
     const SIGNED: bool;
+    const ZERO: Self;
+    const ONE: Self;
+    const MINUS_ONE: Option<Self>;
 }
 
 macro_rules! cmp {
-    ($p:ty, $signed:literal) => {
+    ($p:ty, $signed:literal, $minus_one:expr) => {
         unsafe impl Cmp for $p {
+            const MINUS_ONE: Option<$p> = $minus_one;
+            const ONE: $p = 1;
             const SIGNED: bool = $signed;
+            const ZERO: $p = 0;
         }
     };
 }
 
-cmp!(i8, true);
-cmp!(i16, true);
-cmp!(i32, true);
-cmp!(i64, true);
-cmp!(i128, true);
-cmp!(u8, true);
-cmp!(u16, true);
-cmp!(u32, true);
-cmp!(u64, true);
-cmp!(u128, true);
+cmp!(i8, true, Some(-1));
+cmp!(i16, true, Some(-1));
+cmp!(i32, true, Some(-1));
+cmp!(i64, true, Some(-1));
+cmp!(i128, true, Some(-1));
+cmp!(u8, true, None);
+cmp!(u16, true, None);
+cmp!(u32, true, None);
+cmp!(u64, true, None);
+cmp!(u128, true, None);
 
 pub(crate) const fn ordering<C>(a: C, b: C) -> Ordering
 where
@@ -183,4 +189,29 @@ where
     C: Cmp,
 {
     ordering(a, b).is_lt()
+}
+
+pub(crate) const fn is_zero<C>(a: C) -> bool
+where
+    C: Cmp,
+{
+    ordering(a, C::ZERO).is_eq()
+}
+
+pub(crate) const fn is_one<C>(a: C) -> bool
+where
+    C: Cmp,
+{
+    ordering(a, C::ONE).is_eq()
+}
+
+pub(crate) const fn is_minus_one<C>(a: C) -> bool
+where
+    C: Cmp,
+{
+    let Some(minus_one) = C::MINUS_ONE else {
+        return false;
+    };
+
+    ordering(a, minus_one).is_eq()
 }
