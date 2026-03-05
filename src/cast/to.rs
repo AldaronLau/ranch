@@ -60,6 +60,56 @@ macro_rules! to {
 
                 ranged.to_ranged()
             }
+
+            /// Convert to a new non-zero [`Ranged`] type, optionally expanding
+            /// the range.
+            ///
+            /// The output type's range must include the range of `Self`.
+            ///
+            /// ```rust
+            /// # use ranch::*;
+            #[doc = concat!("let ranged = ", stringify!($nonzero), "::<1, 50>::new::<42>();")]
+            /// 
+            /// let expanded_u8: RangedNonZeroU8<1, 100> = ranged.to_ranged_nonzero();
+            /// let expanded_u16: RangedNonZeroU16<1, 100> = ranged.to_ranged_nonzero();
+            /// let expanded_u32: RangedNonZeroU32<1, 100> = ranged.to_ranged_nonzero();
+            /// let expanded_u64: RangedNonZeroU64<1, 100> = ranged.to_ranged_nonzero();
+            /// let expanded_u128: RangedNonZeroU128<1, 100> = ranged.to_ranged_nonzero();
+            /// let expanded_i8: RangedNonZeroI8<1, 100> = ranged.to_ranged_nonzero();
+            /// let expanded_i16: RangedNonZeroI16<1, 100> = ranged.to_ranged_nonzero();
+            /// let expanded_i32: RangedNonZeroI32<1, 100> = ranged.to_ranged_nonzero();
+            /// let expanded_i64: RangedNonZeroI64<1, 100> = ranged.to_ranged_nonzero();
+            /// let expanded_i128: RangedNonZeroI128<1, 100> = ranged.to_ranged_nonzero();
+            ///
+            /// assert_eq!(ranged.get(), expanded_u8.get() as _);
+            /// assert_eq!(ranged.get(), expanded_u16.get() as _);
+            /// assert_eq!(ranged.get(), expanded_u32.get() as _);
+            /// assert_eq!(ranged.get(), expanded_u64.get() as _);
+            /// assert_eq!(ranged.get(), expanded_u128.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i8.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i16.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i32.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i64.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i128.get() as _);
+            /// ```
+            pub const fn to_ranged_nonzero<T, R>(self) -> Ranged<T, R>
+            where
+                T: RangeablePrimitive + IsNonZero,
+                T::ZeroablePrimitive:
+                    RangeablePrimitive<ZeroablePrimitive = T::ZeroablePrimitive>
+                    + Cmp,
+                R: Range<T::ZeroablePrimitive>,
+                $type<MIN, MAX>: AsPrimitive<T::ZeroablePrimitive>,
+                Ranged<T::ZeroablePrimitive, R>: AsPrimitive<$p>,
+                Ranged<T::ZeroablePrimitive, R>: AsRepr<Option<Ranged<T, R>>>,
+            {
+                let ranged: $type<MIN, MAX> = as_repr::as_repr(self);
+                let Some(ranged) = ranged.to_ranged_nonzero() else {
+                    unreachable!()
+                };
+
+                ranged
+            }
         }
 
         impl<const MIN: $p, const MAX: $p> $type<MIN, MAX> {
