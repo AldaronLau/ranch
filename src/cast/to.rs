@@ -69,7 +69,7 @@ macro_rules! to {
             /// ```rust
             /// # use ranch::*;
             #[doc = concat!("let ranged = ", stringify!($nonzero), "::<1, 50>::new::<42>();")]
-            /// 
+            ///
             /// let expanded_u8: RangedNonZeroU8<1, 100> = ranged.to_ranged_nonzero();
             /// let expanded_u16: RangedNonZeroU16<1, 100> = ranged.to_ranged_nonzero();
             /// let expanded_u32: RangedNonZeroU32<1, 100> = ranged.to_ranged_nonzero();
