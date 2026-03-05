@@ -125,20 +125,6 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
         self.0
     }
 
-    /// Convert to [`RangedU8`].
-    ///
-    /// ```rust
-    /// # use ranch::{RangedNonZeroU8, RangedU8};
-    /// assert_eq!(
-    ///     RangedU8::<1, 100>::new::<42>(),
-    ///     RangedNonZeroU8::<1, 100>::new::<42>().to_ranged(),
-    /// );
-    /// ```
-    #[must_use]
-    pub const fn to_ranged(self) -> RangedU8<MIN, MAX> {
-        RangedU8::from_unchecked(self.get())
-    }
-
     /// Return the number of leading zeros in the binary representation of
     /// `self`.
     ///
@@ -199,7 +185,8 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn checked_add(self, other: impl AsRepr<u8>) -> Option<Self> {
-        let Some(value) = self.to_ranged().checked_add(other) else {
+        let ranged = as_repr::as_repr::<RangedU8<MIN, MAX>>(self);
+        let Some(value) = ranged.checked_add(other) else {
             return None;
         };
 
@@ -223,7 +210,8 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn checked_mul(self, other: impl AsRepr<u8>) -> Option<Self> {
-        let Some(value) = self.to_ranged().checked_mul(other) else {
+        let ranged = as_repr::as_repr::<RangedU8<MIN, MAX>>(self);
+        let Some(value) = ranged.checked_mul(other) else {
             return None;
         };
 
@@ -247,7 +235,8 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn checked_pow(self, other: impl AsRepr<u32>) -> Option<Self> {
-        let Some(value) = self.to_ranged().checked_pow(other) else {
+        let ranged = as_repr::as_repr::<RangedU8<MIN, MAX>>(self);
+        let Some(value) = ranged.checked_pow(other) else {
             return None;
         };
 
@@ -276,7 +265,8 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
         self,
         rhs: impl AsRepr<u8>,
     ) -> Option<Quotient<Self>> {
-        let Some(value) = self.to_ranged().checked_div(rhs) else {
+        let ranged = as_repr::as_repr::<RangedU8<MIN, MAX>>(self);
+        let Some(value) = ranged.checked_div(rhs) else {
             return None;
         };
         let Quotient::Number(number) = value else {
@@ -304,7 +294,8 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn checked_sub(self, other: impl AsRepr<u8>) -> Option<Self> {
-        let Some(value) = self.to_ranged().checked_sub(other) else {
+        let ranged = as_repr::as_repr::<RangedU8<MIN, MAX>>(self);
+        let Some(value) = ranged.checked_sub(other) else {
             return None;
         };
 
@@ -343,7 +334,7 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
         self,
         rhs: RangedNonZeroU8<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroU8<OUTPUT_MIN, OUTPUT_MAX> {
-        self.to_ranged()
+        as_repr::as_repr::<RangedU8<MIN, MAX>>(self)
             .add_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(
                 rhs.to_ranged(),
             )
@@ -383,7 +374,7 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
         self,
         rhs: RangedNonZeroU8<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroU8<OUTPUT_MIN, OUTPUT_MAX> {
-        self.to_ranged()
+        as_repr::as_repr::<RangedU8<MIN, MAX>>(self)
             .mul_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(
                 rhs.to_ranged(),
             )
@@ -423,7 +414,7 @@ impl<const MIN: u8, const MAX: u8> RangedNonZeroU8<MIN, MAX> {
         self,
         rhs: RangedU32<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroU8<OUTPUT_MIN, OUTPUT_MAX> {
-        self.to_ranged()
+        as_repr::as_repr::<RangedU8<MIN, MAX>>(self)
             .pow_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
             .to_ranged_nonzero()
             .unwrap()

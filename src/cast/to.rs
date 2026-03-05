@@ -17,6 +17,51 @@ macro_rules! to {
     ($nonzero:ident, $type:ident, $p:ty) => {
         impl IsNonZero for NonZero<$p> {}
 
+        impl<const MIN: $p, const MAX: $p> $nonzero<MIN, MAX> {
+            /// Convert to a new [`Ranged`] type, optionally expanding the
+            /// range.
+            ///
+            /// The output type's range must include the range of `Self`.
+            ///
+            /// ```rust
+            /// # use ranch::*;
+            #[doc = concat!("let ranged = ", stringify!($nonzero), "::<1, 100>::new::<42>();")]
+            ///
+            /// let expanded_u8: RangedU8<1, 100> = ranged.to_ranged();
+            /// let expanded_u16: RangedU16<1, 100> = ranged.to_ranged();
+            /// let expanded_u32: RangedU32<1, 100> = ranged.to_ranged();
+            /// let expanded_u64: RangedU64<1, 100> = ranged.to_ranged();
+            /// let expanded_u128: RangedU128<1, 100> = ranged.to_ranged();
+            /// let expanded_i8: RangedI8<1, 100> = ranged.to_ranged();
+            /// let expanded_i16: RangedI16<1, 100> = ranged.to_ranged();
+            /// let expanded_i32: RangedI32<1, 100> = ranged.to_ranged();
+            /// let expanded_i64: RangedI64<1, 100> = ranged.to_ranged();
+            /// let expanded_i128: RangedI128<1, 100> = ranged.to_ranged();
+            ///
+            /// assert_eq!(ranged.get(), expanded_u8.get() as _);
+            /// assert_eq!(ranged.get(), expanded_u16.get() as _);
+            /// assert_eq!(ranged.get(), expanded_u32.get() as _);
+            /// assert_eq!(ranged.get(), expanded_u64.get() as _);
+            /// assert_eq!(ranged.get(), expanded_u128.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i8.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i16.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i32.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i64.get() as _);
+            /// assert_eq!(ranged.get(), expanded_i128.get() as _);
+            /// ```
+            pub const fn to_ranged<T, R>(self) -> Ranged<T, R>
+            where
+                T: RangeablePrimitive<ZeroablePrimitive = T> + Cmp,
+                R: Range<T>,
+                $type<MIN, MAX>: AsPrimitive<T>,
+                Ranged<T, R>: AsPrimitive<$p>,
+            {
+                let ranged: $type<MIN, MAX> = as_repr::as_repr(self);
+
+                ranged.to_ranged()
+            }
+        }
+
         impl<const MIN: $p, const MAX: $p> $type<MIN, MAX> {
             /// Convert to a new [`Ranged`] type, optionally expanding the
             /// range.

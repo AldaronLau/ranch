@@ -129,20 +129,6 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
         self.0
     }
 
-    /// Convert to [`RangedI16`].
-    ///
-    /// ```rust
-    /// # use ranch::{RangedNonZeroI16, RangedI16};
-    /// assert_eq!(
-    ///     RangedI16::<1, 100>::new::<42>(),
-    ///     RangedNonZeroI16::<1, 100>::new::<42>().to_ranged(),
-    /// );
-    /// ```
-    #[must_use]
-    pub const fn to_ranged(self) -> RangedI16<MIN, MAX> {
-        RangedI16::from_unchecked(self.get())
-    }
-
     /// Return the number of leading zeros in the binary representation of
     /// `self`.
     ///
@@ -206,7 +192,7 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
         self,
         other: impl AsRepr<i16>,
     ) -> Result<Option<Self>> {
-        match self.to_ranged().checked_add(other) {
+        match as_repr::as_repr::<RangedI16<MIN, MAX>>(self).checked_add(other) {
             Ok(value) => Ok(value.to_ranged_nonzero()),
             Err(e) => Err(e),
         }
@@ -232,7 +218,7 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
         self,
         other: impl AsRepr<i16>,
     ) -> Result<Option<Self>> {
-        match self.to_ranged().checked_mul(other) {
+        match as_repr::as_repr::<RangedI16<MIN, MAX>>(self).checked_mul(other) {
             Ok(value) => Ok(value.to_ranged_nonzero()),
             Err(e) => Err(e),
         }
@@ -257,7 +243,7 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn checked_pow(self, other: impl AsRepr<u32>) -> Result<Self> {
-        match self.to_ranged().checked_pow(other) {
+        match as_repr::as_repr::<RangedI16<MIN, MAX>>(self).checked_pow(other) {
             Ok(value) => Ok(value.to_ranged_nonzero().unwrap()),
             Err(e) => Err(e),
         }
@@ -286,7 +272,9 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
         self,
         rhs: impl AsRepr<i16>,
     ) -> Result<Option<Quotient<Self>>> {
-        let value = match self.to_ranged().checked_div(rhs) {
+        let value = match as_repr::as_repr::<RangedI16<MIN, MAX>>(self)
+            .checked_div(rhs)
+        {
             Ok(value) => value,
             Err(e) => return Err(e),
         };
@@ -319,7 +307,7 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
         self,
         other: impl AsRepr<i16>,
     ) -> Result<Option<Self>> {
-        match self.to_ranged().checked_sub(other) {
+        match as_repr::as_repr::<RangedI16<MIN, MAX>>(self).checked_sub(other) {
             Ok(value) => Ok(value.to_ranged_nonzero()),
             Err(e) => Err(e),
         }
@@ -381,7 +369,7 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
         self,
         rhs: RangedNonZeroI16<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroI16<OUTPUT_MIN, OUTPUT_MAX> {
-        self.to_ranged()
+        as_repr::as_repr::<RangedI16<MIN, MAX>>(self)
             .mul_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(
                 rhs.to_ranged(),
             )
@@ -421,7 +409,7 @@ impl<const MIN: i16, const MAX: i16> RangedNonZeroI16<MIN, MAX> {
         self,
         rhs: RangedU32<RHS_MIN, RHS_MAX>,
     ) -> RangedNonZeroI16<OUTPUT_MIN, OUTPUT_MAX> {
-        self.to_ranged()
+        as_repr::as_repr::<RangedI16<MIN, MAX>>(self)
             .pow_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
             .to_ranged_nonzero()
             .unwrap()
