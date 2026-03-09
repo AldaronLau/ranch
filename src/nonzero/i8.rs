@@ -25,15 +25,18 @@ impl<const MIN: i8, const MAX: i8> RangedNonZeroI8<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
+    /// # use ranch::RangedNonZeroI8;
     /// RangedNonZeroI8::<-1, 3>::new::<-2>();
     /// ```
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
+    /// # use ranch::RangedNonZeroI8;
     /// RangedNonZeroI8::<-1, 3>::new::<0>();
     /// ```
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
+    /// # use ranch::RangedNonZeroI8;
     /// RangedNonZeroI8::<-1, 3>::new::<4>();
     /// ```
     #[must_use]
@@ -350,7 +353,7 @@ impl<const MIN: i8, const MAX: i8> RangedNonZeroI8<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedNonZeroI8;
     /// let a = RangedNonZeroI8::<-2, 3>::new::<1>();
     /// let b = RangedNonZeroI8::<-1, 3>::new::<2>();
@@ -390,7 +393,7 @@ impl<const MIN: i8, const MAX: i8> RangedNonZeroI8<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::{RangedNonZeroI8, RangedU32};
     /// let a = RangedNonZeroI8::<1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();

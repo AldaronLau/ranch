@@ -18,11 +18,13 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
+    /// # use ranch::RangedI16;
     /// RangedI16::<1, 3>::new::<0>();
     /// ```
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
+    /// # use ranch::RangedI16;
     /// RangedI16::<1, 3>::new::<4>();
     /// ```
     #[must_use]
@@ -455,7 +457,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedI16;
     /// let a = RangedI16::<1, 3>::new::<1>();
     /// let b = RangedI16::<-1, 3>::new::<2>();
@@ -500,7 +502,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedI16;
     /// let a = RangedI16::<2, 5>::new::<3>();
     /// let b = RangedI16::<-1, 3>::new::<1>();
@@ -545,7 +547,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedI16;
     /// let a = RangedI16::<-2, 3>::new::<1>();
     /// let b = RangedI16::<0, 3>::new::<2>();
@@ -595,7 +597,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// Does not compile:
     //
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedI16;
     /// let a = RangedI16::<2, 5>::new::<3>();
     /// let b = RangedI16::<1, 2>::new::<1>();
@@ -653,7 +655,7 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::{RangedI16, RangedU32};
     /// let a = RangedI16::<1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();

@@ -515,7 +515,7 @@ macro_rules! impl_ops {
             ///
             /// Does not compile:
             //
-            /// ```compile_fail
+            /// ```compile_fail,E0080
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<1>();")]
@@ -1035,7 +1035,7 @@ macro_rules! impl_ops_unsigned {
             ///
             /// Does not compile:
             //
-            /// ```compile_fail
+            /// ```compile_fail,E0080
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
@@ -1083,7 +1083,7 @@ macro_rules! impl_ops_unsigned {
             ///
             /// Does not compile:
             //
-            /// ```compile_fail
+            /// ```compile_fail,E0080
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
@@ -1117,7 +1117,7 @@ macro_rules! impl_ops_unsigned {
             ///
             /// Does not compile:
             //
-            /// ```compile_fail
+            /// ```compile_fail,E0080
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
@@ -1161,7 +1161,7 @@ macro_rules! impl_ops_unsigned {
             ///
             /// Does not compile:
             //
-            /// ```compile_fail
+            /// ```compile_fail,E0080
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
@@ -1272,7 +1272,7 @@ macro_rules! impl_ops_unsigned {
             ///
             /// Does not compile:
             //
-            /// ```compile_fail
+            /// ```compile_fail,E0080
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<1>();")]
@@ -1311,7 +1311,7 @@ macro_rules! impl_ops_unsigned {
             ///
             /// Does not compile:
             //
-            /// ```compile_fail
+            /// ```compile_fail,E0080
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<1>();")]
@@ -1684,7 +1684,7 @@ macro_rules! impl_ops_signed {
             ///
             /// Does not compile:
             //
-            /// ```compile_fail
+            /// ```compile_fail,E0080
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<1>();")]
@@ -1726,7 +1726,7 @@ macro_rules! impl_ops_signed {
             ///
             /// Does not compile:
             //
-            /// ```compile_fail
+            /// ```compile_fail,E0080
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<1>();")]
@@ -1784,7 +1784,7 @@ macro_rules! impl_ops_signed {
             ///
             /// Does not compile:
             //
-            /// ```compile_fail
+            /// ```compile_fail,E0080
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
@@ -1852,7 +1852,7 @@ macro_rules! impl_ops_signed {
             ///
             /// Does not compile:
             //
-            /// ```compile_fail
+            /// ```compile_fail,E0080
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
@@ -1904,7 +1904,7 @@ macro_rules! impl_ops_signed {
             ///
             /// Does not compile:
             //
-            /// ```compile_fail
+            /// ```compile_fail,E0080
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
@@ -1944,7 +1944,7 @@ macro_rules! impl_ops_signed {
             ///
             /// Does not compile:
             //
-            /// ```compile_fail
+            /// ```compile_fail,E0080
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]

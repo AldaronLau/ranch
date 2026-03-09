@@ -147,7 +147,7 @@ macro_rules! to {
             ///
             /// Does not compile:
             ///
-            /// ```rust,compile_fail
+            /// ```rust,compile_fail,E0080
             /// # use ranch::*;
             #[doc = concat!("let ranged = ", stringify!($type), "::<0, 2>::new::<2>();")]
             ///

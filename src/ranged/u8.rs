@@ -18,11 +18,13 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
+    /// # use ranch::RangedU8;
     /// RangedU8::<1, 3>::new::<0>();
     /// ```
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
+    /// # use ranch::RangedU8;
     /// RangedU8::<1, 3>::new::<4>();
     /// ```
     #[must_use]
@@ -396,7 +398,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedU8;
     /// let a = RangedU8::<1, 3>::new::<1>();
     /// let b = RangedU8::<1, 3>::new::<2>();
@@ -441,7 +443,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedU8;
     /// let a = RangedU8::<2, 5>::new::<3>();
     /// let b = RangedU8::<1, 2>::new::<1>();
@@ -486,7 +488,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedU8;
     /// let a = RangedU8::<1, 3>::new::<1>();
     /// let b = RangedU8::<2, 3>::new::<2>();
@@ -531,7 +533,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// Does not compile:
     //
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedU8;
     /// let a = RangedU8::<2, 5>::new::<3>();
     /// let b = RangedU8::<1, 2>::new::<1>();
@@ -580,7 +582,7 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::{RangedU8, RangedU32};
     /// let a = RangedU8::<1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();

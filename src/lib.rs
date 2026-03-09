@@ -145,7 +145,7 @@
 //!
 //! Won't compile if the range's maximum exceeds the last index:
 //!
-//! ```rust,compile_fail
+//! ```rust,compile_fail,E0080
 //! # use ranch::RangedU32;
 //! let a = [1, 2, 3];
 //! let i = RangedU32::<0, 3>::new::<1>();

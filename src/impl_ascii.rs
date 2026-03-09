@@ -277,7 +277,8 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
     ///
     /// Won't compile if out of ASCII range:
     ///
-    /// ```rust,compile_fail
+    /// ```rust,compile_fail,E0080
+    /// # use ranch::ascii::Char;
     /// assert_eq!("\\x9d", Char::new::<b'\x9d'>().escape_ascii().to_string());
     /// ```
     pub fn escape_ascii(self) -> EscapeDefault {

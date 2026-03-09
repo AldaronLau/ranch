@@ -25,11 +25,13 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
+    /// # use ranch::RangedNonZeroU128;
     /// RangedNonZeroU128::<1, 3>::new::<0>();
     /// ```
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
+    /// # use ranch::RangedNonZeroU128;
     /// RangedNonZeroU128::<1, 3>::new::<4>();
     /// ```
     #[must_use]
@@ -315,7 +317,7 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedNonZeroU128;
     /// let a = RangedNonZeroU128::<1, 3>::new::<1>();
     /// let b = RangedNonZeroU128::<1, 3>::new::<2>();
@@ -355,7 +357,7 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedNonZeroU128;
     /// let a = RangedNonZeroU128::<1, 3>::new::<1>();
     /// let b = RangedNonZeroU128::<2, 3>::new::<2>();
@@ -395,7 +397,7 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::{RangedNonZeroU128, RangedU32};
     /// let a = RangedNonZeroU128::<1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();

@@ -50,7 +50,7 @@ macro_rules! bitops_impl {
             ///
             /// Fails to compile if you try to expand the type:
             ///
-            /// ```rust,compile_fail
+            /// ```rust,compile_fail,E0080
             /// # use ranch::bitwise::{I12, I6};
             /// assert_eq!(
             ///     I6::new::<0b1011>().bitmask::<0b1110, I12>(),
@@ -529,7 +529,7 @@ macro_rules! bitops_impl {
             ///
             /// Fails to compile if you try to expand the type:
             ///
-            /// ```rust,compile_fail
+            /// ```rust,compile_fail,E0080
             /// # use ranch::bitwise::{U12, U4};
             /// assert_eq!(
             ///     U4::new::<0b1011>().bitmask::<0b1110, U12>(),

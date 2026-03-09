@@ -18,11 +18,13 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
+    /// # use ranch::RangedI128;
     /// RangedI128::<1, 3>::new::<0>();
     /// ```
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
+    /// # use ranch::RangedI128;
     /// RangedI128::<1, 3>::new::<4>();
     /// ```
     #[must_use]
@@ -460,7 +462,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedI128;
     /// let a = RangedI128::<1, 3>::new::<1>();
     /// let b = RangedI128::<-1, 3>::new::<2>();
@@ -505,7 +507,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedI128;
     /// let a = RangedI128::<2, 5>::new::<3>();
     /// let b = RangedI128::<-1, 3>::new::<1>();
@@ -550,7 +552,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedI128;
     /// let a = RangedI128::<-2, 3>::new::<1>();
     /// let b = RangedI128::<0, 3>::new::<2>();
@@ -600,7 +602,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// Does not compile:
     //
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::RangedI128;
     /// let a = RangedI128::<2, 5>::new::<3>();
     /// let b = RangedI128::<1, 2>::new::<1>();
@@ -658,7 +660,7 @@ impl<const MIN: i128, const MAX: i128> RangedI128<MIN, MAX> {
     ///
     /// Does not compile:
     ///
-    /// ```compile_fail
+    /// ```compile_fail,E0080
     /// # use ranch::{RangedI128, RangedU32};
     /// let a = RangedI128::<1, 3>::new::<2>();
     /// let b = RangedU32::<2, 3>::new::<2>();

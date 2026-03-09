@@ -103,10 +103,10 @@ macro_rules! impl_nonzero_from_ranged {
             /// );
             /// ```
             ///
-            /// ```rust,compile_fail
-            #[doc = concat!("# use ranch::{", stringify!($type), "};")]
+            /// ```rust,compile_fail,E0080
+            #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             ///
-            #[doc = concat!(stringify!($nonzero), "::from_ranged(", stringify!($type), "::<0, 100>::new::<42>())")]
+            #[doc = concat!(stringify!($nonzero), "::from_ranged(", stringify!($type), "::<0, 100>::new::<42>());")]
             /// ```
             pub const fn from_ranged(ranged: $type::<MIN, MAX>) -> Self {
                 // `MAX` comparison only needed for signed numbers
