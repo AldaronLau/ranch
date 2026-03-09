@@ -4,7 +4,7 @@ use core::mem::{self, ManuallyDrop};
 
 use as_repr::AsRepr;
 
-use crate::{*, cast::as_primitive::Primitive};
+use crate::{cast::as_primitive::Primitive, *};
 
 /// # Safety
 ///
