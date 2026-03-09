@@ -90,7 +90,9 @@ where
 }
 
 /// This should act like `as`, keeping the value the same, removing any extra
-/// bits
+/// bits.
+///
+/// If the sign would change by casting, panics.
 pub(crate) const fn as_primitive<T, V>(value: V) -> T
 where
     V: AsPrimitive<T>,
@@ -127,7 +129,7 @@ where
     };
 
     let mut value = as_repr::as_repr(value);
-    let is_negative = V::SIGNED && unsafe { is_negative(value) };
+    let negative = unsafe { is_negative(value) };
 
     // Convert to little endian
     if cfg!(target_endian = "big") {
@@ -136,7 +138,7 @@ where
 
     let mut primitive: T = unsafe { mem::zeroed() };
 
-    if is_negative {
+    if negative {
         primitive = unsafe { not(primitive) };
     }
 
@@ -155,6 +157,11 @@ where
     // Convert to native endian
     if cfg!(target_endian = "big") {
         primitive = unsafe { endian_swizzle(primitive) };
+    }
+
+    // Check if sign changed
+    if unsafe { is_negative(primitive) } ^ negative {
+        panic!("cannot change sign during cast")
     }
 
     primitive
@@ -251,15 +258,21 @@ where
 ///
 /// # Safety
 ///
-///  - `T` must be a signed primitive value
+///  - `T` must be a primitive value (since `RangeablePrimitive` and `Primitive`
+///    are safe traits that could theoretically break this invariant, but
+///    shouldn't, this function must be marked unsafe)
 const unsafe fn is_negative<T>(input: T) -> bool
 where
-    T: Copy + Clone,
+    T: Primitive,
 {
     const {
         if !matches!(size_of::<T>(), 1 | 2 | 4 | 8 | 16) {
             panic!("invalid size");
         }
+    }
+
+    if const { !T::SIGNED } {
+        return false;
     }
 
     match size_of::<T>() {
