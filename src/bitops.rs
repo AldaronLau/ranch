@@ -433,6 +433,8 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
+                    as_primitive::as_primitive_expanding(R::MIN);
+
                     if as_primitive::as_primitive_expanding(R::MAX)
                         >= Self::USED_BITS
                     {
@@ -470,6 +472,8 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
+                    as_primitive::as_primitive_expanding(R::MIN);
+
                     if as_primitive::as_primitive_expanding(R::MAX)
                         >= Self::USED_BITS
                     {
@@ -905,6 +909,8 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
+                    as_primitive::as_primitive_expanding(R::MIN);
+
                     if as_primitive::as_primitive_expanding(R::MAX)
                         >= Self::USED_BITS
                     {
@@ -942,6 +948,8 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
+                    as_primitive::as_primitive_expanding(R::MIN);
+
                     if as_primitive::as_primitive_expanding(R::MAX)
                         >= Self::USED_BITS
                     {

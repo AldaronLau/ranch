@@ -4,13 +4,13 @@ use core::mem::{self, ManuallyDrop};
 
 use as_repr::AsRepr;
 
-use crate::*;
+use crate::{*, cast::as_primitive::Primitive};
 
 /// # Safety
 ///
 ///  - Must be able to transmute from representation type without UB
 pub unsafe trait FromRepr: AsRepr<Self::Repr> + Copy + Clone {
-    type Repr: Copy + Clone;
+    type Repr: Primitive;
 }
 
 unsafe impl<const MIN: u8, const MAX: u8> FromRepr for RangedU8<MIN, MAX> {

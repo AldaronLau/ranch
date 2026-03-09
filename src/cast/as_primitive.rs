@@ -8,7 +8,7 @@ use crate::{
     multirange::MultiRange, num::rangeable_primitive::RangeablePrimitive, *,
 };
 
-trait Primitive {}
+pub trait Primitive: RangeablePrimitive<ZeroablePrimitive = Self> {}
 
 impl<T> Primitive for T where T: RangeablePrimitive<ZeroablePrimitive = T> {}
 
@@ -23,7 +23,7 @@ pub unsafe trait AsPrimitive<T>:
 {
     const SIGNED: bool;
 
-    type Repr: Copy + Clone;
+    type Repr: Primitive;
 }
 
 macro_rules! as_primitive {
@@ -64,7 +64,7 @@ as_primitive!(RangedNonZeroI128, i128, true);
 pub(crate) const fn as_primitive_shrinking<T, V>(value: V) -> T
 where
     V: AsPrimitive<T>,
-    T: Copy + Clone,
+    T: Primitive,
 {
     const {
         if size_of::<T>() > size_of::<V::Repr>() {
@@ -78,7 +78,7 @@ where
 pub(crate) const fn as_primitive_expanding<T, V>(value: V) -> T
 where
     V: AsPrimitive<T>,
-    T: Copy + Clone,
+    T: Primitive,
 {
     const {
         if size_of::<V::Repr>() > size_of::<T>() {
@@ -94,7 +94,7 @@ where
 pub(crate) const fn as_primitive<T, V>(value: V) -> T
 where
     V: AsPrimitive<T>,
-    T: Copy + Clone,
+    T: Primitive,
 {
     #[repr(u32)]
     enum Size {
