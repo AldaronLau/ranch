@@ -14,7 +14,7 @@ use crate::{
 pub trait IsNonZero {}
 
 macro_rules! to {
-    ($nonzero:ident, $type:ident, $p:ty) => {
+    ($nonzero:ident, $type:ident, $p:ty, $f:ty, $g:ty) => {
         impl IsNonZero for NonZero<$p> {}
 
         impl<const MIN: $p, const MAX: $p> $nonzero<MIN, MAX> {
@@ -152,6 +152,16 @@ macro_rules! to {
             #[doc = concat!("let ranged = ", stringify!($type), "::<0, 2>::new::<2>();")]
             ///
             /// let expanded_u32: RangedU32<1, 4> = ranged.to_ranged();
+            /// ```
+            ///
+            /// ```rust,compile_fail,E0080
+            /// # use ranch::bitwise::*;
+            #[doc = concat!("let _: ", stringify!($g), " = ", stringify!($f), "::new::<2>().to_ranged();")]
+            /// ```
+            ///
+            /// ```rust,compile_fail,E0080
+            /// # use ranch::bitwise::*;
+            #[doc = concat!("let _: ", stringify!($f), " = ", stringify!($g), "::new::<2>().to_ranged();")]
             /// ```
             pub const fn to_ranged<T, R>(self) -> Ranged<T, R>
             where
@@ -320,14 +330,13 @@ macro_rules! to {
     };
 }
 
-// FIXME: NonZero
-to!(RangedNonZeroU8, RangedU8, u8);
-to!(RangedNonZeroU16, RangedU16, u16);
-to!(RangedNonZeroU32, RangedU32, u32);
-to!(RangedNonZeroU64, RangedU64, u64);
-to!(RangedNonZeroU128, RangedU128, u128);
-to!(RangedNonZeroI8, RangedI8, i8);
-to!(RangedNonZeroI16, RangedI16, i16);
-to!(RangedNonZeroI32, RangedI32, i32);
-to!(RangedNonZeroI64, RangedI64, i64);
-to!(RangedNonZeroI128, RangedI128, i128);
+to!(RangedNonZeroU8, RangedU8, u8, U8, I8);
+to!(RangedNonZeroU16, RangedU16, u16, U16, I16);
+to!(RangedNonZeroU32, RangedU32, u32, U32, I32);
+to!(RangedNonZeroU64, RangedU64, u64, U64, I64);
+to!(RangedNonZeroU128, RangedU128, u128, U128, I128);
+to!(RangedNonZeroI8, RangedI8, i8, I8, U8);
+to!(RangedNonZeroI16, RangedI16, i16, I16, U16);
+to!(RangedNonZeroI32, RangedI32, i32, I32, U32);
+to!(RangedNonZeroI64, RangedI64, i64, I64, U64);
+to!(RangedNonZeroI128, RangedI128, i128, I128, U128);
