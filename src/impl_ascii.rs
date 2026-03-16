@@ -1,7 +1,8 @@
 use core::ascii::EscapeDefault;
 
-use super::{
+use crate::{
     ascii::{Char, Digit, Graphic, Lowercase, NonNul, Uppercase},
+    range::RangeU8,
     *,
 };
 
@@ -130,7 +131,7 @@ impl Digit {
     /// );
     /// ```
     pub const fn from_digit(digit: RangedU8<0, 9>) -> Self {
-        Self::from_ranged(digit.add::<0x30, 0x30, 0x39>())
+        Self::from_ranged(digit.add::<0x30, RangeU8<0x30, 0x39>>())
     }
 
     /// Convert from ASCII digit to numeric digit.
@@ -140,7 +141,8 @@ impl Digit {
     /// assert_eq!(Digit::new::<b'5'>().to_digit(), 5);
     /// ```
     pub const fn to_digit(self) -> RangedU8<0, 9> {
-        as_repr::as_repr::<RangedU8<0x30, 0x39>>(self).sub::<0x30, 0, 9>()
+        as_repr::as_repr::<RangedU8<0x30, 0x39>>(self)
+            .sub::<0x30, RangeU8<0, 9>>()
     }
 
     /// Convert to [`char`].

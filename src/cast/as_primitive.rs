@@ -1,11 +1,13 @@
 #![allow(unsafe_code)]
 
-use core::{mem, ptr};
+use core::{mem, num::NonZero, ptr};
 
 use as_repr::AsRepr;
 
 use crate::{
-    multirange::MultiRange, num::rangeable_primitive::RangeablePrimitive, *,
+    multirange::{MultiRange, Ranged},
+    num::rangeable_primitive::RangeablePrimitive,
+    *,
 };
 
 pub trait Primitive: RangeablePrimitive<ZeroablePrimitive = Self> {}
@@ -27,11 +29,21 @@ pub unsafe trait AsPrimitive<T>:
 }
 
 macro_rules! as_primitive {
-    ($type:ident, $p:ty, $signed:literal) => {
-        unsafe impl<const MIN: $p, const MAX: $p, T> AsPrimitive<T>
-            for $type<MIN, MAX>
+    ($p:ty, $signed:literal) => {
+        unsafe impl<T, R> AsPrimitive<T> for Ranged<$p, R>
         where
             T: Primitive,
+            R: MultiRange<$p>,
+        {
+            type Repr = $p;
+
+            const SIGNED: bool = $signed;
+        }
+
+        unsafe impl<T, R> AsPrimitive<T> for Ranged<NonZero<$p>, R>
+        where
+            T: Primitive,
+            R: MultiRange<$p>,
         {
             type Repr = $p;
 
@@ -40,26 +52,16 @@ macro_rules! as_primitive {
     };
 }
 
-as_primitive!(RangedU8, u8, false);
-as_primitive!(RangedU16, u16, false);
-as_primitive!(RangedU32, u32, false);
-as_primitive!(RangedU64, u64, false);
-as_primitive!(RangedU128, u128, false);
-as_primitive!(RangedI8, i8, true);
-as_primitive!(RangedI16, i16, true);
-as_primitive!(RangedI32, i32, true);
-as_primitive!(RangedI64, i64, true);
-as_primitive!(RangedI128, i128, true);
-as_primitive!(RangedNonZeroU8, u8, false);
-as_primitive!(RangedNonZeroU16, u16, false);
-as_primitive!(RangedNonZeroU32, u32, false);
-as_primitive!(RangedNonZeroU64, u64, false);
-as_primitive!(RangedNonZeroU128, u128, false);
-as_primitive!(RangedNonZeroI8, i8, true);
-as_primitive!(RangedNonZeroI16, i16, true);
-as_primitive!(RangedNonZeroI32, i32, true);
-as_primitive!(RangedNonZeroI64, i64, true);
-as_primitive!(RangedNonZeroI128, i128, true);
+as_primitive!(u8, false);
+as_primitive!(u16, false);
+as_primitive!(u32, false);
+as_primitive!(u64, false);
+as_primitive!(u128, false);
+as_primitive!(i8, true);
+as_primitive!(i16, true);
+as_primitive!(i32, true);
+as_primitive!(i64, true);
+as_primitive!(i128, true);
 
 pub(crate) const fn as_primitive_shrinking<T, V>(value: V) -> T
 where

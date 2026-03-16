@@ -251,6 +251,14 @@ mod num {
     pub(super) mod ranged;
 }
 
+mod ops {
+    mod misc;
+    mod nonzero_unsigned;
+    mod ord;
+    mod signed;
+    mod unsigned;
+}
+
 pub mod ascii;
 mod assertions;
 mod assign;
@@ -265,7 +273,6 @@ mod impl_ascii;
 mod index;
 pub mod multirange;
 mod neg;
-mod ops;
 mod ord;
 pub mod parsing;
 mod quotient;

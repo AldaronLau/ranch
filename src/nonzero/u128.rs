@@ -304,46 +304,6 @@ impl<const MIN: u128, const MAX: u128> RangedNonZeroU128<MIN, MAX> {
         value.to_ranged_nonzero()
     }
 
-    /// Add two numbers together.
-    ///
-    /// ```rust
-    /// # use ranch::RangedNonZeroU128;
-    /// let a = RangedNonZeroU128::<1, 3>::new::<1>();
-    /// let b = RangedNonZeroU128::<1, 3>::new::<2>();
-    /// let output: RangedNonZeroU128::<2, 6> = a.add_ranged(b);
-    ///
-    /// assert_eq!(output.get(), 3);
-    /// ```
-    ///
-    /// Does not compile:
-    ///
-    /// ```compile_fail,E0080
-    /// # use ranch::RangedNonZeroU128;
-    /// let a = RangedNonZeroU128::<1, 3>::new::<1>();
-    /// let b = RangedNonZeroU128::<1, 3>::new::<2>();
-    /// let output: RangedNonZeroU128::<1, 6> = a.add_ranged(b);
-    ///
-    /// assert_eq!(output.get(), 3);
-    /// ```
-    #[must_use = "this returns the result of the operation, \
-                  without modifying the original"]
-    pub const fn add_ranged<
-        const RHS_MIN: u128,
-        const RHS_MAX: u128,
-        const OUTPUT_MIN: u128,
-        const OUTPUT_MAX: u128,
-    >(
-        self,
-        rhs: RangedNonZeroU128<RHS_MIN, RHS_MAX>,
-    ) -> RangedNonZeroU128<OUTPUT_MIN, OUTPUT_MAX> {
-        as_repr::as_repr::<RangedU128<MIN, MAX>>(self)
-            .add_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(
-                rhs.to_ranged(),
-            )
-            .to_ranged_nonzero()
-            .unwrap()
-    }
-
     /// Multiply two numbers together.
     ///
     /// ```rust

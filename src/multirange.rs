@@ -63,29 +63,39 @@ macro_rules! nonzero_impl_multirange {
 }
 
 macro_rules! nonzero_multirange_impl {
-    ($r:ident, $p:ty) => {
-        impl<const MIN: $p, const MAX: $p> MultiRange<$p> for $r<MIN, MAX> {
-            const MAX: $p = MAX;
-            const MIN: $p = MIN;
+    ($p:ty) => {
+        impl<R> MultiRange<$p> for Ranged<NonZero<$p>, R>
+        where
+            R: MultiRange<$p>,
+        {
+            const MAX: $p = R::MAX;
+            const MIN: $p = R::MIN;
             const SUBRANGES: &'static [RangeInclusive<$p>] = &[
-                RangeInclusive::new(MIN, min(-1, MAX)),
-                RangeInclusive::new(max(1, MIN), MAX),
+                RangeInclusive::new(R::MIN, min(-1, R::MAX)),
+                RangeInclusive::new(max(1, R::MIN), R::MAX),
             ];
         }
 
-        impl<const MIN: $p, const MAX: $p> MultiRange for $r<MIN, MAX> {
-            const MAX: $r<MIN, MAX> = Self::MAX;
-            const MIN: $r<MIN, MAX> = Self::MIN;
-            const SUBRANGES: &'static [RangeInclusive<$r<MIN, MAX>>] = &[
+        impl<R> MultiRange for Ranged<NonZero<$p>, R>
+        where
+            R: MultiRange<$p>,
+        {
+            const MAX: Self = Self::from_unchecked(R::MAX);
+            const MIN: Self = Self::from_unchecked(R::MIN);
+            const SUBRANGES: &'static [RangeInclusive<Self>] = &[
                 RangeInclusive::new(
                     Self::MIN,
                     const {
-                        $r::from_unchecked(NonZero::new(min(-1, MAX)).unwrap())
+                        Self::from_unchecked(
+                            NonZero::new(min(-1, R::MAX)).unwrap(),
+                        )
                     },
                 ),
                 RangeInclusive::new(
                     const {
-                        $r::from_unchecked(NonZero::new(max(1, MIN)).unwrap())
+                        Self::from_unchecked(
+                            NonZero::new(max(1, R::MIN)).unwrap(),
+                        )
                     },
                     Self::MAX,
                 ),
@@ -95,31 +105,32 @@ macro_rules! nonzero_multirange_impl {
 }
 
 macro_rules! multirange_nonzero_impl {
-    ($r:ident, $p:ty) => {
-        impl<const MIN: $p, const MAX: $p> MultiRange<NonZero<$p>>
-            for $r<MIN, MAX>
+    ($p:ty) => {
+        impl<R> MultiRange<NonZero<$p>> for Ranged<NonZero<$p>, R>
+        where
+            R: MultiRange<$p>,
         {
-            const MAX: NonZero<$p> = const { NonZero::new(MAX).unwrap() };
-            const MIN: NonZero<$p> = const { NonZero::new(MIN).unwrap() };
+            const MAX: NonZero<$p> = const { NonZero::new(R::MAX).unwrap() };
+            const MIN: NonZero<$p> = const { NonZero::new(R::MIN).unwrap() };
             const SUBRANGES: &'static [RangeInclusive<NonZero<$p>>] = &[
                 RangeInclusive::new(
-                    const { NonZero::new(MIN).unwrap() },
-                    const { NonZero::new(min(-1, MAX)).unwrap() },
+                    const { NonZero::new(R::MIN).unwrap() },
+                    const { NonZero::new(min(-1, R::MAX)).unwrap() },
                 ),
                 RangeInclusive::new(
-                    const { NonZero::new(max(1, MIN)).unwrap() },
-                    const { NonZero::new(MAX).unwrap() },
+                    const { NonZero::new(max(1, R::MIN)).unwrap() },
+                    const { NonZero::new(R::MAX).unwrap() },
                 ),
             ];
         }
     };
 }
 
-nonzero_multirange_impl!(RangedNonZeroI8, i8);
-nonzero_multirange_impl!(RangedNonZeroI16, i16);
-nonzero_multirange_impl!(RangedNonZeroI32, i32);
-nonzero_multirange_impl!(RangedNonZeroI64, i64);
-nonzero_multirange_impl!(RangedNonZeroI128, i128);
+nonzero_multirange_impl!(i8);
+nonzero_multirange_impl!(i16);
+nonzero_multirange_impl!(i32);
+nonzero_multirange_impl!(i64);
+nonzero_multirange_impl!(i128);
 
 nonzero_impl_multirange!(i8);
 nonzero_impl_multirange!(i16);
@@ -127,11 +138,11 @@ nonzero_impl_multirange!(i32);
 nonzero_impl_multirange!(i64);
 nonzero_impl_multirange!(i128);
 
-multirange_nonzero_impl!(RangedNonZeroI8, i8);
-multirange_nonzero_impl!(RangedNonZeroI16, i16);
-multirange_nonzero_impl!(RangedNonZeroI32, i32);
-multirange_nonzero_impl!(RangedNonZeroI64, i64);
-multirange_nonzero_impl!(RangedNonZeroI128, i128);
+multirange_nonzero_impl!(i8);
+multirange_nonzero_impl!(i16);
+multirange_nonzero_impl!(i32);
+multirange_nonzero_impl!(i64);
+multirange_nonzero_impl!(i128);
 
 /// Return an iterator of ranges from a [`MultiRange`].
 ///

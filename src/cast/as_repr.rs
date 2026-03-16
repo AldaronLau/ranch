@@ -21,26 +21,30 @@ where
 macro_rules! as_repr {
     ($nonzero:ident, $ranged:ident, $p:ident $(,)?) => {
         // unsafe: `repr(primitive)` implies `repr(Option<NonZero<primitive>>)`
-        unsafe impl<const MIN: $p, const MAX: $p> AsRepr<Option<NonZero<$p>>>
-            for $ranged<MIN, MAX>
+        unsafe impl<R> AsRepr<Option<NonZero<$p>>> for Ranged<$p, R>
+        where
+            R: MultiRange<$p>
         {
         }
 
         // unsafe: `repr(NonZero<primitive>)` implies `repr(primitive)`
-        unsafe impl<const MIN: $p, const MAX: $p> AsRepr<$p>
-            for $nonzero<MIN, MAX>
+        unsafe impl<R> AsRepr<$p> for Ranged<NonZero<$p>, R>
+        where
+            R: MultiRange<$p>
         {
         }
 
         // unsafe: `repr(primitive)` implies `repr(Option<NonZero<primitive>>)`
-        unsafe impl<const MIN: $p, const MAX: $p>
-            AsRepr<Option<$nonzero<MIN, MAX>>> for $ranged<MIN, MAX>
+        unsafe impl<R> AsRepr<Option<Ranged<NonZero<$p>, R>>> for Ranged<$p, R>
+        where
+            R: MultiRange<$p>
         {
         }
 
         // unsafe: `repr(NonZero<primitive>)` implies `repr(primitive)`
-        unsafe impl<const MIN: $p, const MAX: $p> AsRepr<$ranged<MIN, MAX>>
-            for $nonzero<MIN, MAX>
+        unsafe impl<R> AsRepr<Ranged<$p, R>> for Ranged<NonZero<$p>, R>
+        where
+            R: MultiRange<$p>
         {
         }
     };

@@ -1,94 +1,28 @@
 use core::{
-    cmp::Ordering,
     num::NonZero,
     ops::{Add, Div, Mul, Rem, Sub},
 };
 
 use as_repr::AsRepr;
 
-use super::*;
+use crate::{
+    multirange::Ranged,
+    range::{
+        Range, RangeI8, RangeI16, RangeI32, RangeI64, RangeI128, RangeU8,
+        RangeU16, RangeU32, RangeU64, RangeU128,
+    },
+    *,
+};
 
 macro_rules! impl_ops {
     (
+        $r:ident,
         $type:ident,
         $p:ty,
         $nonzero:ident,
         $ret:ident,
         $nan_unreachable:ident $(,)?
     ) => {
-        impl<const MIN: $p, const MAX: $p> Ord for $nonzero::<MIN, MAX> {
-            fn cmp(&self, other: &Self) -> Ordering {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.cmp(&other)
-            }
-        }
-
-        impl<T, const MIN: $p, const MAX: $p> PartialOrd<T>
-            for $nonzero::<MIN, MAX>
-        where
-            T: AsRepr<$p> + Copy + Clone,
-        {
-            fn partial_cmp(&self, other: &T) -> Option<Ordering> {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.partial_cmp(&other)
-            }
-        }
-
-        impl<const MIN: $p, const MAX: $p> Ord for $type::<MIN, MAX> {
-            fn cmp(&self, other: &Self) -> Ordering {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.cmp(&other)
-            }
-        }
-
-        impl<T, const MIN: $p, const MAX: $p> PartialOrd<T>
-            for $type::<MIN, MAX>
-        where
-            T: AsRepr<$p> + Copy + Clone,
-        {
-            fn partial_cmp(&self, other: &T) -> Option<Ordering> {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.partial_cmp(&other)
-            }
-        }
-
-        impl<const MIN: $p, const MAX: $p> Eq for $nonzero::<MIN, MAX> { }
-
-        impl<T, const MIN: $p, const MAX: $p> PartialEq<T>
-            for $nonzero::<MIN, MAX>
-        where
-            T: AsRepr<$p> + Copy + Clone,
-        {
-            fn eq(&self, other: &T) -> bool {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.eq(&other)
-            }
-        }
-
-        impl<const MIN: $p, const MAX: $p> Eq for $type::<MIN, MAX> { }
-
-        impl<T, const MIN: $p, const MAX: $p> PartialEq<T> for $type::<MIN, MAX>
-        where
-            T: AsRepr<$p> + Copy + Clone,
-        {
-            fn eq(&self, other: &T) -> bool {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.eq(&other)
-            }
-        }
-
         impl<T, const MIN: $p, const MAX: $p> Add<T> for $type::<MIN, MAX>
         where
             T: AsRepr<$p>,
@@ -203,13 +137,9 @@ macro_rules! impl_ops {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn add<
-                const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn add<const RHS: $p, R: Range<$p>>(
                 self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+            ) -> Ranged::<$p, R> {
                 let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
 
                 self.add_ranged(rhs)
@@ -226,13 +156,9 @@ macro_rules! impl_ops {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn sub<
-                const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn sub<const RHS: $p, R: Range<$p>>(
                 self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+            ) -> Ranged::<$p, R> {
                 let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
 
                 self.sub_ranged(rhs)
@@ -2019,6 +1945,7 @@ macro_rules! impl_ops_signed {
 }
 
 impl_ops!(
+    RangeI8,
     RangedI8,
     i8,
     RangedNonZeroI8,
@@ -2026,6 +1953,7 @@ impl_ops!(
     signed_nan_unreachable,
 );
 impl_ops!(
+    RangeI16,
     RangedI16,
     i16,
     RangedNonZeroI16,
@@ -2033,6 +1961,7 @@ impl_ops!(
     signed_nan_unreachable,
 );
 impl_ops!(
+    RangeI32,
     RangedI32,
     i32,
     RangedNonZeroI32,
@@ -2040,6 +1969,7 @@ impl_ops!(
     signed_nan_unreachable,
 );
 impl_ops!(
+    RangeI64,
     RangedI64,
     i64,
     RangedNonZeroI64,
@@ -2047,6 +1977,7 @@ impl_ops!(
     signed_nan_unreachable,
 );
 impl_ops!(
+    RangeI128,
     RangedI128,
     i128,
     RangedNonZeroI128,
@@ -2055,6 +1986,7 @@ impl_ops!(
 );
 
 impl_ops!(
+    RangeU8,
     RangedU8,
     u8,
     RangedNonZeroU8,
@@ -2062,6 +1994,7 @@ impl_ops!(
     unsigned_nan_unreachable,
 );
 impl_ops!(
+    RangeU16,
     RangedU16,
     u16,
     RangedNonZeroU16,
@@ -2069,6 +2002,7 @@ impl_ops!(
     unsigned_nan_unreachable,
 );
 impl_ops!(
+    RangeU32,
     RangedU32,
     u32,
     RangedNonZeroU32,
@@ -2076,6 +2010,7 @@ impl_ops!(
     unsigned_nan_unreachable,
 );
 impl_ops!(
+    RangeU64,
     RangedU64,
     u64,
     RangedNonZeroU64,
@@ -2083,6 +2018,7 @@ impl_ops!(
     unsigned_nan_unreachable,
 );
 impl_ops!(
+    RangeU128,
     RangedU128,
     u128,
     RangedNonZeroU128,
