@@ -80,8 +80,10 @@ macro_rules! nonzero_multirange_impl {
         where
             R: MultiRange<$p>,
         {
-            const MAX: Self = Self::from_unchecked(R::MAX);
-            const MIN: Self = Self::from_unchecked(R::MIN);
+            const MAX: Self =
+                Self::from_unchecked(NonZero::new(R::MAX).unwrap());
+            const MIN: Self =
+                Self::from_unchecked(NonZero::new(R::MIN).unwrap());
             const SUBRANGES: &'static [RangeInclusive<Self>] = &[
                 RangeInclusive::new(
                     Self::MIN,
