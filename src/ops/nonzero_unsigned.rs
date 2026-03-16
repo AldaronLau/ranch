@@ -1,3 +1,5 @@
+use core::num::NonZero;
+
 use crate::{multirange::Ranged, range::Range, *};
 
 macro_rules! ops_nonzero_unsigned {
@@ -32,7 +34,7 @@ macro_rules! ops_nonzero_unsigned {
             >(
                 self,
                 rhs: Ranged<$p, Rhs>,
-            ) -> Ranged<$p, Out> {
+            ) -> Ranged<NonZero<$p>, Out> {
                 as_repr::as_repr::<$ranged<MIN, MAX>>(self)
                     .add_ranged::<Rhs, Out>(rhs.to_ranged())
                     .to_ranged_nonzero()

@@ -3,10 +3,7 @@
 use core::{error, fmt, num::NonZero, ops::RangeInclusive, result};
 
 pub use super::{num::marker::*, random::*};
-use crate::{
-    multirange::{MultiRange, Rangeable, Ranged},
-    *,
-};
+use crate::multirange::{MultiRange, Rangeable, Ranged};
 
 /// Validating an integer is within a range result
 pub type Result<T = (), E = Error> = result::Result<T, E>;

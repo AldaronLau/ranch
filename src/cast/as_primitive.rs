@@ -7,7 +7,6 @@ use as_repr::AsRepr;
 use crate::{
     multirange::{MultiRange, Ranged},
     num::rangeable_primitive::RangeablePrimitive,
-    *,
 };
 
 pub trait Primitive: RangeablePrimitive<ZeroablePrimitive = Self> {}

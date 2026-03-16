@@ -5,7 +5,6 @@ use as_repr::AsRepr;
 use crate::{
     multirange::{MultiRange, Ranged},
     num::rangeable_primitive::RangeablePrimitive,
-    range::Range,
 };
 
 impl<P, R> Ord for Ranged<P, R>

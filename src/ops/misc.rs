@@ -5,18 +5,10 @@ use core::{
 
 use as_repr::AsRepr;
 
-use crate::{
-    multirange::Ranged,
-    range::{
-        Range, RangeI8, RangeI16, RangeI32, RangeI64, RangeI128, RangeU8,
-        RangeU16, RangeU32, RangeU64, RangeU128,
-    },
-    *,
-};
+use crate::{multirange::Ranged, range::Range, *};
 
 macro_rules! impl_ops {
     (
-        $r:ident,
         $type:ident,
         $p:ty,
         $nonzero:ident,
@@ -1945,7 +1937,6 @@ macro_rules! impl_ops_signed {
 }
 
 impl_ops!(
-    RangeI8,
     RangedI8,
     i8,
     RangedNonZeroI8,
@@ -1953,7 +1944,6 @@ impl_ops!(
     signed_nan_unreachable,
 );
 impl_ops!(
-    RangeI16,
     RangedI16,
     i16,
     RangedNonZeroI16,
@@ -1961,7 +1951,6 @@ impl_ops!(
     signed_nan_unreachable,
 );
 impl_ops!(
-    RangeI32,
     RangedI32,
     i32,
     RangedNonZeroI32,
@@ -1969,7 +1958,6 @@ impl_ops!(
     signed_nan_unreachable,
 );
 impl_ops!(
-    RangeI64,
     RangedI64,
     i64,
     RangedNonZeroI64,
@@ -1977,7 +1965,6 @@ impl_ops!(
     signed_nan_unreachable,
 );
 impl_ops!(
-    RangeI128,
     RangedI128,
     i128,
     RangedNonZeroI128,
@@ -1986,7 +1973,6 @@ impl_ops!(
 );
 
 impl_ops!(
-    RangeU8,
     RangedU8,
     u8,
     RangedNonZeroU8,
@@ -1994,7 +1980,6 @@ impl_ops!(
     unsigned_nan_unreachable,
 );
 impl_ops!(
-    RangeU16,
     RangedU16,
     u16,
     RangedNonZeroU16,
@@ -2002,7 +1987,6 @@ impl_ops!(
     unsigned_nan_unreachable,
 );
 impl_ops!(
-    RangeU32,
     RangedU32,
     u32,
     RangedNonZeroU32,
@@ -2010,7 +1994,6 @@ impl_ops!(
     unsigned_nan_unreachable,
 );
 impl_ops!(
-    RangeU64,
     RangedU64,
     u64,
     RangedNonZeroU64,
@@ -2018,7 +2001,6 @@ impl_ops!(
     unsigned_nan_unreachable,
 );
 impl_ops!(
-    RangeU128,
     RangedU128,
     u128,
     RangedNonZeroU128,
