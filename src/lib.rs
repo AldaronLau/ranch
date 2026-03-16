@@ -101,13 +101,13 @@
 //! range, but ranch will check your work and tell you if you're wrong.
 //!
 //! ```rust
-//! # use ranch::RangedI32;
+//! # use ranch::{RangedI32, range::RangeI32};
 //! assert_eq!(
-//!     RangedI32::<2, 7>::new::<2>().add::<5, 7, 12>(),
+//!     RangedI32::<2, 7>::new::<2>().add::<5, RangeI32<7, 12>>(),
 //!     RangedI32::<7, 12>::new::<7>(),
 //! );
 //! assert_eq!(
-//!     RangedI32::<2, 7>::new::<2>().add::<6, 8, 13>(),
+//!     RangedI32::<2, 7>::new::<2>().add::<6, RangeI32<8, 13>>(),
 //!     RangedI32::<8, 13>::new::<8>(),
 //! );
 //! ```
@@ -254,7 +254,7 @@ mod num {
 mod ops {
     mod misc;
     mod nonzero_unsigned;
-    mod ord;
+    mod cmp;
     mod signed;
     mod unsigned;
 }

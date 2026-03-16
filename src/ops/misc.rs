@@ -123,7 +123,7 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<15, 85>::new::<16>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<38, 108> = a.add::<23, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<38, 108> = a.add::<23, _>();")]
             ///
             /// assert_eq!(output, 39);
             /// ```
@@ -142,7 +142,7 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<38, 108>::new::<39>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<15, 85> = a.sub::<23, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<15, 85> = a.sub::<23, _>();")]
             ///
             /// assert_eq!(output, 16);
             /// ```

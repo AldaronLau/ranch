@@ -33,7 +33,7 @@ macro_rules! ops_nonzero_unsigned {
                 Out: Range<$p>,
             >(
                 self,
-                rhs: Ranged<$p, Rhs>,
+                rhs: Ranged<NonZero<$p>, Rhs>,
             ) -> Ranged<NonZero<$p>, Out> {
                 as_repr::as_repr::<$ranged<MIN, MAX>>(self)
                     .add_ranged::<Rhs, Out>(rhs.to_ranged())
