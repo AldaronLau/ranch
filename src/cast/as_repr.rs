@@ -5,9 +5,9 @@ use core::num::NonZero;
 use as_repr::AsRepr;
 
 use crate::{
+    cast::{as_primitive::Primitive, to::IsNonZero},
     multirange::{MultiRange, Ranged},
     num::rangeable_primitive::RangeablePrimitive,
-    cast::{as_primitive::Primitive, to::IsNonZero},
 };
 
 // unsafe: `repr(transparent)` on `Ranged<T, R>` is `repr(T)`
@@ -24,7 +24,7 @@ unsafe impl<N, P, R> AsRepr<Option<N>> for Ranged<P, R>
 where
     N: RangeablePrimitive<ZeroablePrimitive = P> + IsNonZero,
     P: Primitive,
-    R: MultiRange<P>
+    R: MultiRange<P>,
 {
 }
 
