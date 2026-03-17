@@ -1,8 +1,12 @@
 use core::{hash::Hash, num::NonZero};
 
+use as_repr::AsRepr;
+
 use crate::{cmp::Cmp, multirange::Rangeable};
 
-pub trait RangeablePrimitive: Hash + Sized + Rangeable {
+pub trait RangeablePrimitive:
+    Hash + Sized + Rangeable + AsRepr<Self::ZeroablePrimitive>
+{
     const BITS: u32;
     const SIGNED: bool;
 

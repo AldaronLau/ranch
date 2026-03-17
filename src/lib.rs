@@ -252,9 +252,9 @@ mod num {
 }
 
 mod ops {
+    mod cmp;
     mod misc;
     mod nonzero_unsigned;
-    mod cmp;
     mod signed;
     mod unsigned;
 }
