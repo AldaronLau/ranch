@@ -3,6 +3,7 @@ use core::cmp::Ordering;
 use as_repr::AsRepr;
 
 use crate::{
+    cast::as_primitive::Primitive,
     multirange::{MultiRange, Ranged},
     num::rangeable_primitive::RangeablePrimitive,
 };
@@ -10,6 +11,7 @@ use crate::{
 impl<P, R> Ord for Ranged<P, R>
 where
     P: RangeablePrimitive,
+    P::ZeroablePrimitive: Primitive,
     R: MultiRange<P::ZeroablePrimitive>,
 {
     fn cmp(&self, other: &Self) -> Ordering {
@@ -38,6 +40,7 @@ where
 impl<P, R> Eq for Ranged<P, R>
 where
     P: RangeablePrimitive,
+    P::ZeroablePrimitive: Primitive,
     R: MultiRange<P::ZeroablePrimitive>,
 {
 }
