@@ -280,6 +280,7 @@ mod random;
 pub mod range;
 mod shl;
 mod shr;
+pub mod types;
 pub mod unit;
 
 pub use self::{
