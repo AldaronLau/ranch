@@ -273,13 +273,13 @@ macro_rules! bitops_impl {
             /// ```rust
             /// # use ranch::bitwise::{I7, I13};
             /// assert_eq!(
-            ///     I7::new::<0b10_1011>().expanding_shl::<6, I13>(),
+            ///     I7::new::<0b10_1011>().expanding_shl_to::<6, I13>(),
             ///     I13::new::<0b1010_1100_0000>(),
             /// );
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn expanding_shl<const N: u32, T>(self) -> T
+            pub const fn expanding_shl_to<const N: u32, T>(self) -> T
             where
                 <T as FromRepr>::Repr: DowncastShl,
                 T: FromRepr + BitwiseSigned<<T as FromRepr>::Repr>,
@@ -304,13 +304,13 @@ macro_rules! bitops_impl {
             /// ```rust
             /// # use ranch::bitwise::{I7, I13};
             /// assert_eq!(
-            ///     I13::new::<0b1010_1100_0000>().shrinking_shr::<6, I7>(),
+            ///     I13::new::<0b1010_1100_0000>().shrinking_shr_to::<6, I7>(),
             ///     I7::new::<0b10_1011>(),
             /// );
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn shrinking_shr<const N: u32, T>(self) -> T
+            pub const fn shrinking_shr_to<const N: u32, T>(self) -> T
             where
                 T: FromRepr + BitwiseSigned<<T as FromRepr>::Repr>,
                 Self: AsPrimitive<<T as FromRepr>::Repr>,
@@ -780,13 +780,13 @@ macro_rules! bitops_impl {
             /// ```rust
             /// # use ranch::bitwise::{U6, U12};
             /// assert_eq!(
-            ///     U6::new::<0b10_1011>().expanding_shl::<6, U12>(),
+            ///     U6::new::<0b10_1011>().expanding_shl_to::<6, U12>(),
             ///     U12::new::<0b1010_1100_0000>(),
             /// );
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn expanding_shl<const N: u32, T>(self) -> T
+            pub const fn expanding_shl_to<const N: u32, T>(self) -> T
             where
                 <T as FromRepr>::Repr: DowncastShl,
                 T: FromRepr + BitwiseUnsigned<<T as FromRepr>::Repr>,
@@ -811,13 +811,13 @@ macro_rules! bitops_impl {
             /// ```rust
             /// # use ranch::bitwise::{U6, U12};
             /// assert_eq!(
-            ///     U12::new::<0b1010_1100_0000>().shrinking_shr::<6, U6>(),
+            ///     U12::new::<0b1010_1100_0000>().shrinking_shr_to::<6, U6>(),
             ///     U6::new::<0b10_1011>(),
             /// );
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn shrinking_shr<const N: u32, T>(self) -> T
+            pub const fn shrinking_shr_to<const N: u32, T>(self) -> T
             where
                 T: FromRepr + BitwiseUnsigned<<T as FromRepr>::Repr>,
                 Self: AsPrimitive<<T as FromRepr>::Repr>,

@@ -340,46 +340,6 @@ impl<const MIN: i8, const MAX: i8> RangedNonZeroI8<MIN, MAX> {
         self.get().is_positive()
     }
 
-    /// Multiply two numbers together.
-    ///
-    /// ```rust
-    /// # use ranch::RangedNonZeroI8;
-    /// let a = RangedNonZeroI8::<-2, 3>::new::<1>();
-    /// let b = RangedNonZeroI8::<-1, 3>::new::<2>();
-    /// let output: RangedNonZeroI8::<-6, 9> = a.mul_ranged(b);
-    ///
-    /// assert_eq!(output.get(), 2);
-    /// ```
-    ///
-    /// Does not compile:
-    ///
-    /// ```compile_fail,E0080
-    /// # use ranch::RangedNonZeroI8;
-    /// let a = RangedNonZeroI8::<-2, 3>::new::<1>();
-    /// let b = RangedNonZeroI8::<-1, 3>::new::<2>();
-    /// let output: RangedNonZeroI8::<0, 9> = a.mul_ranged(b);
-    ///
-    /// assert_eq!(output.get(), 2);
-    /// ```
-    #[must_use = "this returns the result of the operation, \
-                  without modifying the original"]
-    pub const fn mul_ranged<
-        const RHS_MIN: i8,
-        const RHS_MAX: i8,
-        const OUTPUT_MIN: i8,
-        const OUTPUT_MAX: i8,
-    >(
-        self,
-        rhs: RangedNonZeroI8<RHS_MIN, RHS_MAX>,
-    ) -> RangedNonZeroI8<OUTPUT_MIN, OUTPUT_MAX> {
-        as_repr::as_repr::<RangedI8<MIN, MAX>>(self)
-            .mul_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(
-                rhs.to_ranged(),
-            )
-            .to_ranged_nonzero()
-            .unwrap()
-    }
-
     /// Raise to an integer power.
     ///
     /// ```rust

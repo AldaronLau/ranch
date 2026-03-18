@@ -386,51 +386,6 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
         value
     }
 
-    /// Multiply two numbers together.
-    ///
-    /// ```rust
-    /// # use ranch::RangedU64;
-    /// let a = RangedU64::<1, 3>::new::<1>();
-    /// let b = RangedU64::<2, 3>::new::<2>();
-    /// let output: RangedU64::<2, 9> = a.mul_ranged(b);
-    ///
-    /// assert_eq!(output.get(), 2);
-    /// ```
-    ///
-    /// Does not compile:
-    ///
-    /// ```compile_fail,E0080
-    /// # use ranch::RangedU64;
-    /// let a = RangedU64::<1, 3>::new::<1>();
-    /// let b = RangedU64::<2, 3>::new::<2>();
-    /// let output: RangedU64::<1, 9> = a.mul_ranged(b);
-    ///
-    /// assert_eq!(output.get(), 2);
-    /// ```
-    #[must_use = "this returns the result of the operation, \
-                  without modifying the original"]
-    pub const fn mul_ranged<
-        const RHS_MIN: u64,
-        const RHS_MAX: u64,
-        const OUTPUT_MIN: u64,
-        const OUTPUT_MAX: u64,
-    >(
-        self,
-        rhs: RangedU64<RHS_MIN, RHS_MAX>,
-    ) -> RangedU64<OUTPUT_MIN, OUTPUT_MAX> {
-        const {
-            if MIN * RHS_MIN != OUTPUT_MIN {
-                panic!("Min mismatch");
-            }
-
-            if MAX * RHS_MAX != OUTPUT_MAX {
-                panic!("Max mismatch");
-            }
-        }
-
-        RangedU64::from_unchecked(self.get() * rhs.get())
-    }
-
     /// Divide `self` by a number.
     ///
     /// ```rust

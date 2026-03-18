@@ -26,10 +26,7 @@ macro_rules! ops_unsigned {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn add_ranged_to<
-                Rhs: Range<$p>,
-                Out: Range<$p>,
-            >(
+            pub const fn add_ranged_to<Rhs: Range<$p>, Out: Range<$p>>(
                 self,
                 rhs: Ranged<$p, Rhs>,
             ) -> Ranged<$p, Out> {
@@ -69,10 +66,7 @@ macro_rules! ops_unsigned {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn sub_ranged_to<
-                Rhs: Range<$p>,
-                Out: Range<$p>,
-            >(
+            pub const fn sub_ranged_to<Rhs: Range<$p>, Out: Range<$p>>(
                 self,
                 rhs: Ranged<$p, Rhs>,
             ) -> Ranged<$p, Out> {
@@ -87,6 +81,45 @@ macro_rules! ops_unsigned {
                 }
 
                 Ranged::from_unchecked(self.get() - as_repr::as_repr::<$p>(rhs))
+            }
+
+            /// Multiply two numbers together.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($name), ";")]
+            #[doc = concat!("let a = ", stringify!($name), "::<1, 3>::new::<1>();")]
+            #[doc = concat!("let b = ", stringify!($name), "::<2, 3>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($name), "::<2, 9> = a.mul_ranged_to(b);")]
+            ///
+            /// assert_eq!(output.get(), 2);
+            /// ```
+            ///
+            /// Does not compile:
+            ///
+            /// ```compile_fail,E0080
+            #[doc = concat!("# use ranch::", stringify!($name), ";")]
+            #[doc = concat!("let a = ", stringify!($name), "::<1, 3>::new::<1>();")]
+            #[doc = concat!("let b = ", stringify!($name), "::<2, 3>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($name), "::<1, 9> = a.mul_ranged_to(b);")]
+            ///
+            /// assert_eq!(output.get(), 2);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn mul_ranged_to<Rhs: Range<$p>, Out: Range<$p>>(
+                self, rhs: Ranged<$p, Rhs>
+            ) -> Ranged<$p, Out> {
+                const {
+                    if MIN * Rhs::MIN != Out::MIN {
+                        panic!("Min mismatch");
+                    }
+
+                    if MAX * Rhs::MAX != Out::MAX {
+                        panic!("Max mismatch");
+                    }
+                }
+
+                Ranged::from_unchecked(self.get() * as_repr::as_repr::<$p>(rhs))
             }
         }
     };

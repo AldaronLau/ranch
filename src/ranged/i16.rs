@@ -444,56 +444,6 @@ impl<const MIN: i16, const MAX: i16> RangedI16<MIN, MAX> {
         value
     }
 
-    /// Multiply two numbers together.
-    ///
-    /// ```rust
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<-2, 3>::new::<1>();
-    /// let b = RangedI16::<0, 3>::new::<2>();
-    /// let output: RangedI16::<-6, 9> = a.mul_ranged(b);
-    ///
-    /// assert_eq!(output.get(), 2);
-    /// ```
-    ///
-    /// Does not compile:
-    ///
-    /// ```compile_fail,E0080
-    /// # use ranch::RangedI16;
-    /// let a = RangedI16::<-2, 3>::new::<1>();
-    /// let b = RangedI16::<0, 3>::new::<2>();
-    /// let output: RangedI16::<0, 9> = a.mul_ranged(b);
-    ///
-    /// assert_eq!(output.get(), 2);
-    /// ```
-    #[must_use = "this returns the result of the operation, \
-                  without modifying the original"]
-    pub const fn mul_ranged<
-        const RHS_MIN: i16,
-        const RHS_MAX: i16,
-        const OUTPUT_MIN: i16,
-        const OUTPUT_MAX: i16,
-    >(
-        self,
-        rhs: RangedI16<RHS_MIN, RHS_MAX>,
-    ) -> RangedI16<OUTPUT_MIN, OUTPUT_MAX> {
-        const {
-            let (min_min, min_max) = (MIN * RHS_MIN, MIN * RHS_MAX);
-            let min = if min_min < min_max { min_min } else { min_max };
-            let (max_min, max_max) = (MAX * RHS_MIN, MAX * RHS_MAX);
-            let max = if max_min > max_max { max_min } else { max_max };
-
-            if min != OUTPUT_MIN {
-                panic!("Min mismatch");
-            }
-
-            if max != OUTPUT_MAX {
-                panic!("Max mismatch");
-            }
-        }
-
-        RangedI16::from_unchecked(self.get() * rhs.get())
-    }
-
     /// Divide `self` by a number.
     ///
     /// ```rust
