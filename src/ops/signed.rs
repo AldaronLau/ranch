@@ -9,7 +9,7 @@ macro_rules! ops_signed {
             #[doc = concat!("# use ranch::", stringify!($name), ";")]
             #[doc = concat!("let a = ", stringify!($name), "::<1, 3>::new::<1>();")]
             #[doc = concat!("let b = ", stringify!($name), "::<-1, 3>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($name), "::<0, 6> = a.add_ranged(b);")]
+            #[doc = concat!("let output: ", stringify!($name), "::<0, 6> = a.add_ranged_to(b);")]
             ///
             /// assert_eq!(output.get(), 3);
             /// ```
@@ -20,13 +20,13 @@ macro_rules! ops_signed {
             #[doc = concat!("# use ranch::", stringify!($name), ";")]
             #[doc = concat!("let a = ", stringify!($name), "::<1, 3>::new::<1>();")]
             #[doc = concat!("let b = ", stringify!($name), "::<-1, 3>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($name), "::<1, 6> = a.add_ranged(b);")]
+            #[doc = concat!("let output: ", stringify!($name), "::<1, 6> = a.add_ranged_to(b);")]
             ///
             /// assert_eq!(output.get(), 3);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn add_ranged<
+            pub const fn add_ranged_to<
                 Rhs: Range<$p>,
                 Out: Range<$p>,
             >(
@@ -63,13 +63,13 @@ macro_rules! ops_signed {
             #[doc = concat!("# use ranch::", stringify!($name), ";")]
             #[doc = concat!("let a = ", stringify!($name), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($name), "::<-1, 3>::new::<1>();")]
-            #[doc = concat!("let output: ", stringify!($name), "::<0, 6> = a.sub_ranged(b);")]
+            #[doc = concat!("let output: ", stringify!($name), "::<0, 6> = a.sub_ranged_to(b);")]
             ///
             /// assert_eq!(output.get(), 2);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn sub_ranged<
+            pub const fn sub_ranged_to<
                 Rhs: Range<$p>,
                 Out: Range<$p>,
             >(

@@ -30,7 +30,7 @@ where
 impl<T, R> Ranged<T, R>
 where
     T: RangeablePrimitive,
-    R: Range<T::ZeroablePrimitive>,
+    R: MultiRange<T::ZeroablePrimitive>,
 {
     /// The size of this integer type in bits.
     pub const BITS: u32 = T::BITS;
