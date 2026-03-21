@@ -207,19 +207,15 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 9>::new::<8>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<49, 81> = a.pow::<2, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<49, 81> = a.pow::<2, _>();")]
             ///
             /// assert_eq!(output, 64);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn pow_to<
-                const RHS: u32,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
-                self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+            pub const fn pow_to<const RHS: u32, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
+            {
                 let rhs = const { RangedU32::<RHS, RHS>::new::<RHS>() };
 
                 self.pow_ranged_to(rhs)

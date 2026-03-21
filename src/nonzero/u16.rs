@@ -304,44 +304,6 @@ impl<const MIN: u16, const MAX: u16> RangedNonZeroU16<MIN, MAX> {
         value.to_ranged_nonzero()
     }
 
-    /// Raise to an integer power.
-    ///
-    /// ```rust
-    /// # use ranch::{RangedNonZeroU16, RangedU32};
-    /// let a = RangedNonZeroU16::<1, 3>::new::<2>();
-    /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedNonZeroU16::<1, 27> = a.pow_ranged(b);
-    ///
-    /// assert_eq!(output.get(), 4);
-    /// ```
-    ///
-    /// Does not compile:
-    ///
-    /// ```compile_fail,E0080
-    /// # use ranch::{RangedNonZeroU16, RangedU32};
-    /// let a = RangedNonZeroU16::<1, 3>::new::<2>();
-    /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedNonZeroU16::<0, 27> = a.pow_ranged(b);
-    ///
-    /// assert_eq!(output.get(), 4);
-    /// ```
-    #[must_use = "this returns the result of the operation, \
-                  without modifying the original"]
-    pub const fn pow_ranged<
-        const RHS_MIN: u32,
-        const RHS_MAX: u32,
-        const OUTPUT_MIN: u16,
-        const OUTPUT_MAX: u16,
-    >(
-        self,
-        rhs: RangedU32<RHS_MIN, RHS_MAX>,
-    ) -> RangedNonZeroU16<OUTPUT_MIN, OUTPUT_MAX> {
-        as_repr::as_repr::<RangedU16<MIN, MAX>>(self)
-            .pow_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
-            .to_ranged_nonzero()
-            .unwrap()
-    }
-
     /// Calculate the midpoint (average) between `self` and `rhs`.
     ///
     /// ```rust

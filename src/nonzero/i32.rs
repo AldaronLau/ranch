@@ -339,42 +339,4 @@ impl<const MIN: i32, const MAX: i32> RangedNonZeroI32<MIN, MAX> {
     pub const fn is_positive(self) -> bool {
         self.get().is_positive()
     }
-
-    /// Raise to an integer power.
-    ///
-    /// ```rust
-    /// # use ranch::{RangedNonZeroI32, RangedU32};
-    /// let a = RangedNonZeroI32::<-1, 3>::new::<2>();
-    /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedNonZeroI32::<-1, 27> = a.pow_ranged(b);
-    ///
-    /// assert_eq!(output.get(), 4);
-    /// ```
-    ///
-    /// Does not compile:
-    ///
-    /// ```compile_fail,E0080
-    /// # use ranch::{RangedNonZeroI32, RangedU32};
-    /// let a = RangedNonZeroI32::<1, 3>::new::<2>();
-    /// let b = RangedU32::<2, 3>::new::<2>();
-    /// let output: RangedNonZeroI32::<0, 27> = a.pow_ranged(b);
-    ///
-    /// assert_eq!(output.get(), 4);
-    /// ```
-    #[must_use = "this returns the result of the operation, \
-                  without modifying the original"]
-    pub const fn pow_ranged<
-        const RHS_MIN: u32,
-        const RHS_MAX: u32,
-        const OUTPUT_MIN: i32,
-        const OUTPUT_MAX: i32,
-    >(
-        self,
-        rhs: RangedU32<RHS_MIN, RHS_MAX>,
-    ) -> RangedNonZeroI32<OUTPUT_MIN, OUTPUT_MAX> {
-        as_repr::as_repr::<RangedI32<MIN, MAX>>(self)
-            .pow_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
-            .to_ranged_nonzero()
-            .unwrap()
-    }
 }

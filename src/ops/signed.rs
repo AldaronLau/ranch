@@ -127,6 +127,69 @@ macro_rules! ops_signed {
 
                 Ranged::from_unchecked(self.get() * as_repr::as_repr::<$p>(rhs))
             }
+
+            /// Raise to an integer power.
+            ///
+            /// ```rust
+            /// # use ranch::*;
+            #[doc = concat!("let a = ", stringify!($name), "::<-1, 3>::new::<2>();")]
+            /// let b = RangedU32::<2, 3>::new::<2>();
+            #[doc = concat!("let output: ", stringify!($name), "::<-1, 27> = a.pow_ranged_to(b);")]
+            ///
+            /// assert_eq!(output.get(), 4);
+            /// ```
+            ///
+            /// Does not compile:
+            ///
+            /// ```compile_fail,E0080
+            /// # use ranch::*;
+            #[doc = concat!("let a = ", stringify!($name), "::<-1, 3>::new::<2>();")]
+            /// let b = RangedU32::<2, 3>::new::<2>();
+            #[doc = concat!("let output: ", stringify!($name), "::<0, 27> = a.pow_ranged_to(b);")]
+            ///
+            /// assert_eq!(output.get(), 4);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn pow_ranged_to<Rhs: Range<u32>, Out: Range<$p>>(
+                self,
+                rhs: Ranged<u32, Rhs>,
+            ) -> Ranged<$p, Out> {
+                const {
+                    if MIN.is_negative() {
+                        let min = MIN.pow(Rhs::MIN);
+                        let max = MAX.pow(Rhs::MAX);
+                        let rhs_max = if Rhs::MAX % 2 == 0 {
+                            Rhs::MAX - 1
+                        } else {
+                            Rhs::MAX
+                        };
+                        let rhs_min = if Rhs::MIN % 2 == 0 {
+                            Rhs::MIN - 1
+                        } else {
+                            Rhs::MIN
+                        };
+                        let min_min = MIN.pow(rhs_min);
+                        let min_max = MAX.pow(rhs_max);
+                        let min = if min_min < min { min_min } else { min };
+                        let min = if min_max < min { min_max } else { min };
+
+                        if min != Out::MIN {
+                            panic!("Min mismatch");
+                        } else if max != Out::MAX {
+                            panic!("Max mismatch");
+                        }
+                    } else if MIN.pow(Rhs::MIN) != Out::MIN {
+                        panic!("Min mismatch");
+                    } else if MAX.pow(Rhs::MAX) != Out::MAX {
+                        panic!("Max mismatch");
+                    }
+                }
+
+                Ranged::from_unchecked(
+                    self.get().pow(as_repr::as_repr::<u32>(rhs)),
+                )
+            }
         }
     };
 }

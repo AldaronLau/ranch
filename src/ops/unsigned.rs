@@ -107,7 +107,8 @@ macro_rules! ops_unsigned {
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
             pub const fn mul_ranged_to<Rhs: Range<$p>, Out: Range<$p>>(
-                self, rhs: Ranged<$p, Rhs>
+                self,
+                rhs: Ranged<$p, Rhs>,
             ) -> Ranged<$p, Out> {
                 const {
                     if MIN * Rhs::MIN != Out::MIN {
@@ -120,6 +121,48 @@ macro_rules! ops_unsigned {
                 }
 
                 Ranged::from_unchecked(self.get() * as_repr::as_repr::<$p>(rhs))
+            }
+
+            /// Raise to an integer power.
+            ///
+            /// ```rust
+            /// # use ranch::*;
+            #[doc = concat!("let a = ", stringify!($name), "::<1, 3>::new::<2>();")]
+            /// let b = RangedU32::<2, 3>::new::<2>();
+            #[doc = concat!("let output: ", stringify!($name), "::<1, 27> = a.pow_ranged_to(b);")]
+            ///
+            /// assert_eq!(output.get(), 4);
+            /// ```
+            ///
+            /// Does not compile:
+            ///
+            /// ```compile_fail,E0080
+            /// # use ranch::*;
+            #[doc = concat!("let a = ", stringify!($name), "::<1, 3>::new::<2>();")]
+            /// let b = RangedU32::<2, 3>::new::<2>();
+            #[doc = concat!("let output: ", stringify!($name), "::<0, 27> = a.pow_ranged_to(b);")]
+            ///
+            /// assert_eq!(output.get(), 4);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn pow_ranged_to<Rhs: Range<u32>, Out: Range<$p>>(
+                self,
+                rhs: Ranged<u32, Rhs>,
+            ) -> Ranged<$p, Out> {
+                const {
+                    if MIN.pow(Rhs::MIN) != Out::MIN {
+                        panic!("Min mismatch");
+                    }
+
+                    if MAX.pow(Rhs::MAX) != Out::MAX {
+                        panic!("Max mismatch");
+                    }
+                }
+
+                Ranged::from_unchecked(
+                    self.get().pow(as_repr::as_repr::<u32>(rhs)),
+                )
             }
         }
     };
