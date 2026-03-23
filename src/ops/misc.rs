@@ -115,7 +115,7 @@ macro_rules! impl_ops {
             #[doc = concat!("assert_eq!(b.to_full().leading_zeros().get(), ", stringify!($p), "::BITS - 7);")]
             /// ```
             pub const fn to_full(self) -> $type<{ <$p>::MIN }, { <$p>::MAX }> {
-                $type::from_unchecked(self.get())
+                Ranged::from_unchecked(self.get())
             }
 
             /// Add a number to `self`.
@@ -604,7 +604,7 @@ macro_rules! impl_ops_nonzero_unsigned {
                     unreachable!()
                 };
 
-                $type::from_unchecked(value)
+                Ranged::from_unchecked(value)
             }
 
             /// Returns true if and only if `self == (1 << k)` for some `k`.
@@ -691,7 +691,7 @@ macro_rules! impl_ops_nonzero_unsigned {
                     unreachable!()
                 };
 
-                $type::from_unchecked(value)
+                Ranged::from_unchecked(value)
             }
 
             /// Return `true` if `self` is an integer multiple of `rhs`, and
@@ -885,7 +885,7 @@ macro_rules! impl_ops_unsigned {
                     }
                 }
 
-                $type::from_unchecked(self.get().next_multiple_of(RHS))
+                Ranged::from_unchecked(self.get().next_multiple_of(RHS))
             }
 
             /// Return `true` if `self` is an integer multiple of `rhs`, and
@@ -961,7 +961,7 @@ macro_rules! impl_ops_unsigned {
                 if rhs.get() == 0 {
                     Quotient::Nan
                 } else {
-                    Quotient::Number($type::from_unchecked(self.get() % rhs.get()))
+                    Quotient::Number(Ranged::from_unchecked(self.get() % rhs.get()))
                 }
             }
 
@@ -1040,7 +1040,7 @@ macro_rules! impl_ops_unsigned {
                     }
                 }
 
-                $type::from_unchecked(self.get() % rhs.get())
+                Ranged::from_unchecked(self.get() % rhs.get())
             }
 
             /// Get the least remainder of `self (mod rhs)`.
@@ -1545,14 +1545,13 @@ macro_rules! impl_ops_signed {
                           without modifying the original"]
             pub const fn div_euclid_to<
                 const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
+                Out: Range<$p>,
             >(
                 self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
-                let rhs = const { $nonzero::new::<RHS>() };
+            ) -> Ranged<$p, Out> {
+                let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
 
-                self.div_euclid_ranged_nonzero_to::<RHS, RHS, OUTPUT_MIN, OUTPUT_MAX>(rhs)
+                self.div_euclid_ranged_nonzero_to::<_, Out>(rhs)
             }
 
             /// Perform Euclidean division.
@@ -1583,15 +1582,13 @@ macro_rules! impl_ops_signed {
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
             pub const fn div_euclid_ranged_nonzero_to<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
+                Rhs: Range<$p>,
+                Out: Range<$p>,
             >(
                 self,
-                rhs: $nonzero::<RHS_MIN, RHS_MAX>,
-            ) -> $type::<OUTPUT_MIN, OUTPUT_MAX> {
-                match self.div_euclid_ranged_to::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs.to_ranged()) {
+                rhs: Ranged<NonZero<$p>, Rhs>,
+            ) -> Ranged<$p, Out> {
+                match self.div_euclid_ranged_to::<Rhs, Out>(rhs.to_ranged()) {
                     Quotient::Number(x) => x,
                     Quotient::Nan => unreachable!(),
                 }
@@ -1624,18 +1621,19 @@ macro_rules! impl_ops_signed {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn div_euclid_ranged_to<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn div_euclid_ranged_to<Rhs: Range<$p>, Out: Range<$p>>(
                 self,
-                rhs: $type<RHS_MIN, RHS_MAX>,
-            ) -> Quotient<$type<OUTPUT_MIN, OUTPUT_MAX>> {
+                rhs: Ranged<$p, Rhs>,
+            ) -> Quotient<Ranged<$p, Out>> {
                 const {
-                    let (min_min, min_max) = (MIN.div_euclid(RHS_MIN), MIN.div_euclid(RHS_MAX));
-                    let (max_min, max_max) = (MAX.div_euclid(RHS_MIN), MAX.div_euclid(RHS_MAX));
+                    let (min_min, min_max) = (
+                        MIN.div_euclid(Rhs::MIN),
+                        MIN.div_euclid(Rhs::MAX),
+                    );
+                    let (max_min, max_max) = (
+                        MAX.div_euclid(Rhs::MIN),
+                        MAX.div_euclid(Rhs::MAX),
+                    );
                     let min = if min_min < min_max { min_min } else { min_max };
                     let min = if max_min < min { max_min } else { min };
                     let min = if max_max < min { max_max } else { min };
@@ -1643,19 +1641,23 @@ macro_rules! impl_ops_signed {
                     let max = if min_min > min { min_min } else { max };
                     let max = if min_max > min { min_max } else { max };
 
-                    if min != OUTPUT_MIN {
+                    if min != Out::MIN {
                         panic!("Min mismatch");
                     }
 
-                    if max != OUTPUT_MAX {
+                    if max != Out::MAX {
                         panic!("Max mismatch");
                     }
                 }
 
-                if rhs.get() == 0 {
+                let rhs = as_repr::as_repr::<$p>(rhs);
+
+                if rhs == 0 {
                     Quotient::Nan
                 } else {
-                    Quotient::Number($type::from_unchecked(self.get().div_euclid(rhs.get())))
+                    Quotient::Number(
+                        Ranged::from_unchecked(self.get().div_euclid(rhs)),
+                    )
                 }
             }
 
@@ -1682,48 +1684,45 @@ macro_rules! impl_ops_signed {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_ranged_to<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn rem_ranged_to<Rhs: Range<$p>, Out: Range<$p>>(
                 self,
-                rhs: $type<RHS_MIN, RHS_MAX>,
-            ) -> Quotient<$type<OUTPUT_MIN, OUTPUT_MAX>> {
+                rhs: Ranged<$p, Rhs>,
+            ) -> Quotient<Ranged<$p, Out>> {
                 const {
                     let (min, max) = match
-                        (RHS_MIN < 0, RHS_MAX > 0, MIN < 0, MAX > 0)
+                        (Rhs::MIN < 0, Rhs::MAX > 0, MIN < 0, MAX > 0)
                     {
                         (true, true, _, _)
                             | (_, _, true, true)
                             | (true, false, false, true)
                             | (false, true, true, false)
                         => {
-                            let min = RHS_MIN.abs();
-                            let max = RHS_MAX.abs();
+                            let min = Rhs::MIN.abs();
+                            let max = Rhs::MAX.abs();
                             let bounds = if max > min { max } else { min };
 
                             (-(bounds - 1), bounds - 1)
                         }
-                        (false, true, false, true) => (0, RHS_MAX - 1),
-                        (true, false, true, false) => (RHS_MIN + 1, 0),
+                        (false, true, false, true) => (0, Rhs::MAX - 1),
+                        (true, false, true, false) => (Rhs::MIN + 1, 0),
                         (false, false, _, _) | (_, _, false, false) => (0, 0),
                     };
 
-                    if min != OUTPUT_MIN {
+                    if min != Out::MIN {
                         panic!("Max mismatch");
                     }
 
-                    if max != OUTPUT_MAX {
+                    if max != Out::MAX {
                         panic!("Max mismatch");
                     }
                 }
 
-                if rhs.get() == 0 {
+                let rhs = as_repr::as_repr::<$p>(rhs);
+
+                if rhs == 0 {
                     Quotient::Nan
                 } else {
-                    Quotient::Number($type::from_unchecked(self.get() % rhs.get()))
+                    Quotient::Number(Ranged::from_unchecked(self.get() % rhs))
                 }
             }
 
@@ -1751,16 +1750,15 @@ macro_rules! impl_ops_signed {
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
             pub const fn rem_euclid_ranged_to<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
+                Rhs: Range<$p>,
                 const OUTPUT_MAX: $p,
             >(
                 self,
-                rhs: $type<RHS_MIN, RHS_MAX>,
+                rhs: Ranged<$p, Rhs>,
             ) -> Quotient<$type<0, OUTPUT_MAX>> {
                 const {
-                    let max_abs = RHS_MAX.abs();
-                    let min_abs = RHS_MIN.abs();
+                    let max_abs = Rhs::MAX.abs();
+                    let min_abs = Rhs::MIN.abs();
                     let rhs_limit = if max_abs > min_abs {
                         max_abs
                     } else {
@@ -1772,10 +1770,14 @@ macro_rules! impl_ops_signed {
                     }
                 }
 
-                if rhs.get() == 0 {
+                let rhs = as_repr::as_repr::<$p>(rhs);
+
+                if rhs == 0 {
                     Quotient::Nan
                 } else {
-                    Quotient::Number($type::from_unchecked(self.get().rem_euclid(rhs.get())))
+                    Quotient::Number(
+                        Ranged::from_unchecked(self.get().rem_euclid(rhs)),
+                    )
                 }
             }
 
@@ -1802,18 +1804,11 @@ macro_rules! impl_ops_signed {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_ranged_nonzero_to<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn rem_ranged_nonzero_to<Rhs: Range<$p>, Out: Range<$p>>(
                 self,
-                rhs: $nonzero<RHS_MIN, RHS_MAX>,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
-                match self.rem_ranged_to::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(
-                    rhs.to_ranged()
-                ) {
+                rhs: Ranged<NonZero<$p>, Rhs>,
+            ) -> Ranged<$p, Out> {
+                match self.rem_ranged_to::<Rhs, Out>(rhs.to_ranged()) {
                     Quotient::Number(n) => n,
                     Quotient::Nan => unimplemented!(),
                 }
@@ -1843,14 +1838,13 @@ macro_rules! impl_ops_signed {
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
             pub const fn rem_euclid_ranged_nonzero_to<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
+                Rhs: Range<$p>,
                 const OUTPUT_MAX: $p,
             >(
                 self,
-                rhs: $nonzero<RHS_MIN, RHS_MAX>,
+                rhs: Ranged<NonZero<$p>, Rhs>,
             ) -> $type<0, OUTPUT_MAX> {
-                match self.rem_euclid_ranged_to::<RHS_MIN, RHS_MAX, OUTPUT_MAX>(
+                match self.rem_euclid_ranged_to::<Rhs, OUTPUT_MAX>(
                     rhs.to_ranged()
                 ) {
                     Quotient::Number(n) => n,
@@ -1869,13 +1863,9 @@ macro_rules! impl_ops_signed {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_to<
-                const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
-                self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+            pub const fn rem_to<const RHS: $p, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
+            {
                 let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
 
                 self.rem_ranged_nonzero_to(rhs)
@@ -1892,10 +1882,7 @@ macro_rules! impl_ops_signed {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_euclid_to<
-                const RHS: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn rem_euclid_to<const RHS: $p, const OUTPUT_MAX: $p>(
                 self,
             ) -> $type<0, OUTPUT_MAX> {
                 let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
