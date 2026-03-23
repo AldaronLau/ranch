@@ -190,13 +190,9 @@ macro_rules! impl_ops {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn div_to<
-                const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
-                self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+            pub const fn div_to<const RHS: $p, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
+            {
                 let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
 
                 self.div_ranged_nonzero_to(rhs)
@@ -422,7 +418,7 @@ macro_rules! impl_ops {
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<1, 2> = a.div_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<1, 2> = a.div_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output.get(), 1);
             /// ```
@@ -433,28 +429,17 @@ macro_rules! impl_ops {
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<1>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.div_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.div_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output.get(), 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn div_ranged_nonzero<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn div_ranged_nonzero_to<Rhs: Range<$p>, Out: Range<$p>>(
                 self,
-                rhs: $nonzero::<RHS_MIN, RHS_MAX>,
-            ) -> $type::<OUTPUT_MIN, OUTPUT_MAX> {
-                match self.div_ranged::<
-                    RHS_MIN,
-                    RHS_MAX,
-                    OUTPUT_MIN,
-                    OUTPUT_MAX,
-                >(rhs.to_ranged())
-                {
+                rhs: Ranged<NonZero<$p>, Rhs>,
+            ) -> Ranged<$p, Out> {
+                match self.div_ranged_to::<Rhs, Out>(rhs.to_ranged()) {
                     Quotient::Number(num) => num,
                     Quotient::Nan => unreachable!(),
                 }
@@ -1159,21 +1144,17 @@ macro_rules! impl_ops_unsigned {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn div_euclid_to<
-                const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
-                self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
-                self.div_to::<RHS, OUTPUT_MIN, OUTPUT_MAX>()
+            pub const fn div_euclid_to<const RHS: $p, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
+            {
+                self.div_to::<RHS, Out>()
             }
 
             /// Perform Euclidean division.
             ///
             /// Since, for the positive integers, all common definitions of
             /// division are equal, this is exactly equal to
-            /// [`Self::div_ranged_nonzero()`].
+            /// [`Self::div_ranged_nonzero_to()`].
             ///
             /// ```rust
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
@@ -1197,22 +1178,20 @@ macro_rules! impl_ops_unsigned {
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
             pub const fn div_euclid_ranged_nonzero_to<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
+                Rhs: Range<$p>,
+                Out: Range<$p>,
             >(
                 self,
-                rhs: $nonzero::<RHS_MIN, RHS_MAX>,
-            ) -> $type::<OUTPUT_MIN, OUTPUT_MAX> {
-                self.div_ranged_nonzero::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
+                rhs: Ranged<NonZero<$p>, Rhs>,
+            ) -> Ranged<$p, Out> {
+                self.div_ranged_nonzero_to::<Rhs, Out>(rhs)
             }
 
             /// Divide `self` by a number.
             ///
             /// Since, for the positive integers, all common definitions of
             /// division are equal, this is exactly equal to
-            /// [`Self::div_ranged()`].
+            /// [`Self::div_ranged_to()`].
             ///
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
@@ -1235,16 +1214,11 @@ macro_rules! impl_ops_unsigned {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn div_euclid_ranged_to<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn div_euclid_ranged_to<Rhs: Range<$p>, Out: Range<$p>>(
                 self,
-                rhs: $type<RHS_MIN, RHS_MAX>,
-            ) -> Quotient<$type<OUTPUT_MIN, OUTPUT_MAX>> {
-                self.div_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
+                rhs: Ranged<$p, Rhs>,
+            ) -> Quotient<Ranged<$p, Out>> {
+                self.div_ranged_to::<Rhs, Out>(rhs)
             }
 
             /// Checked integer division.
@@ -1585,7 +1559,7 @@ macro_rules! impl_ops_signed {
             ///
             /// Since, for the positive integers, all common definitions of
             /// division are equal, this is exactly equal to
-            /// [`Self::div_ranged_nonzero()`].
+            /// [`Self::div_ranged_nonzero_to()`].
             ///
             /// ```rust
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
@@ -1627,7 +1601,7 @@ macro_rules! impl_ops_signed {
             ///
             /// Since, for the positive integers, all common definitions of
             /// division are equal, this is exactly equal to
-            /// [`Self::div_ranged()`].
+            /// [`Self::div_ranged_to()`].
             ///
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]

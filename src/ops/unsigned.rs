@@ -164,6 +164,52 @@ macro_rules! ops_unsigned {
                     self.get().pow(as_repr::as_repr::<u32>(rhs)),
                 )
             }
+
+            /// Divide `self` by a number.
+            ///
+            /// ```rust
+            #[doc = concat!("# use ranch::", stringify!($name), ";")]
+            #[doc = concat!("let a = ", stringify!($name), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($name), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($name), "::<1, 2> = a.div_ranged_to(b).number().unwrap();")]
+            ///
+            /// assert_eq!(output.get(), 1);
+            /// ```
+            ///
+            /// Does not compile:
+            ///
+            /// ```compile_fail,E0080
+            #[doc = concat!("# use ranch::", stringify!($name), ";")]
+            #[doc = concat!("let a = ", stringify!($name), "::<2, 5>::new::<3>();")]
+            #[doc = concat!("let b = ", stringify!($name), "::<1, 2>::new::<2>();")]
+            #[doc = concat!("let output: ", stringify!($name), "::<0, 2> = a.div_ranged_to(b).number().unwrap();")]
+            ///
+            /// assert_eq!(output.get(), 1);
+            /// ```
+            #[must_use = "this returns the result of the operation, \
+                          without modifying the original"]
+            pub const fn div_ranged_to<Rhs: Range<$p>, Out: Range<$p>>(
+                self,
+                rhs: Ranged<$p, Rhs>,
+            ) -> Quotient<Ranged<$p, Out>> {
+                const {
+                    if MIN / Rhs::MAX != Out::MIN {
+                        panic!("Min mismatch");
+                    }
+
+                    if MAX / Rhs::MAX != Out::MAX {
+                        panic!("Max mismatch");
+                    }
+                }
+
+                let rhs = as_repr::as_repr::<$p>(rhs);
+
+                if rhs == 0 {
+                    Quotient::Nan
+                } else {
+                    Quotient::Number(Ranged::from_unchecked(self.get() / rhs))
+                }
+            }
         }
     };
 }

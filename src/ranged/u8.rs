@@ -384,55 +384,6 @@ impl<const MIN: u8, const MAX: u8> RangedU8<MIN, MAX> {
 
         value
     }
-
-    /// Divide `self` by a number.
-    ///
-    /// ```rust
-    /// # use ranch::RangedU8;
-    /// let a = RangedU8::<2, 5>::new::<3>();
-    /// let b = RangedU8::<1, 2>::new::<2>();
-    /// let output: RangedU8::<1, 2> = a.div_ranged(b).number().unwrap();
-    ///
-    /// assert_eq!(output.get(), 1);
-    /// ```
-    ///
-    /// Does not compile:
-    //
-    /// ```compile_fail,E0080
-    /// # use ranch::RangedU8;
-    /// let a = RangedU8::<2, 5>::new::<3>();
-    /// let b = RangedU8::<1, 2>::new::<1>();
-    /// let output: RangedU8::<0, 2> = a.div_ranged(b).number().unwrap();
-    ///
-    /// assert_eq!(output.get(), 1);
-    /// ```
-    #[must_use = "this returns the result of the operation, \
-                  without modifying the original"]
-    pub const fn div_ranged<
-        const RHS_MIN: u8,
-        const RHS_MAX: u8,
-        const OUTPUT_MIN: u8,
-        const OUTPUT_MAX: u8,
-    >(
-        self,
-        rhs: RangedU8<RHS_MIN, RHS_MAX>,
-    ) -> Quotient<RangedU8<OUTPUT_MIN, OUTPUT_MAX>> {
-        const {
-            if MIN / RHS_MAX != OUTPUT_MIN {
-                panic!("Min mismatch");
-            }
-
-            if MAX / RHS_MAX != OUTPUT_MAX {
-                panic!("Max mismatch");
-            }
-        }
-
-        if rhs.get() == 0 {
-            Quotient::Nan
-        } else {
-            Quotient::Number(RangedU8::from_unchecked(self.get() / rhs.get()))
-        }
-    }
 }
 
 impl<const MIN: u8, const MAX: u8> core::str::FromStr for RangedU8<MIN, MAX> {

@@ -443,64 +443,6 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
 
         value
     }
-
-    /// Divide `self` by a number.
-    ///
-    /// ```rust
-    /// # use ranch::RangedI64;
-    /// let a = RangedI64::<2, 5>::new::<3>();
-    /// let b = RangedI64::<1, 2>::new::<2>();
-    /// let output: RangedI64::<1, 2> = a.div_ranged(b).number().unwrap();
-    ///
-    /// assert_eq!(output.get(), 1);
-    /// ```
-    ///
-    /// Does not compile:
-    //
-    /// ```compile_fail,E0080
-    /// # use ranch::RangedI64;
-    /// let a = RangedI64::<2, 5>::new::<3>();
-    /// let b = RangedI64::<1, 2>::new::<1>();
-    /// let output: RangedI64::<0, 2> = a.div_ranged(b).number().unwrap();
-    ///
-    /// assert_eq!(output.get(), 1);
-    /// ```
-    #[must_use = "this returns the result of the operation, \
-                  without modifying the original"]
-    pub const fn div_ranged<
-        const RHS_MIN: i64,
-        const RHS_MAX: i64,
-        const OUTPUT_MIN: i64,
-        const OUTPUT_MAX: i64,
-    >(
-        self,
-        rhs: RangedI64<RHS_MIN, RHS_MAX>,
-    ) -> Quotient<RangedI64<OUTPUT_MIN, OUTPUT_MAX>> {
-        const {
-            let (min_min, min_max) = (MIN / RHS_MIN, MIN / RHS_MAX);
-            let (max_min, max_max) = (MAX / RHS_MIN, MAX / RHS_MAX);
-            let min = if min_min < min_max { min_min } else { min_max };
-            let min = if max_min < min { max_min } else { min };
-            let min = if max_max < min { max_max } else { min };
-            let max = if max_min > max_max { max_min } else { max_max };
-            let max = if min_min > min { min_min } else { max };
-            let max = if min_max > min { min_max } else { max };
-
-            if min != OUTPUT_MIN {
-                panic!("Min mismatch");
-            }
-
-            if max != OUTPUT_MAX {
-                panic!("Max mismatch");
-            }
-        }
-
-        if rhs.get() == 0 {
-            Quotient::Nan
-        } else {
-            Quotient::Number(RangedI64::from_unchecked(self.get() / rhs.get()))
-        }
-    }
 }
 
 impl<const MIN: i64, const MAX: i64> core::str::FromStr
