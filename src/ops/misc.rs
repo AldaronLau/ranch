@@ -169,11 +169,11 @@ macro_rules! impl_ops {
                           without modifying the original"]
             pub const fn mul_to<
                 const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
+                const OUT_MIN: $p,
+                const OUT_MAX: $p,
             >(
                 self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+            ) -> $type<OUT_MIN, OUT_MAX> {
                 let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
 
                 self.mul_ranged_to(rhs)
@@ -238,9 +238,9 @@ macro_rules! impl_ops {
                           without modifying the original"]
             pub const fn min_to<
                 const OTHER: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(self) -> $type<OUTPUT_MIN, OUTPUT_MAX>
+                const OUT_MIN: $p,
+                const OUT_MAX: $p,
+            >(self) -> $type<OUT_MIN, OUT_MAX>
             {
                 self.min_ranged_to($type::<OTHER, OTHER>::new::<OTHER>())
             }
@@ -266,9 +266,9 @@ macro_rules! impl_ops {
                           without modifying the original"]
             pub const fn max_to<
                 const OTHER: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(self) -> $type<OUTPUT_MIN, OUTPUT_MAX>
+                const OUT_MIN: $p,
+                const OUT_MAX: $p,
+            >(self) -> $type<OUT_MIN, OUT_MAX>
             {
                 self.max_ranged_to($type::<OTHER, OTHER>::new::<OTHER>())
             }
@@ -287,11 +287,11 @@ macro_rules! impl_ops {
             pub const fn clamp_to<
                 const TO_MIN: $p,
                 const TO_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p
+                const OUT_MIN: $p,
+                const OUT_MAX: $p
             >(
                 self
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX>
+            ) -> $type<OUT_MIN, OUT_MAX>
             {
                 self.clamp_ranged_to(
                     $type::<TO_MIN, TO_MIN>::new::<TO_MIN>(),
@@ -947,13 +947,13 @@ macro_rules! impl_ops_unsigned {
             pub const fn rem_ranged_to<
                 const RHS_MIN: $p,
                 const RHS_MAX: $p,
-                const OUTPUT_MAX: $p,
+                const OUT_MAX: $p,
             >(
                 self,
                 rhs: $type<RHS_MIN, RHS_MAX>,
-            ) -> Quotient<$type<0, OUTPUT_MAX>> {
+            ) -> Quotient<$type<0, OUT_MAX>> {
                 const {
-                    if OUTPUT_MAX != RHS_MAX - 1 {
+                    if OUT_MAX != RHS_MAX - 1 {
                         panic!("Max mismatch");
                     }
                 }
@@ -995,12 +995,12 @@ macro_rules! impl_ops_unsigned {
             pub const fn rem_euclid_ranged_to<
                 const RHS_MIN: $p,
                 const RHS_MAX: $p,
-                const OUTPUT_MAX: $p,
+                const OUT_MAX: $p,
             >(
                 self,
                 rhs: $type<RHS_MIN, RHS_MAX>,
-            ) -> Quotient<$type<0, OUTPUT_MAX>> {
-                self.rem_ranged_to::<RHS_MIN, RHS_MAX, OUTPUT_MAX>(rhs)
+            ) -> Quotient<$type<0, OUT_MAX>> {
+                self.rem_ranged_to::<RHS_MIN, RHS_MAX, OUT_MAX>(rhs)
             }
 
             /// Get the remainder from dividing `self` by a non-zero number.
@@ -1029,13 +1029,13 @@ macro_rules! impl_ops_unsigned {
             pub const fn rem_ranged_nonzero_to<
                 const RHS_MIN: $p,
                 const RHS_MAX: $p,
-                const OUTPUT_MAX: $p,
+                const OUT_MAX: $p,
             >(
                 self,
                 rhs: $nonzero<RHS_MIN, RHS_MAX>,
-            ) -> $type<0, OUTPUT_MAX> {
+            ) -> $type<0, OUT_MAX> {
                 const {
-                    if OUTPUT_MAX != RHS_MAX - 1 {
+                    if OUT_MAX != RHS_MAX - 1 {
                         panic!("Max mismatch");
                     }
                 }
@@ -1073,12 +1073,12 @@ macro_rules! impl_ops_unsigned {
             pub const fn rem_euclid_ranged_nonzero_to<
                 const RHS_MIN: $p,
                 const RHS_MAX: $p,
-                const OUTPUT_MAX: $p,
+                const OUT_MAX: $p,
             >(
                 self,
                 rhs: $nonzero<RHS_MIN, RHS_MAX>,
-            ) -> $type<0, OUTPUT_MAX> {
-                self.rem_ranged_nonzero_to::<RHS_MIN, RHS_MAX, OUTPUT_MAX>(rhs)
+            ) -> $type<0, OUT_MAX> {
+                self.rem_ranged_nonzero_to::<RHS_MIN, RHS_MAX, OUT_MAX>(rhs)
             }
 
             /// Get the least remainder of `self (mod rhs)`.
@@ -1094,10 +1094,10 @@ macro_rules! impl_ops_unsigned {
                           without modifying the original"]
             pub const fn rem_to<
                 const RHS: $p,
-                const OUTPUT_MAX: $p,
+                const OUT_MAX: $p,
             >(
                 self,
-            ) -> $type<0, OUTPUT_MAX> {
+            ) -> $type<0, OUT_MAX> {
                 let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
 
                 self.rem_ranged_nonzero_to(rhs)
@@ -1120,10 +1120,10 @@ macro_rules! impl_ops_unsigned {
                           without modifying the original"]
             pub const fn rem_euclid_to<
                 const RHS: $p,
-                const OUTPUT_MAX: $p,
+                const OUT_MAX: $p,
             >(
                 self,
-            ) -> $type<0, OUTPUT_MAX> {
+            ) -> $type<0, OUT_MAX> {
                 let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
 
                 self.rem_euclid_ranged_nonzero_to(rhs)
@@ -1751,11 +1751,11 @@ macro_rules! impl_ops_signed {
                           without modifying the original"]
             pub const fn rem_euclid_ranged_to<
                 Rhs: Range<$p>,
-                const OUTPUT_MAX: $p,
+                const OUT_MAX: $p,
             >(
                 self,
                 rhs: Ranged<$p, Rhs>,
-            ) -> Quotient<$type<0, OUTPUT_MAX>> {
+            ) -> Quotient<$type<0, OUT_MAX>> {
                 const {
                     let max_abs = Rhs::MAX.abs();
                     let min_abs = Rhs::MIN.abs();
@@ -1765,7 +1765,7 @@ macro_rules! impl_ops_signed {
                         min_abs
                     };
 
-                    if OUTPUT_MAX != rhs_limit - 1 {
+                    if OUT_MAX != rhs_limit - 1 {
                         panic!("Max mismatch");
                     }
                 }
@@ -1839,12 +1839,12 @@ macro_rules! impl_ops_signed {
                           without modifying the original"]
             pub const fn rem_euclid_ranged_nonzero_to<
                 Rhs: Range<$p>,
-                const OUTPUT_MAX: $p,
+                const OUT_MAX: $p,
             >(
                 self,
                 rhs: Ranged<NonZero<$p>, Rhs>,
-            ) -> $type<0, OUTPUT_MAX> {
-                match self.rem_euclid_ranged_to::<Rhs, OUTPUT_MAX>(
+            ) -> $type<0, OUT_MAX> {
+                match self.rem_euclid_ranged_to::<Rhs, OUT_MAX>(
                     rhs.to_ranged()
                 ) {
                     Quotient::Number(n) => n,
@@ -1882,9 +1882,9 @@ macro_rules! impl_ops_signed {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_euclid_to<const RHS: $p, const OUTPUT_MAX: $p>(
+            pub const fn rem_euclid_to<const RHS: $p, const OUT_MAX: $p>(
                 self,
-            ) -> $type<0, OUTPUT_MAX> {
+            ) -> $type<0, OUT_MAX> {
                 let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
 
                 self.rem_euclid_ranged_nonzero_to(rhs)
