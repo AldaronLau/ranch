@@ -167,13 +167,9 @@ macro_rules! impl_ops {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn mul_to<
-                const RHS: $p,
-                const OUT_MIN: $p,
-                const OUT_MAX: $p,
-            >(
-                self,
-            ) -> $type<OUT_MIN, OUT_MAX> {
+            pub const fn mul_to<const RHS: $p, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
+            {
                 let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
 
                 self.mul_ranged_to(rhs)
@@ -236,11 +232,8 @@ macro_rules! impl_ops {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn min_to<
-                const OTHER: $p,
-                const OUT_MIN: $p,
-                const OUT_MAX: $p,
-            >(self) -> $type<OUT_MIN, OUT_MAX>
+            pub const fn min_to<const OTHER: $p, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
             {
                 self.min_ranged_to($type::<OTHER, OTHER>::new::<OTHER>())
             }
@@ -264,11 +257,8 @@ macro_rules! impl_ops {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn max_to<
-                const OTHER: $p,
-                const OUT_MIN: $p,
-                const OUT_MAX: $p,
-            >(self) -> $type<OUT_MIN, OUT_MAX>
+            pub const fn max_to<const OTHER: $p, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
             {
                 self.max_ranged_to($type::<OTHER, OTHER>::new::<OTHER>())
             }
@@ -284,19 +274,36 @@ macro_rules! impl_ops {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn clamp_to<
-                const TO_MIN: $p,
-                const TO_MAX: $p,
-                const OUT_MIN: $p,
-                const OUT_MAX: $p
-            >(
-                self
-            ) -> $type<OUT_MIN, OUT_MAX>
+            pub const fn clamp_to<To: Range<$p>, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
             {
-                self.clamp_ranged_to(
-                    $type::<TO_MIN, TO_MIN>::new::<TO_MIN>(),
-                    $type::<TO_MAX, TO_MAX>::new::<TO_MAX>(),
-                )
+                let (min, max) = const {
+                    let min = if MIN > To::MIN { MIN } else { To::MIN };
+                    let max = if MAX < To::MAX { MAX } else { To::MAX };
+
+                    if Out::MIN != min {
+                        panic!("Mimatched minimum")
+                    }
+
+                    if Out::MAX != max {
+                        panic!("Mimatched maximum")
+                    }
+
+                    if min < max {
+                        panic!("min > max");
+                    }
+
+                    (min, max)
+                };
+                let this = self.get();
+
+                Ranged::from_unchecked(if this < min {
+                    min
+                } else if this > max {
+                    max
+                } else {
+                    this
+                })
             }
 
             /// Checked integer division by a non-zero number.
@@ -583,19 +590,16 @@ macro_rules! impl_ops_nonzero_unsigned {
             /// assert_eq!(d.next_power_of_two::<1, 64>().get(), 64);
             /// ```
             #[must_use]
-            pub const fn next_power_of_two_to<
-                const OUT_MIN: $p,
-                const OUT_MAX: $p,
-            >(
-                self,
-            ) -> $type::<OUT_MIN, OUT_MAX> {
+            pub const fn next_power_of_two_to<Out: Range<$p>>(self)
+                -> Ranged<NonZero<$p>, Out>
+            {
                 const {
-                    if OUT_MIN != MIN.checked_next_power_of_two().unwrap() {
-                        panic!("mismatched OUT_MIN")
+                    if Out::MIN != MIN.checked_next_power_of_two().unwrap() {
+                        panic!("mismatched Out::MIN")
                     }
 
-                    if OUT_MAX != MAX.checked_next_power_of_two().unwrap() {
-                        panic!("mismatched OUT_MAX")
+                    if Out::MAX != MAX.checked_next_power_of_two().unwrap() {
+                        panic!("mismatched Out::MAX")
                     }
                 }
 
@@ -669,20 +673,16 @@ macro_rules! impl_ops_nonzero_unsigned {
             /// assert_eq!(c.next_multiple_of_to::<8, 8, 40>().get(), 40);
             /// ```
             #[must_use]
-            pub const fn next_multiple_of_to<
-                const RHS: $p,
-                const OUT_MIN: $p,
-                const OUT_MAX: $p,
-            >(
+            pub const fn next_multiple_of_to<const RHS: $p, Out: Range<$p>>(
                 self,
-            ) -> $type<OUT_MIN, OUT_MAX> {
+            ) -> Ranged<NonZero<$p>, Out> {
                 const {
-                    if OUT_MIN != MIN.next_multiple_of(RHS) {
-                        panic!("mismatched OUT_MIN")
+                    if Out::MIN != MIN.next_multiple_of(RHS) {
+                        panic!("mismatched Out::MIN")
                     }
 
-                    if OUT_MAX != MAX.next_multiple_of(RHS) {
-                        panic!("mismatched OUT_MAX")
+                    if Out::MAX != MAX.next_multiple_of(RHS) {
+                        panic!("mismatched Out::MAX")
                     }
                 }
 
@@ -777,19 +777,16 @@ macro_rules! impl_ops_unsigned {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn next_power_of_two_to<
-                const OUT_MIN: $p,
-                const OUT_MAX: $p,
-            >(
-                self,
-            ) -> $nonzero<OUT_MIN, OUT_MAX> {
+            pub const fn next_power_of_two_to<Out: Range<$p>>(self)
+                -> Ranged<NonZero<$p>, Out>
+            {
                 const {
-                    if OUT_MIN != MIN.checked_next_power_of_two().unwrap() {
-                        panic!("mismatched OUT_MIN")
+                    if Out::MIN != MIN.checked_next_power_of_two().unwrap() {
+                        panic!("mismatched Out::MIN")
                     }
 
-                    if OUT_MAX != MAX.checked_next_power_of_two().unwrap() {
-                        panic!("mismatched OUT_MAX")
+                    if Out::MAX != MAX.checked_next_power_of_two().unwrap() {
+                        panic!("mismatched Out::MAX")
                     }
                 }
 
@@ -798,7 +795,7 @@ macro_rules! impl_ops_unsigned {
                     unreachable!()
                 };
 
-                $nonzero::from_unchecked(value)
+                Ranged::from_unchecked(value)
             }
 
             /// Returns true if and only if `self == (1 << k)` for some `k`.
@@ -868,20 +865,16 @@ macro_rules! impl_ops_unsigned {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn next_multiple_of_to<
-                const RHS: $p,
-                const OUT_MIN: $p,
-                const OUT_MAX: $p,
-            >(
+            pub const fn next_multiple_of_to<const RHS: $p, Out: Range<$p>>(
                 self,
-            ) -> $type<OUT_MIN, OUT_MAX> {
+            ) -> Ranged<$p, Out> {
                 const {
-                    if OUT_MIN != MIN.next_multiple_of(RHS) {
-                        panic!("mismatched OUT_MIN")
+                    if Out::MIN != MIN.next_multiple_of(RHS) {
+                        panic!("mismatched Out::MIN")
                     }
 
-                    if OUT_MAX != MAX.next_multiple_of(RHS) {
-                        panic!("mismatched OUT_MAX")
+                    if Out::MAX != MAX.next_multiple_of(RHS) {
+                        panic!("mismatched Out::MAX")
                     }
                 }
 
@@ -944,24 +937,22 @@ macro_rules! impl_ops_unsigned {
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_ranged_to<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUT_MAX: $p,
-            >(
+            pub const fn rem_ranged_to<Rhs: Range<$p>, const OUT_MAX: $p>(
                 self,
-                rhs: $type<RHS_MIN, RHS_MAX>,
+                rhs: Ranged<$p, Rhs>,
             ) -> Quotient<$type<0, OUT_MAX>> {
                 const {
-                    if OUT_MAX != RHS_MAX - 1 {
+                    if OUT_MAX != Rhs::MAX - 1 {
                         panic!("Max mismatch");
                     }
                 }
 
-                if rhs.get() == 0 {
+                let rhs = as_repr::as_repr::<$p>(rhs);
+
+                if rhs == 0 {
                     Quotient::Nan
                 } else {
-                    Quotient::Number(Ranged::from_unchecked(self.get() % rhs.get()))
+                    Quotient::Number(Ranged::from_unchecked(self.get() % rhs))
                 }
             }
 
@@ -993,14 +984,13 @@ macro_rules! impl_ops_unsigned {
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
             pub const fn rem_euclid_ranged_to<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
+                Rhs: Range<$p>,
                 const OUT_MAX: $p,
             >(
                 self,
-                rhs: $type<RHS_MIN, RHS_MAX>,
+                rhs: Ranged<$p, Rhs>,
             ) -> Quotient<$type<0, OUT_MAX>> {
-                self.rem_ranged_to::<RHS_MIN, RHS_MAX, OUT_MAX>(rhs)
+                self.rem_ranged_to::<Rhs, OUT_MAX>(rhs)
             }
 
             /// Get the remainder from dividing `self` by a non-zero number.
@@ -1027,20 +1017,21 @@ macro_rules! impl_ops_unsigned {
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
             pub const fn rem_ranged_nonzero_to<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
+                Rhs: Range<$p>,
                 const OUT_MAX: $p,
             >(
                 self,
-                rhs: $nonzero<RHS_MIN, RHS_MAX>,
+                rhs: Ranged<NonZero<$p>, Rhs>,
             ) -> $type<0, OUT_MAX> {
                 const {
-                    if OUT_MAX != RHS_MAX - 1 {
+                    if OUT_MAX != Rhs::MAX - 1 {
                         panic!("Max mismatch");
                     }
                 }
 
-                Ranged::from_unchecked(self.get() % rhs.get())
+                let rhs = as_repr::as_repr::<$p>(rhs);
+
+                Ranged::from_unchecked(self.get() % rhs)
             }
 
             /// Get the least remainder of `self (mod rhs)`.
@@ -1071,14 +1062,13 @@ macro_rules! impl_ops_unsigned {
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
             pub const fn rem_euclid_ranged_nonzero_to<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
+                Rhs: Range<$p>,
                 const OUT_MAX: $p,
             >(
                 self,
-                rhs: $nonzero<RHS_MIN, RHS_MAX>,
+                rhs: Ranged<NonZero<$p>, Rhs>,
             ) -> $type<0, OUT_MAX> {
-                self.rem_ranged_nonzero_to::<RHS_MIN, RHS_MAX, OUT_MAX>(rhs)
+                self.rem_ranged_nonzero_to::<Rhs, OUT_MAX>(rhs)
             }
 
             /// Get the least remainder of `self (mod rhs)`.
