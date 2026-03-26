@@ -268,42 +268,21 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<5, 10>::new::<7>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<8, 10> = a.clamp::<8, 12, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<8, 10> = a.clamp_to::<8, 12, _>();")]
             ///
             /// assert_eq!(output, 8);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn clamp_to<To: Range<$p>, Out: Range<$p>>(self)
-                -> Ranged<$p, Out>
-            {
-                let (min, max) = const {
-                    let min = if MIN > To::MIN { MIN } else { To::MIN };
-                    let max = if MAX < To::MAX { MAX } else { To::MAX };
-
-                    if Out::MIN != min {
-                        panic!("Mimatched minimum")
-                    }
-
-                    if Out::MAX != max {
-                        panic!("Mimatched maximum")
-                    }
-
-                    if min < max {
-                        panic!("min > max");
-                    }
-
-                    (min, max)
-                };
-                let this = self.get();
-
-                Ranged::from_unchecked(if this < min {
-                    min
-                } else if this > max {
-                    max
-                } else {
-                    this
-                })
+            pub const fn clamp_to<
+                const TO_MIN: $p,
+                const TO_MAX: $p,
+                Out: Range<$p>,
+            >(self) -> Ranged<$p, Out> {
+                self.clamp_ranged_to(
+                    $type::<TO_MIN, TO_MIN>::new::<TO_MIN>(),
+                    $type::<TO_MAX, TO_MAX>::new::<TO_MAX>(),
+                )
             }
 
             /// Checked integer division by a non-zero number.
