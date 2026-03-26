@@ -1,0 +1,61 @@
+use core::cmp::Ordering;
+
+use as_repr::AsRepr;
+
+use crate::{
+    cast::as_primitive::Primitive,
+    multirange::{MultiRange, Ranged},
+    num::rangeable_primitive::RangeablePrimitive,
+};
+
+impl<P, R> Ord for Ranged<P, R>
+where
+    P: RangeablePrimitive,
+    P::ZeroablePrimitive: Primitive,
+    R: MultiRange<P::ZeroablePrimitive>,
+{
+    fn cmp(&self, other: &Self) -> Ordering {
+        let this: P = as_repr::as_repr(*self);
+        let other: P = as_repr::as_repr(*other);
+
+        this.cmp(&other)
+    }
+}
+
+impl<P, R, T> PartialOrd<T> for Ranged<P, R>
+where
+    P: RangeablePrimitive,
+    R: MultiRange<P::ZeroablePrimitive>,
+    T: AsRepr<P::ZeroablePrimitive> + Copy + Clone,
+{
+    fn partial_cmp(&self, other: &T) -> Option<Ordering> {
+        let this: P = as_repr::as_repr(*self);
+        let this: P::ZeroablePrimitive = as_repr::as_repr(this);
+        let other: P::ZeroablePrimitive = as_repr::as_repr(*other);
+
+        this.partial_cmp(&other)
+    }
+}
+
+impl<P, R> Eq for Ranged<P, R>
+where
+    P: RangeablePrimitive,
+    P::ZeroablePrimitive: Primitive,
+    R: MultiRange<P::ZeroablePrimitive>,
+{
+}
+
+impl<P, R, T> PartialEq<T> for Ranged<P, R>
+where
+    P: RangeablePrimitive,
+    R: MultiRange<P::ZeroablePrimitive>,
+    T: AsRepr<P::ZeroablePrimitive> + Copy + Clone,
+{
+    fn eq(&self, other: &T) -> bool {
+        let this: P = as_repr::as_repr(*self);
+        let this: P::ZeroablePrimitive = as_repr::as_repr(this);
+        let other: P::ZeroablePrimitive = as_repr::as_repr(*other);
+
+        this.eq(&other)
+    }
+}

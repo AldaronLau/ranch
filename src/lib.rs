@@ -101,16 +101,19 @@
 //! range, but ranch will check your work and tell you if you're wrong.
 //!
 //! ```rust
-//! # use ranch::RangedI32;
+//! # use ranch::{RangedI32, range::RangeI32};
 //! assert_eq!(
-//!     RangedI32::<2, 7>::new::<2>().add::<5, 7, 12>(),
+//!     RangedI32::<2, 7>::new::<2>().add_to::<5, RangeI32<7, 12>>(),
 //!     RangedI32::<7, 12>::new::<7>(),
 //! );
 //! assert_eq!(
-//!     RangedI32::<2, 7>::new::<2>().add::<6, 8, 13>(),
+//!     RangedI32::<2, 7>::new::<2>().add_to::<6, RangeI32<8, 13>>(),
 //!     RangedI32::<8, 13>::new::<8>(),
 //! );
 //! ```
+//!
+//! **Note:** After [`feature(generic_const_exprs)`] stabilizes, new functions
+//! without the `_to` suffix will remove the generic for the return range.
 //!
 //! ## Ranged
 //!
@@ -121,13 +124,16 @@
 //! ```rust
 //! # use ranch::RangedI32;
 //! let a: RangedI32<8, 14> = RangedI32::<2, 7>::new::<2>()
-//!     .add_ranged(RangedI32::<6, 7>::new::<6>());
+//!     .add_ranged_to(RangedI32::<6, 7>::new::<6>());
 //! let b: RangedI32<8, 14> = RangedI32::<2, 7>::new::<2>()
-//!     .add_ranged(RangedI32::<6, 7>::new::<7>());
+//!     .add_ranged_to(RangedI32::<6, 7>::new::<7>());
 //!
 //! assert_eq!(a, 8);
 //! assert_eq!(b, 9);
 //! ```
+//!
+//! **Note:** After [`feature(generic_const_exprs)`] stabilizes, new functions
+//! without the `_to` suffix will remove the generic for the return range.
 //!
 //! # Indexing arrays
 //!
@@ -159,6 +165,7 @@
 //! [at compile time]: RangedI32::new()
 //! [`Serialize`]: serde_core::Serialize
 //! [`Deserialize`]: serde_core::Deserialize
+//! [`feature(generic_const_exprs)`]: https://github.com/rust-lang/rust/issues/76560
 
 #![cfg(feature = "full")]
 #![doc(
@@ -251,6 +258,15 @@ mod num {
     pub(super) mod ranged;
 }
 
+mod ops {
+    mod cmp;
+    mod misc;
+    mod nonzero_signed;
+    mod nonzero_unsigned;
+    mod signed;
+    mod unsigned;
+}
+
 pub mod ascii;
 mod assertions;
 mod assign;
@@ -265,7 +281,6 @@ mod impl_ascii;
 mod index;
 pub mod multirange;
 mod neg;
-mod ops;
 mod ord;
 pub mod parsing;
 mod quotient;
@@ -273,6 +288,7 @@ mod random;
 pub mod range;
 mod shl;
 mod shr;
+pub mod types;
 pub mod unit;
 
 pub use self::{

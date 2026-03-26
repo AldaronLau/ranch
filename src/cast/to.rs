@@ -17,7 +17,10 @@ macro_rules! to {
     ($nonzero:ident, $type:ident, $p:ty, $f:ty, $g:ty) => {
         impl IsNonZero for NonZero<$p> {}
 
-        impl<const MIN: $p, const MAX: $p> $nonzero<MIN, MAX> {
+        impl<Rn> Ranged<NonZero<$p>, Rn>
+        where
+            Rn: Range<$p>
+        {
             /// Convert to a new [`Ranged`] type, optionally expanding the
             /// range.
             ///
@@ -53,10 +56,10 @@ macro_rules! to {
             where
                 T: RangeablePrimitive<ZeroablePrimitive = T> + Cmp,
                 R: Range<T>,
-                $type<MIN, MAX>: AsPrimitive<T>,
+                Ranged<$p, Rn>: AsPrimitive<T>,
                 Ranged<T, R>: AsPrimitive<$p>,
             {
-                let ranged: $type<MIN, MAX> = as_repr::as_repr(self);
+                let ranged: Ranged<$p, Rn> = as_repr::as_repr(self);
 
                 ranged.to_ranged()
             }
@@ -99,11 +102,11 @@ macro_rules! to {
                     RangeablePrimitive<ZeroablePrimitive = T::ZeroablePrimitive>
                     + Cmp,
                 R: Range<T::ZeroablePrimitive>,
-                $type<MIN, MAX>: AsPrimitive<T::ZeroablePrimitive>,
+                Ranged<$p, Rn>: AsPrimitive<T::ZeroablePrimitive>,
                 Ranged<T::ZeroablePrimitive, R>: AsPrimitive<$p>,
                 Ranged<T::ZeroablePrimitive, R>: AsRepr<Option<Ranged<T, R>>>,
             {
-                let ranged: $type<MIN, MAX> = as_repr::as_repr(self);
+                let ranged: Ranged<$p, Rn> = as_repr::as_repr(self);
                 let Some(ranged) = ranged.to_ranged_nonzero() else {
                     unreachable!()
                 };
@@ -112,7 +115,10 @@ macro_rules! to {
             }
         }
 
-        impl<const MIN: $p, const MAX: $p> $type<MIN, MAX> {
+        impl<Rn> Ranged<$p, Rn>
+        where
+            Rn: Range<$p>
+        {
             /// Convert to a new [`Ranged`] type, optionally expanding the
             /// range.
             ///
@@ -181,11 +187,11 @@ macro_rules! to {
                             Ranged::<T, R>::MAX,
                         );
 
-                        if cmp::gt(min, MIN) {
+                        if cmp::gt(min, Rn::MIN) {
                             panic!("minimum must be lower or match");
                         }
 
-                        if cmp::lt(max, MAX) {
+                        if cmp::lt(max, Rn::MAX) {
                             panic!("maximum must be higher or match");
                         }
                     } else {
@@ -276,14 +282,20 @@ macro_rules! to {
                             Ranged::<T::ZeroablePrimitive, R>::MAX,
                         );
 
-                        if cmp::gt(min, MIN) && MIN != 0 && min - 1 != 0 {
+                        if cmp::gt(min, Rn::MIN)
+                            && Rn::MIN != 0
+                            && min - 1 != 0
+                        {
                             panic!(
                                 "minimum must be lower or match or exclude \
                                  zero",
                             );
                         }
 
-                        if cmp::lt(max, MAX) && MAX != 0 && max + 1 != 0 {
+                        if cmp::lt(max, Rn::MAX)
+                            && Rn::MAX != 0
+                            && max + 1 != 0
+                        {
                             panic!(
                                 "maximum must be higher or match or exclude \
                                  zero",
@@ -299,7 +311,7 @@ macro_rules! to {
                         );
 
                         if cmp::gt(R::MIN, min)
-                            && MIN != 0
+                            && Rn::MIN != 0
                             && !cmp::is_one(R::MIN)
                         {
                             panic!(
@@ -309,7 +321,7 @@ macro_rules! to {
                         }
 
                         if cmp::lt(R::MAX, max)
-                            && MAX != 0
+                            && Rn::MAX != 0
                             && !cmp::is_minus_one(R::MAX)
                         {
                             panic!(

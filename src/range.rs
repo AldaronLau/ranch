@@ -3,7 +3,7 @@
 use core::{error, fmt, num::NonZero, ops::RangeInclusive, result};
 
 pub use super::{num::marker::*, random::*};
-use crate::{multirange::Rangeable, *};
+use crate::multirange::{MultiRange, Rangeable, Ranged};
 
 /// Validating an integer is within a range result
 pub type Result<T = (), E = Error> = result::Result<T, E>;
@@ -125,22 +125,6 @@ macro_rules! primitive_impl_range {
     };
 }
 
-macro_rules! ranged_impl_range {
-    ($r:ident, $p:ty) => {
-        impl<const MIN: $p, const MAX: $p> Range<$p> for $r<MIN, MAX> {
-            const MAX: $p = MAX;
-            const MIN: $p = MIN;
-        }
-
-        impl<const MIN: $p, const MAX: $p> Range<$r<MIN, MAX>>
-            for $r<MIN, MAX>
-        {
-            const MAX: $r<MIN, MAX> = Self::MAX;
-            const MIN: $r<MIN, MAX> = Self::MIN;
-        }
-    };
-}
-
 macro_rules! nonzero_impl_range {
     ($p:ty) => {
         impl Range<$p> for NonZero<$p> {
@@ -150,25 +134,66 @@ macro_rules! nonzero_impl_range {
     };
 }
 
-macro_rules! range_nonzero_impl {
-    ($r:ident, $p:ty) => {
-        impl<const MIN: $p, const MAX: $p> Range<NonZero<$p>> for $r<MIN, MAX> {
-            const MAX: NonZero<$p> = const { NonZero::new(MAX).unwrap() };
-            const MIN: NonZero<$p> = const { NonZero::new(MIN).unwrap() };
+macro_rules! ranged_impl_range {
+    ($p:ty) => {
+        impl<R> Range<$p> for Ranged<$p, R>
+        where
+            R: MultiRange<$p>,
+        {
+            const MAX: $p = R::MAX;
+            const MIN: $p = R::MIN;
+        }
+
+        impl<R> Range for Ranged<$p, R>
+        where
+            R: MultiRange<$p>,
+        {
+            const MAX: Self = Self::from_unchecked(R::MAX);
+            const MIN: Self = Self::from_unchecked(R::MIN);
         }
     };
 }
 
-ranged_impl_range!(RangedU8, u8);
-ranged_impl_range!(RangedU16, u16);
-ranged_impl_range!(RangedU32, u32);
-ranged_impl_range!(RangedU64, u64);
-ranged_impl_range!(RangedU128, u128);
-ranged_impl_range!(RangedI8, i8);
-ranged_impl_range!(RangedI16, i16);
-ranged_impl_range!(RangedI32, i32);
-ranged_impl_range!(RangedI64, i64);
-ranged_impl_range!(RangedI128, i128);
+macro_rules! range_nonzero_impl {
+    ($p:ty) => {
+        impl<R> Range<$p> for Ranged<NonZero<$p>, R>
+        where
+            R: MultiRange<$p>,
+        {
+            const MAX: $p = R::MAX;
+            const MIN: $p = R::MIN;
+        }
+
+        impl<R> Range for Ranged<NonZero<$p>, R>
+        where
+            R: MultiRange<$p>,
+        {
+            const MAX: Self =
+                Self::from_unchecked(NonZero::new(R::MAX).unwrap());
+            const MIN: Self =
+                Self::from_unchecked(NonZero::new(R::MIN).unwrap());
+        }
+
+        impl<R> Range<NonZero<$p>> for Ranged<NonZero<$p>, R>
+        where
+            R: MultiRange<$p>,
+        {
+            const MAX: NonZero<$p> = const { NonZero::new(R::MAX).unwrap() };
+            const MIN: NonZero<$p> = const { NonZero::new(R::MIN).unwrap() };
+        }
+    };
+}
+
+ranged_impl_range!(u8);
+ranged_impl_range!(u16);
+ranged_impl_range!(u32);
+ranged_impl_range!(u64);
+ranged_impl_range!(u128);
+ranged_impl_range!(i8);
+ranged_impl_range!(i16);
+ranged_impl_range!(i32);
+ranged_impl_range!(i64);
+ranged_impl_range!(i128);
 
 primitive_impl_range!(u8);
 primitive_impl_range!(u16);
@@ -180,12 +205,6 @@ primitive_impl_range!(i16);
 primitive_impl_range!(i32);
 primitive_impl_range!(i64);
 primitive_impl_range!(i128);
-
-ranged_impl_range!(RangedNonZeroU8, u8);
-ranged_impl_range!(RangedNonZeroU16, u16);
-ranged_impl_range!(RangedNonZeroU32, u32);
-ranged_impl_range!(RangedNonZeroU64, u64);
-ranged_impl_range!(RangedNonZeroU128, u128);
 
 primitive_impl_range!(NonZero<u8>);
 primitive_impl_range!(NonZero<u16>);
@@ -199,8 +218,8 @@ nonzero_impl_range!(u32);
 nonzero_impl_range!(u64);
 nonzero_impl_range!(u128);
 
-range_nonzero_impl!(RangedNonZeroU8, u8);
-range_nonzero_impl!(RangedNonZeroU16, u16);
-range_nonzero_impl!(RangedNonZeroU32, u32);
-range_nonzero_impl!(RangedNonZeroU64, u64);
-range_nonzero_impl!(RangedNonZeroU128, u128);
+range_nonzero_impl!(u8);
+range_nonzero_impl!(u16);
+range_nonzero_impl!(u32);
+range_nonzero_impl!(u64);
+range_nonzero_impl!(u128);

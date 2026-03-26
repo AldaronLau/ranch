@@ -1,12 +1,11 @@
 use core::{
-    cmp::Ordering,
     num::NonZero,
     ops::{Add, Div, Mul, Rem, Sub},
 };
 
 use as_repr::AsRepr;
 
-use super::*;
+use crate::{multirange::Ranged, range::Range, *};
 
 macro_rules! impl_ops {
     (
@@ -16,79 +15,6 @@ macro_rules! impl_ops {
         $ret:ident,
         $nan_unreachable:ident $(,)?
     ) => {
-        impl<const MIN: $p, const MAX: $p> Ord for $nonzero::<MIN, MAX> {
-            fn cmp(&self, other: &Self) -> Ordering {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.cmp(&other)
-            }
-        }
-
-        impl<T, const MIN: $p, const MAX: $p> PartialOrd<T>
-            for $nonzero::<MIN, MAX>
-        where
-            T: AsRepr<$p> + Copy + Clone,
-        {
-            fn partial_cmp(&self, other: &T) -> Option<Ordering> {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.partial_cmp(&other)
-            }
-        }
-
-        impl<const MIN: $p, const MAX: $p> Ord for $type::<MIN, MAX> {
-            fn cmp(&self, other: &Self) -> Ordering {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.cmp(&other)
-            }
-        }
-
-        impl<T, const MIN: $p, const MAX: $p> PartialOrd<T>
-            for $type::<MIN, MAX>
-        where
-            T: AsRepr<$p> + Copy + Clone,
-        {
-            fn partial_cmp(&self, other: &T) -> Option<Ordering> {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.partial_cmp(&other)
-            }
-        }
-
-        impl<const MIN: $p, const MAX: $p> Eq for $nonzero::<MIN, MAX> { }
-
-        impl<T, const MIN: $p, const MAX: $p> PartialEq<T>
-            for $nonzero::<MIN, MAX>
-        where
-            T: AsRepr<$p> + Copy + Clone,
-        {
-            fn eq(&self, other: &T) -> bool {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.eq(&other)
-            }
-        }
-
-        impl<const MIN: $p, const MAX: $p> Eq for $type::<MIN, MAX> { }
-
-        impl<T, const MIN: $p, const MAX: $p> PartialEq<T> for $type::<MIN, MAX>
-        where
-            T: AsRepr<$p> + Copy + Clone,
-        {
-            fn eq(&self, other: &T) -> bool {
-                let this: $p = as_repr::as_repr(*self);
-                let other: $p = as_repr::as_repr(*other);
-
-                this.eq(&other)
-            }
-        }
-
         impl<T, const MIN: $p, const MAX: $p> Add<T> for $type::<MIN, MAX>
         where
             T: AsRepr<$p>,
@@ -189,7 +115,7 @@ macro_rules! impl_ops {
             #[doc = concat!("assert_eq!(b.to_full().leading_zeros().get(), ", stringify!($p), "::BITS - 7);")]
             /// ```
             pub const fn to_full(self) -> $type<{ <$p>::MIN }, { <$p>::MAX }> {
-                $type::from_unchecked(self.get())
+                Ranged::from_unchecked(self.get())
             }
 
             /// Add a number to `self`.
@@ -197,22 +123,18 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<15, 85>::new::<16>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<38, 108> = a.add::<23, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<38, 108> = a.add_to::<23, _>();")]
             ///
             /// assert_eq!(output, 39);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn add<
-                const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn add_to<const RHS: $p, R: Range<$p>>(
                 self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+            ) -> Ranged::<$p, R> {
                 let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
 
-                self.add_ranged(rhs)
+                self.add_ranged_to(rhs)
             }
 
             /// Subtract a number from `self`.
@@ -220,22 +142,18 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<38, 108>::new::<39>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<15, 85> = a.sub::<23, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<15, 85> = a.sub_to::<23, _>();")]
             ///
             /// assert_eq!(output, 16);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn sub<
-                const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn sub_to<const RHS: $p, R: Range<$p>>(
                 self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+            ) -> Ranged::<$p, R> {
                 let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
 
-                self.sub_ranged(rhs)
+                self.sub_ranged_to(rhs)
             }
 
             /// Multiply a number to `self`.
@@ -243,22 +161,18 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<23, 42>::new::<30>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<46, 84> = a.mul::<2, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<46, 84> = a.mul_to::<2, _>();")]
             ///
             /// assert_eq!(output, 60);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn mul<
-                const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
-                self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+            pub const fn mul_to<const RHS: $p, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
+            {
                 let rhs = const { $type::<RHS, RHS>::new::<RHS>() };
 
-                self.mul_ranged(rhs)
+                self.mul_ranged_to(rhs)
             }
 
             /// Divide `self` by a number.
@@ -266,22 +180,18 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<60>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div::<2, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div_to::<2, _>();")]
             ///
             /// assert_eq!(output, 30);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn div<
-                const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
-                self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+            pub const fn div_to<const RHS: $p, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
+            {
                 let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
 
-                self.div_ranged_nonzero(rhs)
+                self.div_ranged_nonzero_to(rhs)
             }
 
             /// Raise `self` to a power.
@@ -289,22 +199,18 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 9>::new::<8>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<49, 81> = a.pow::<2, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<49, 81> = a.pow_to::<2, _>();")]
             ///
             /// assert_eq!(output, 64);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn pow<
-                const RHS: u32,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
-                self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+            pub const fn pow_to<const RHS: u32, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
+            {
                 let rhs = const { RangedU32::<RHS, RHS>::new::<RHS>() };
 
-                self.pow_ranged(rhs)
+                self.pow_ranged_to(rhs)
             }
 
             /// Compare and return the minimum of two values.
@@ -312,7 +218,7 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 10>::new::<9>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<7, 8> = a.min::<8, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<7, 8> = a.min_to::<8, _>();")]
             ///
             /// assert_eq!(output, 8);
             /// ```
@@ -320,19 +226,16 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 12>::new::<9>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<7, 10> = a.min::<10, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<7, 10> = a.min_to::<10, _>();")]
             ///
             /// assert_eq!(output, 9);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn min<
-                const OTHER: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(self) -> $type<OUTPUT_MIN, OUTPUT_MAX>
+            pub const fn min_to<const OTHER: $p, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
             {
-                self.min_ranged($type::<OTHER, OTHER>::new::<OTHER>())
+                self.min_ranged_to($type::<OTHER, OTHER>::new::<OTHER>())
             }
 
             /// Compare and return the maximum of two values.
@@ -340,7 +243,7 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 10>::new::<9>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<8, 10> = a.max::<8, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<8, 10> = a.max_to::<8, _>();")]
             ///
             /// assert_eq!(output, 9);
             /// ```
@@ -348,19 +251,16 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 12>::new::<9>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<10, 12> = a.max::<10, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<10, 12> = a.max_to::<10, _>();")]
             ///
             /// assert_eq!(output, 10);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn max<
-                const OTHER: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(self) -> $type<OUTPUT_MIN, OUTPUT_MAX>
+            pub const fn max_to<const OTHER: $p, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
             {
-                self.max_ranged($type::<OTHER, OTHER>::new::<OTHER>())
+                self.max_ranged_to($type::<OTHER, OTHER>::new::<OTHER>())
             }
 
             /// Restrict a value to a certain interval.
@@ -368,22 +268,18 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<5, 10>::new::<7>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<8, 10> = a.clamp::<8, 12, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<8, 10> = a.clamp_to::<8, 12, _>();")]
             ///
             /// assert_eq!(output, 8);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn clamp<
+            pub const fn clamp_to<
                 const TO_MIN: $p,
                 const TO_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p
-            >(
-                self
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX>
-            {
-                self.clamp_ranged(
+                Out: Range<$p>,
+            >(self) -> Ranged<$p, Out> {
+                self.clamp_ranged_to(
                     $type::<TO_MIN, TO_MIN>::new::<TO_MIN>(),
                     $type::<TO_MAX, TO_MAX>::new::<TO_MAX>(),
                 )
@@ -508,7 +404,7 @@ macro_rules! impl_ops {
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<1, 2> = a.div_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<1, 2> = a.div_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output.get(), 1);
             /// ```
@@ -519,28 +415,17 @@ macro_rules! impl_ops {
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<1>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.div_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.div_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output.get(), 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn div_ranged_nonzero<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn div_ranged_nonzero_to<Rhs: Range<$p>, Out: Range<$p>>(
                 self,
-                rhs: $nonzero::<RHS_MIN, RHS_MAX>,
-            ) -> $type::<OUTPUT_MIN, OUTPUT_MAX> {
-                match self.div_ranged::<
-                    RHS_MIN,
-                    RHS_MAX,
-                    OUTPUT_MIN,
-                    OUTPUT_MAX,
-                >(rhs.to_ranged())
-                {
+                rhs: Ranged<NonZero<$p>, Rhs>,
+            ) -> Ranged<$p, Out> {
+                match self.div_ranged_to::<Rhs, Out>(rhs.to_ranged()) {
                     Quotient::Number(num) => num,
                     Quotient::Nan => unreachable!(),
                 }
@@ -614,7 +499,7 @@ macro_rules! impl_ops_nonzero_signed {
 }
 
 macro_rules! impl_ops_nonzero_unsigned {
-    ($type:ident, $p:ty $(,)?) => {
+    ($range:ident, $type:ident, $p:ty $(,)?) => {
         impl<const MIN: $p, const MAX: $p> $type<MIN, MAX> {
             /// Checked integer division by a non-zero number.
             ///
@@ -672,31 +557,28 @@ macro_rules! impl_ops_nonzero_unsigned {
             /// Return the smallest power of two greater than or equal to self.
             ///
             /// ```rust
-            #[doc = concat!("# use ranch::{Error, ", stringify!($type), "};")]
+            #[doc = concat!("# use ranch::{range::*, ", stringify!($type), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<1, 33>::new::<1>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 33>::new::<9>();")]
             #[doc = concat!("let c = ", stringify!($type), "::<1, 33>::new::<32>();")]
             #[doc = concat!("let d = ", stringify!($type), "::<1, 33>::new::<33>();")]
             ///
-            /// assert_eq!(a.next_power_of_two::<1, 64>().get(), 1);
-            /// assert_eq!(b.next_power_of_two::<1, 64>().get(), 16);
-            /// assert_eq!(c.next_power_of_two::<1, 64>().get(), 32);
-            /// assert_eq!(d.next_power_of_two::<1, 64>().get(), 64);
+            #[doc = concat!("assert_eq!(a.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 1);")]
+            #[doc = concat!("assert_eq!(b.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 16);")]
+            #[doc = concat!("assert_eq!(c.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 32);")]
+            #[doc = concat!("assert_eq!(d.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 64);")]
             /// ```
             #[must_use]
-            pub const fn next_power_of_two<
-                const OUT_MIN: $p,
-                const OUT_MAX: $p,
-            >(
-                self,
-            ) -> $type::<OUT_MIN, OUT_MAX> {
+            pub const fn next_power_of_two_to<Out: Range<$p>>(self)
+                -> Ranged<NonZero<$p>, Out>
+            {
                 const {
-                    if OUT_MIN != MIN.checked_next_power_of_two().unwrap() {
-                        panic!("mismatched OUT_MIN")
+                    if Out::MIN != MIN.checked_next_power_of_two().unwrap() {
+                        panic!("mismatched Out::MIN")
                     }
 
-                    if OUT_MAX != MAX.checked_next_power_of_two().unwrap() {
-                        panic!("mismatched OUT_MAX")
+                    if Out::MAX != MAX.checked_next_power_of_two().unwrap() {
+                        panic!("mismatched Out::MAX")
                     }
                 }
 
@@ -705,7 +587,7 @@ macro_rules! impl_ops_nonzero_unsigned {
                     unreachable!()
                 };
 
-                $type::from_unchecked(value)
+                Ranged::from_unchecked(value)
             }
 
             /// Returns true if and only if `self == (1 << k)` for some `k`.
@@ -760,30 +642,26 @@ macro_rules! impl_ops_nonzero_unsigned {
             /// Return the smallest power of two greater than or equal to self.
             ///
             /// ```rust
-            #[doc = concat!("# use ranch::{Error, ", stringify!($type), "};")]
+            #[doc = concat!("# use ranch::{range::*, ", stringify!($type), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<1, 33>::new::<16>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 33>::new::<23>();")]
             #[doc = concat!("let c = ", stringify!($type), "::<1, 33>::new::<33>();")]
             ///
-            /// assert_eq!(a.next_multiple_of::<8, 8, 40>().get(), 16);
-            /// assert_eq!(b.next_multiple_of::<8, 8, 40>().get(), 24);
-            /// assert_eq!(c.next_multiple_of::<8, 8, 40>().get(), 40);
+            #[doc = concat!("assert_eq!(a.next_multiple_of_to::<8, ", stringify!($range), "<8, 40>>().get(), 16);")]
+            #[doc = concat!("assert_eq!(b.next_multiple_of_to::<8, ", stringify!($range), "<8, 40>>().get(), 24);")]
+            #[doc = concat!("assert_eq!(c.next_multiple_of_to::<8, ", stringify!($range), "<8, 40>>().get(), 40);")]
             /// ```
             #[must_use]
-            pub const fn next_multiple_of<
-                const RHS: $p,
-                const OUT_MIN: $p,
-                const OUT_MAX: $p,
-            >(
+            pub const fn next_multiple_of_to<const RHS: $p, Out: Range<$p>>(
                 self,
-            ) -> $type<OUT_MIN, OUT_MAX> {
+            ) -> Ranged<NonZero<$p>, Out> {
                 const {
-                    if OUT_MIN != MIN.next_multiple_of(RHS) {
-                        panic!("mismatched OUT_MIN")
+                    if Out::MIN != MIN.next_multiple_of(RHS) {
+                        panic!("mismatched Out::MIN")
                     }
 
-                    if OUT_MAX != MAX.next_multiple_of(RHS) {
-                        panic!("mismatched OUT_MAX")
+                    if Out::MAX != MAX.next_multiple_of(RHS) {
+                        panic!("mismatched Out::MAX")
                     }
                 }
 
@@ -792,7 +670,7 @@ macro_rules! impl_ops_nonzero_unsigned {
                     unreachable!()
                 };
 
-                $type::from_unchecked(value)
+                Ranged::from_unchecked(value)
             }
 
             /// Return `true` if `self` is an integer multiple of `rhs`, and
@@ -828,7 +706,7 @@ macro_rules! impl_ops_nonzero_unsigned {
 }
 
 macro_rules! impl_ops_unsigned {
-    ($type:ident, $p:ty, $nonzero:ident, $with:ident $(,)?) => {
+    ($range:ident, $type:ident, $p:ty, $nonzero:ident, $with:ident $(,)?) => {
         impl<const MIN: $p, const MAX: $p> $type<MIN, MAX> {
             /// Return the smallest power of two greater than or equal to self.
             ///
@@ -865,32 +743,29 @@ macro_rules! impl_ops_unsigned {
             /// Return the smallest power of two greater than or equal to self.
             ///
             /// ```rust
-            #[doc = concat!("# use ranch::{Error, ", stringify!($type), "};")]
+            #[doc = concat!("# use ranch::{range::*, ", stringify!($type), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<0, 33>::new::<0>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<0, 33>::new::<9>();")]
             #[doc = concat!("let c = ", stringify!($type), "::<0, 33>::new::<32>();")]
             #[doc = concat!("let d = ", stringify!($type), "::<0, 33>::new::<33>();")]
             ///
-            /// assert_eq!(a.next_power_of_two::<1, 64>().get(), 1);
-            /// assert_eq!(b.next_power_of_two::<1, 64>().get(), 16);
-            /// assert_eq!(c.next_power_of_two::<1, 64>().get(), 32);
-            /// assert_eq!(d.next_power_of_two::<1, 64>().get(), 64);
+            #[doc = concat!("assert_eq!(a.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 1);")]
+            #[doc = concat!("assert_eq!(b.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 16);")]
+            #[doc = concat!("assert_eq!(c.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 32);")]
+            #[doc = concat!("assert_eq!(d.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 64);")]
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn next_power_of_two<
-                const OUT_MIN: $p,
-                const OUT_MAX: $p,
-            >(
-                self,
-            ) -> $nonzero<OUT_MIN, OUT_MAX> {
+            pub const fn next_power_of_two_to<Out: Range<$p>>(self)
+                -> Ranged<NonZero<$p>, Out>
+            {
                 const {
-                    if OUT_MIN != MIN.checked_next_power_of_two().unwrap() {
-                        panic!("mismatched OUT_MIN")
+                    if Out::MIN != MIN.checked_next_power_of_two().unwrap() {
+                        panic!("mismatched Out::MIN")
                     }
 
-                    if OUT_MAX != MAX.checked_next_power_of_two().unwrap() {
-                        panic!("mismatched OUT_MAX")
+                    if Out::MAX != MAX.checked_next_power_of_two().unwrap() {
+                        panic!("mismatched Out::MAX")
                     }
                 }
 
@@ -899,7 +774,7 @@ macro_rules! impl_ops_unsigned {
                     unreachable!()
                 };
 
-                $nonzero::from_unchecked(value)
+                Ranged::from_unchecked(value)
             }
 
             /// Returns true if and only if `self == (1 << k)` for some `k`.
@@ -958,35 +833,32 @@ macro_rules! impl_ops_unsigned {
             /// Return the smallest power of two greater than or equal to self.
             ///
             /// ```rust
-            #[doc = concat!("# use ranch::{Error, ", stringify!($type), "};")]
+            #[doc = concat!("# use ranch::{range::*, ", stringify!($type), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<0, 33>::new::<16>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<0, 33>::new::<23>();")]
             #[doc = concat!("let c = ", stringify!($type), "::<0, 33>::new::<33>();")]
             ///
-            /// assert_eq!(a.next_multiple_of::<8, 0, 40>().get(), 16);
-            /// assert_eq!(b.next_multiple_of::<8, 0, 40>().get(), 24);
-            /// assert_eq!(c.next_multiple_of::<8, 0, 40>().get(), 40);
+            ///
+            #[doc = concat!("assert_eq!(a.next_multiple_of_to::<8, ", stringify!($range), "<0, 40>>().get(), 16);")]
+            #[doc = concat!("assert_eq!(b.next_multiple_of_to::<8, ", stringify!($range), "<0, 40>>().get(), 24);")]
+            #[doc = concat!("assert_eq!(c.next_multiple_of_to::<8, ", stringify!($range), "<0, 40>>().get(), 40);")]
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn next_multiple_of<
-                const RHS: $p,
-                const OUT_MIN: $p,
-                const OUT_MAX: $p,
-            >(
+            pub const fn next_multiple_of_to<const RHS: $p, Out: Range<$p>>(
                 self,
-            ) -> $type<OUT_MIN, OUT_MAX> {
+            ) -> Ranged<$p, Out> {
                 const {
-                    if OUT_MIN != MIN.next_multiple_of(RHS) {
-                        panic!("mismatched OUT_MIN")
+                    if Out::MIN != MIN.next_multiple_of(RHS) {
+                        panic!("mismatched Out::MIN")
                     }
 
-                    if OUT_MAX != MAX.next_multiple_of(RHS) {
-                        panic!("mismatched OUT_MAX")
+                    if Out::MAX != MAX.next_multiple_of(RHS) {
+                        panic!("mismatched Out::MAX")
                     }
                 }
 
-                $type::from_unchecked(self.get().next_multiple_of(RHS))
+                Ranged::from_unchecked(self.get().next_multiple_of(RHS))
             }
 
             /// Return `true` if `self` is an integer multiple of `rhs`, and
@@ -1028,7 +900,7 @@ macro_rules! impl_ops_unsigned {
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_ranged(b).number().unwrap();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_ranged_to(b).number().unwrap();")]
             ///
             /// assert_eq!(output, 1);
             /// ```
@@ -1039,30 +911,28 @@ macro_rules! impl_ops_unsigned {
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_ranged(b).number().unwrap();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_ranged_to(b).number().unwrap();")]
             ///
             /// assert_eq!(output, 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_ranged<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn rem_ranged_to<Rhs: Range<$p>, const OUT_MAX: $p>(
                 self,
-                rhs: $type<RHS_MIN, RHS_MAX>,
-            ) -> Quotient<$type<0, OUTPUT_MAX>> {
+                rhs: Ranged<$p, Rhs>,
+            ) -> Quotient<$type<0, OUT_MAX>> {
                 const {
-                    if OUTPUT_MAX != RHS_MAX - 1 {
+                    if OUT_MAX != Rhs::MAX - 1 {
                         panic!("Max mismatch");
                     }
                 }
 
-                if rhs.get() == 0 {
+                let rhs = as_repr::as_repr::<$p>(rhs);
+
+                if rhs == 0 {
                     Quotient::Nan
                 } else {
-                    Quotient::Number($type::from_unchecked(self.get() % rhs.get()))
+                    Quotient::Number(Ranged::from_unchecked(self.get() % rhs))
                 }
             }
 
@@ -1070,13 +940,13 @@ macro_rules! impl_ops_unsigned {
             ///
             /// Since, for the positive integers, all common definitions of
             /// division are equal, this is exactly equal to
-            /// [`Self::rem_ranged()`].
+            /// [`Self::rem_ranged_to()`].
             ///
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_euclid_ranged(b).number().unwrap();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_euclid_ranged_to(b).number().unwrap();")]
             ///
             /// assert_eq!(output, 1);
             /// ```
@@ -1087,21 +957,20 @@ macro_rules! impl_ops_unsigned {
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_ranged(b).number().unwrap();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_ranged_to(b).number().unwrap();")]
             ///
             /// assert_eq!(output, 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_euclid_ranged<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MAX: $p,
+            pub const fn rem_euclid_ranged_to<
+                Rhs: Range<$p>,
+                const OUT_MAX: $p,
             >(
                 self,
-                rhs: $type<RHS_MIN, RHS_MAX>,
-            ) -> Quotient<$type<0, OUTPUT_MAX>> {
-                self.rem_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MAX>(rhs)
+                rhs: Ranged<$p, Rhs>,
+            ) -> Quotient<$type<0, OUT_MAX>> {
+                self.rem_ranged_to::<Rhs, OUT_MAX>(rhs)
             }
 
             /// Get the remainder from dividing `self` by a non-zero number.
@@ -1110,7 +979,7 @@ macro_rules! impl_ops_unsigned {
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output, 1);
             /// ```
@@ -1121,40 +990,41 @@ macro_rules! impl_ops_unsigned {
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output, 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_ranged_nonzero<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MAX: $p,
+            pub const fn rem_ranged_nonzero_to<
+                Rhs: Range<$p>,
+                const OUT_MAX: $p,
             >(
                 self,
-                rhs: $nonzero<RHS_MIN, RHS_MAX>,
-            ) -> $type<0, OUTPUT_MAX> {
+                rhs: Ranged<NonZero<$p>, Rhs>,
+            ) -> $type<0, OUT_MAX> {
                 const {
-                    if OUTPUT_MAX != RHS_MAX - 1 {
+                    if OUT_MAX != Rhs::MAX - 1 {
                         panic!("Max mismatch");
                     }
                 }
 
-                $type::from_unchecked(self.get() % rhs.get())
+                let rhs = as_repr::as_repr::<$p>(rhs);
+
+                Ranged::from_unchecked(self.get() % rhs)
             }
 
             /// Get the least remainder of `self (mod rhs)`.
             ///
             /// Since, for the positive integers, all common definitions of
             /// division are equal, this is exactly equal to
-            /// [`Self::rem_ranged_nonzero()`].
+            /// [`Self::rem_ranged_nonzero_to()`].
             ///
             /// ```rust
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_euclid_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_euclid_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output, 1);
             /// ```
@@ -1165,21 +1035,20 @@ macro_rules! impl_ops_unsigned {
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output, 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_euclid_ranged_nonzero<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MAX: $p,
+            pub const fn rem_euclid_ranged_nonzero_to<
+                Rhs: Range<$p>,
+                const OUT_MAX: $p,
             >(
                 self,
-                rhs: $nonzero<RHS_MIN, RHS_MAX>,
-            ) -> $type<0, OUTPUT_MAX> {
-                self.rem_ranged_nonzero::<RHS_MIN, RHS_MAX, OUTPUT_MAX>(rhs)
+                rhs: Ranged<NonZero<$p>, Rhs>,
+            ) -> $type<0, OUT_MAX> {
+                self.rem_ranged_nonzero_to::<Rhs, OUT_MAX>(rhs)
             }
 
             /// Get the least remainder of `self (mod rhs)`.
@@ -1187,21 +1056,21 @@ macro_rules! impl_ops_unsigned {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<65>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem::<3, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_to::<3, _>();")]
             ///
             /// assert_eq!(output, 2);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem<
+            pub const fn rem_to<
                 const RHS: $p,
-                const OUTPUT_MAX: $p,
+                const OUT_MAX: $p,
             >(
                 self,
-            ) -> $type<0, OUTPUT_MAX> {
+            ) -> $type<0, OUT_MAX> {
                 let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
 
-                self.rem_ranged_nonzero(rhs)
+                self.rem_ranged_nonzero_to(rhs)
             }
 
             /// Get the least remainder of `self (mod RHS)`.
@@ -1213,21 +1082,21 @@ macro_rules! impl_ops_unsigned {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<65>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid::<3, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_to::<3, _>();")]
             ///
             /// assert_eq!(output, 2);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_euclid<
+            pub const fn rem_euclid_to<
                 const RHS: $p,
-                const OUTPUT_MAX: $p,
+                const OUT_MAX: $p,
             >(
                 self,
-            ) -> $type<0, OUTPUT_MAX> {
+            ) -> $type<0, OUT_MAX> {
                 let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
 
-                self.rem_euclid_ranged_nonzero(rhs)
+                self.rem_euclid_ranged_nonzero_to(rhs)
             }
 
             /// Perform Euclidean division.
@@ -1239,33 +1108,29 @@ macro_rules! impl_ops_unsigned {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<60>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div_euclid::<2, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div_euclid_to::<2, _>();")]
             ///
             /// assert_eq!(output, 30);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn div_euclid<
-                const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
-                self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
-                self.div::<RHS, OUTPUT_MIN, OUTPUT_MAX>()
+            pub const fn div_euclid_to<const RHS: $p, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
+            {
+                self.div_to::<RHS, Out>()
             }
 
             /// Perform Euclidean division.
             ///
             /// Since, for the positive integers, all common definitions of
             /// division are equal, this is exactly equal to
-            /// [`Self::div_ranged_nonzero()`].
+            /// [`Self::div_ranged_nonzero_to()`].
             ///
             /// ```rust
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<1, 2> = a.div_euclid_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<1, 2> = a.div_euclid_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output.get(), 1);
             /// ```
@@ -1276,35 +1141,33 @@ macro_rules! impl_ops_unsigned {
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<1>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.div_euclid_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.div_euclid_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output.get(), 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn div_euclid_ranged_nonzero<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
+            pub const fn div_euclid_ranged_nonzero_to<
+                Rhs: Range<$p>,
+                Out: Range<$p>,
             >(
                 self,
-                rhs: $nonzero::<RHS_MIN, RHS_MAX>,
-            ) -> $type::<OUTPUT_MIN, OUTPUT_MAX> {
-                self.div_ranged_nonzero::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
+                rhs: Ranged<NonZero<$p>, Rhs>,
+            ) -> Ranged<$p, Out> {
+                self.div_ranged_nonzero_to::<Rhs, Out>(rhs)
             }
 
             /// Divide `self` by a number.
             ///
             /// Since, for the positive integers, all common definitions of
             /// division are equal, this is exactly equal to
-            /// [`Self::div_ranged()`].
+            /// [`Self::div_ranged_to()`].
             ///
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "::<1, 2> = a.div_euclid_ranged(b).number().unwrap();")]
+            #[doc = concat!("let output: ", stringify!($type), "::<1, 2> = a.div_euclid_ranged_to(b).number().unwrap();")]
             ///
             /// assert_eq!(output.get(), 1);
             /// ```
@@ -1315,22 +1178,17 @@ macro_rules! impl_ops_unsigned {
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<1>();")]
-            #[doc = concat!("let output: ", stringify!($type), "::<0, 2> = a.div_euclid_ranged(b).number().unwrap();")]
+            #[doc = concat!("let output: ", stringify!($type), "::<0, 2> = a.div_euclid_ranged_to(b).number().unwrap();")]
             ///
             /// assert_eq!(output.get(), 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn div_euclid_ranged<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn div_euclid_ranged_to<Rhs: Range<$p>, Out: Range<$p>>(
                 self,
-                rhs: $type<RHS_MIN, RHS_MAX>,
-            ) -> Quotient<$type<OUTPUT_MIN, OUTPUT_MAX>> {
-                self.div_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs)
+                rhs: Ranged<$p, Rhs>,
+            ) -> Quotient<Ranged<$p, Out>> {
+                self.div_ranged_to::<Rhs, Out>(rhs)
             }
 
             /// Checked integer division.
@@ -1649,35 +1507,34 @@ macro_rules! impl_ops_signed {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<60>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div_euclid::<2, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div_euclid_to::<2, _>();")]
             ///
             /// assert_eq!(output, 30);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn div_euclid<
+            pub const fn div_euclid_to<
                 const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
+                Out: Range<$p>,
             >(
                 self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
-                let rhs = const { $nonzero::new::<RHS>() };
+            ) -> Ranged<$p, Out> {
+                let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
 
-                self.div_euclid_ranged_nonzero::<RHS, RHS, OUTPUT_MIN, OUTPUT_MAX>(rhs)
+                self.div_euclid_ranged_nonzero_to::<_, Out>(rhs)
             }
 
             /// Perform Euclidean division.
             ///
             /// Since, for the positive integers, all common definitions of
             /// division are equal, this is exactly equal to
-            /// [`Self::div_ranged_nonzero()`].
+            /// [`Self::div_ranged_nonzero_to()`].
             ///
             /// ```rust
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<1, 2> = a.div_euclid_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<1, 2> = a.div_euclid_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output.get(), 1);
             /// ```
@@ -1688,22 +1545,20 @@ macro_rules! impl_ops_signed {
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<1>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.div_euclid_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.div_euclid_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output.get(), 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn div_euclid_ranged_nonzero<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
+            pub const fn div_euclid_ranged_nonzero_to<
+                Rhs: Range<$p>,
+                Out: Range<$p>,
             >(
                 self,
-                rhs: $nonzero::<RHS_MIN, RHS_MAX>,
-            ) -> $type::<OUTPUT_MIN, OUTPUT_MAX> {
-                match self.div_euclid_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(rhs.to_ranged()) {
+                rhs: Ranged<NonZero<$p>, Rhs>,
+            ) -> Ranged<$p, Out> {
+                match self.div_euclid_ranged_to::<Rhs, Out>(rhs.to_ranged()) {
                     Quotient::Number(x) => x,
                     Quotient::Nan => unreachable!(),
                 }
@@ -1713,13 +1568,13 @@ macro_rules! impl_ops_signed {
             ///
             /// Since, for the positive integers, all common definitions of
             /// division are equal, this is exactly equal to
-            /// [`Self::div_ranged()`].
+            /// [`Self::div_ranged_to()`].
             ///
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "::<1, 2> = a.div_euclid_ranged(b).number().unwrap();")]
+            #[doc = concat!("let output: ", stringify!($type), "::<1, 2> = a.div_euclid_ranged_to(b).number().unwrap();")]
             ///
             /// assert_eq!(output.get(), 1);
             /// ```
@@ -1730,24 +1585,25 @@ macro_rules! impl_ops_signed {
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<1>();")]
-            #[doc = concat!("let output: ", stringify!($type), "::<0, 2> = a.div_euclid_ranged(b).number().unwrap();")]
+            #[doc = concat!("let output: ", stringify!($type), "::<0, 2> = a.div_euclid_ranged_to(b).number().unwrap();")]
             ///
             /// assert_eq!(output.get(), 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn div_euclid_ranged<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn div_euclid_ranged_to<Rhs: Range<$p>, Out: Range<$p>>(
                 self,
-                rhs: $type<RHS_MIN, RHS_MAX>,
-            ) -> Quotient<$type<OUTPUT_MIN, OUTPUT_MAX>> {
+                rhs: Ranged<$p, Rhs>,
+            ) -> Quotient<Ranged<$p, Out>> {
                 const {
-                    let (min_min, min_max) = (MIN.div_euclid(RHS_MIN), MIN.div_euclid(RHS_MAX));
-                    let (max_min, max_max) = (MAX.div_euclid(RHS_MIN), MAX.div_euclid(RHS_MAX));
+                    let (min_min, min_max) = (
+                        MIN.div_euclid(Rhs::MIN),
+                        MIN.div_euclid(Rhs::MAX),
+                    );
+                    let (max_min, max_max) = (
+                        MAX.div_euclid(Rhs::MIN),
+                        MAX.div_euclid(Rhs::MAX),
+                    );
                     let min = if min_min < min_max { min_min } else { min_max };
                     let min = if max_min < min { max_min } else { min };
                     let min = if max_max < min { max_max } else { min };
@@ -1755,19 +1611,23 @@ macro_rules! impl_ops_signed {
                     let max = if min_min > min { min_min } else { max };
                     let max = if min_max > min { min_max } else { max };
 
-                    if min != OUTPUT_MIN {
+                    if min != Out::MIN {
                         panic!("Min mismatch");
                     }
 
-                    if max != OUTPUT_MAX {
+                    if max != Out::MAX {
                         panic!("Max mismatch");
                     }
                 }
 
-                if rhs.get() == 0 {
+                let rhs = as_repr::as_repr::<$p>(rhs);
+
+                if rhs == 0 {
                     Quotient::Nan
                 } else {
-                    Quotient::Number($type::from_unchecked(self.get().div_euclid(rhs.get())))
+                    Quotient::Number(
+                        Ranged::from_unchecked(self.get().div_euclid(rhs)),
+                    )
                 }
             }
 
@@ -1777,7 +1637,7 @@ macro_rules! impl_ops_signed {
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_ranged(b).number().unwrap();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_ranged_to(b).number().unwrap();")]
             ///
             /// assert_eq!(output, 1);
             /// ```
@@ -1788,54 +1648,51 @@ macro_rules! impl_ops_signed {
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_ranged(b).number().unwrap();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_ranged_to(b).number().unwrap();")]
             ///
             /// assert_eq!(output, 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_ranged<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn rem_ranged_to<Rhs: Range<$p>, Out: Range<$p>>(
                 self,
-                rhs: $type<RHS_MIN, RHS_MAX>,
-            ) -> Quotient<$type<OUTPUT_MIN, OUTPUT_MAX>> {
+                rhs: Ranged<$p, Rhs>,
+            ) -> Quotient<Ranged<$p, Out>> {
                 const {
                     let (min, max) = match
-                        (RHS_MIN < 0, RHS_MAX > 0, MIN < 0, MAX > 0)
+                        (Rhs::MIN < 0, Rhs::MAX > 0, MIN < 0, MAX > 0)
                     {
                         (true, true, _, _)
                             | (_, _, true, true)
                             | (true, false, false, true)
                             | (false, true, true, false)
                         => {
-                            let min = RHS_MIN.abs();
-                            let max = RHS_MAX.abs();
+                            let min = Rhs::MIN.abs();
+                            let max = Rhs::MAX.abs();
                             let bounds = if max > min { max } else { min };
 
                             (-(bounds - 1), bounds - 1)
                         }
-                        (false, true, false, true) => (0, RHS_MAX - 1),
-                        (true, false, true, false) => (RHS_MIN + 1, 0),
+                        (false, true, false, true) => (0, Rhs::MAX - 1),
+                        (true, false, true, false) => (Rhs::MIN + 1, 0),
                         (false, false, _, _) | (_, _, false, false) => (0, 0),
                     };
 
-                    if min != OUTPUT_MIN {
+                    if min != Out::MIN {
                         panic!("Max mismatch");
                     }
 
-                    if max != OUTPUT_MAX {
+                    if max != Out::MAX {
                         panic!("Max mismatch");
                     }
                 }
 
-                if rhs.get() == 0 {
+                let rhs = as_repr::as_repr::<$p>(rhs);
+
+                if rhs == 0 {
                     Quotient::Nan
                 } else {
-                    Quotient::Number($type::from_unchecked(self.get() % rhs.get()))
+                    Quotient::Number(Ranged::from_unchecked(self.get() % rhs))
                 }
             }
 
@@ -1845,7 +1702,7 @@ macro_rules! impl_ops_signed {
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_euclid_ranged(b).number().unwrap();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_euclid_ranged_to(b).number().unwrap();")]
             ///
             /// assert_eq!(output, 1);
             /// ```
@@ -1856,38 +1713,41 @@ macro_rules! impl_ops_signed {
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_ranged(b).number().unwrap();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_ranged_to(b).number().unwrap();")]
             ///
             /// assert_eq!(output, 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_euclid_ranged<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MAX: $p,
+            pub const fn rem_euclid_ranged_to<
+                Rhs: Range<$p>,
+                const OUT_MAX: $p,
             >(
                 self,
-                rhs: $type<RHS_MIN, RHS_MAX>,
-            ) -> Quotient<$type<0, OUTPUT_MAX>> {
+                rhs: Ranged<$p, Rhs>,
+            ) -> Quotient<$type<0, OUT_MAX>> {
                 const {
-                    let max_abs = RHS_MAX.abs();
-                    let min_abs = RHS_MIN.abs();
+                    let max_abs = Rhs::MAX.abs();
+                    let min_abs = Rhs::MIN.abs();
                     let rhs_limit = if max_abs > min_abs {
                         max_abs
                     } else {
                         min_abs
                     };
 
-                    if OUTPUT_MAX != rhs_limit - 1 {
+                    if OUT_MAX != rhs_limit - 1 {
                         panic!("Max mismatch");
                     }
                 }
 
-                if rhs.get() == 0 {
+                let rhs = as_repr::as_repr::<$p>(rhs);
+
+                if rhs == 0 {
                     Quotient::Nan
                 } else {
-                    Quotient::Number($type::from_unchecked(self.get().rem_euclid(rhs.get())))
+                    Quotient::Number(
+                        Ranged::from_unchecked(self.get().rem_euclid(rhs)),
+                    )
                 }
             }
 
@@ -1897,7 +1757,7 @@ macro_rules! impl_ops_signed {
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output, 1);
             /// ```
@@ -1908,24 +1768,17 @@ macro_rules! impl_ops_signed {
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output, 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_ranged_nonzero<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn rem_ranged_nonzero_to<Rhs: Range<$p>, Out: Range<$p>>(
                 self,
-                rhs: $nonzero<RHS_MIN, RHS_MAX>,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
-                match self.rem_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MIN, OUTPUT_MAX>(
-                    rhs.to_ranged()
-                ) {
+                rhs: Ranged<NonZero<$p>, Rhs>,
+            ) -> Ranged<$p, Out> {
+                match self.rem_ranged_to::<Rhs, Out>(rhs.to_ranged()) {
                     Quotient::Number(n) => n,
                     Quotient::Nan => unimplemented!(),
                 }
@@ -1937,7 +1790,7 @@ macro_rules! impl_ops_signed {
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_euclid_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 1> = a.rem_euclid_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output, 1);
             /// ```
@@ -1948,21 +1801,20 @@ macro_rules! impl_ops_signed {
             #[doc = concat!("# use ranch::{", stringify!($type), ", ", stringify!($nonzero), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($nonzero), "::<1, 2>::new::<2>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_ranged_nonzero(b);")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_ranged_nonzero_to(b);")]
             ///
             /// assert_eq!(output, 1);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_euclid_ranged_nonzero<
-                const RHS_MIN: $p,
-                const RHS_MAX: $p,
-                const OUTPUT_MAX: $p,
+            pub const fn rem_euclid_ranged_nonzero_to<
+                Rhs: Range<$p>,
+                const OUT_MAX: $p,
             >(
                 self,
-                rhs: $nonzero<RHS_MIN, RHS_MAX>,
-            ) -> $type<0, OUTPUT_MAX> {
-                match self.rem_euclid_ranged::<RHS_MIN, RHS_MAX, OUTPUT_MAX>(
+                rhs: Ranged<NonZero<$p>, Rhs>,
+            ) -> $type<0, OUT_MAX> {
+                match self.rem_euclid_ranged_to::<Rhs, OUT_MAX>(
                     rhs.to_ranged()
                 ) {
                     Quotient::Number(n) => n,
@@ -1975,22 +1827,18 @@ macro_rules! impl_ops_signed {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<65>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem::<3, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_to::<3, _>();")]
             ///
             /// assert_eq!(output, 2);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem<
-                const RHS: $p,
-                const OUTPUT_MIN: $p,
-                const OUTPUT_MAX: $p,
-            >(
-                self,
-            ) -> $type<OUTPUT_MIN, OUTPUT_MAX> {
+            pub const fn rem_to<const RHS: $p, Out: Range<$p>>(self)
+                -> Ranged<$p, Out>
+            {
                 let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
 
-                self.rem_ranged_nonzero(rhs)
+                self.rem_ranged_nonzero_to(rhs)
             }
 
             /// Get the least remainder of `self (mod RHS)`.
@@ -1998,21 +1846,18 @@ macro_rules! impl_ops_signed {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<65>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid::<3, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_to::<3, _>();")]
             ///
             /// assert_eq!(output, 2);
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
-            pub const fn rem_euclid<
-                const RHS: $p,
-                const OUTPUT_MAX: $p,
-            >(
+            pub const fn rem_euclid_to<const RHS: $p, const OUT_MAX: $p>(
                 self,
-            ) -> $type<0, OUTPUT_MAX> {
+            ) -> $type<0, OUT_MAX> {
                 let rhs = const { $nonzero::<RHS, RHS>::new::<RHS>() };
 
-                self.rem_euclid_ranged_nonzero(rhs)
+                self.rem_euclid_ranged_nonzero_to(rhs)
             }
         }
     };
@@ -2096,17 +1941,17 @@ impl_ops_nonzero_signed!(RangedNonZeroI32, i32);
 impl_ops_nonzero_signed!(RangedNonZeroI64, i64);
 impl_ops_nonzero_signed!(RangedNonZeroI128, i128);
 
-impl_ops_nonzero_unsigned!(RangedNonZeroU8, u8);
-impl_ops_nonzero_unsigned!(RangedNonZeroU16, u16);
-impl_ops_nonzero_unsigned!(RangedNonZeroU32, u32);
-impl_ops_nonzero_unsigned!(RangedNonZeroU64, u64);
-impl_ops_nonzero_unsigned!(RangedNonZeroU128, u128);
+impl_ops_nonzero_unsigned!(RangeU8, RangedNonZeroU8, u8);
+impl_ops_nonzero_unsigned!(RangeU16, RangedNonZeroU16, u16);
+impl_ops_nonzero_unsigned!(RangeU32, RangedNonZeroU32, u32);
+impl_ops_nonzero_unsigned!(RangeU64, RangedNonZeroU64, u64);
+impl_ops_nonzero_unsigned!(RangeU128, RangedNonZeroU128, u128);
 
-impl_ops_unsigned!(RangedU8, u8, RangedNonZeroU8, with_u8);
-impl_ops_unsigned!(RangedU16, u16, RangedNonZeroU16, with_u16);
-impl_ops_unsigned!(RangedU32, u32, RangedNonZeroU32, with_u32);
-impl_ops_unsigned!(RangedU64, u64, RangedNonZeroU64, with_u64);
-impl_ops_unsigned!(RangedU128, u128, RangedNonZeroU128, with_u128);
+impl_ops_unsigned!(RangeU8, RangedU8, u8, RangedNonZeroU8, with_u8);
+impl_ops_unsigned!(RangeU16, RangedU16, u16, RangedNonZeroU16, with_u16);
+impl_ops_unsigned!(RangeU32, RangedU32, u32, RangedNonZeroU32, with_u32);
+impl_ops_unsigned!(RangeU64, RangedU64, u64, RangedNonZeroU64, with_u64);
+impl_ops_unsigned!(RangeU128, RangedU128, u128, RangedNonZeroU128, with_u128);
 
 impl_ops_signed!(RangedI8, i8, RangedNonZeroI8, with_i8);
 impl_ops_signed!(RangedI16, i16, RangedNonZeroI16, with_i16);
