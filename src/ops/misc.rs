@@ -161,7 +161,7 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<23, 42>::new::<30>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<46, 84> = a.mul_to::<2, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<46, 84> = a.mul_to::<2, _>();")]
             ///
             /// assert_eq!(output, 60);
             /// ```
@@ -180,7 +180,7 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<60>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div_to::<2, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div_to::<2, _>();")]
             ///
             /// assert_eq!(output, 30);
             /// ```
@@ -199,7 +199,7 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 9>::new::<8>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<49, 81> = a.pow::<2, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<49, 81> = a.pow_to::<2, _>();")]
             ///
             /// assert_eq!(output, 64);
             /// ```
@@ -218,7 +218,7 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 10>::new::<9>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<7, 8> = a.min::<8, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<7, 8> = a.min_to::<8, _>();")]
             ///
             /// assert_eq!(output, 8);
             /// ```
@@ -226,7 +226,7 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 12>::new::<9>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<7, 10> = a.min::<10, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<7, 10> = a.min_to::<10, _>();")]
             ///
             /// assert_eq!(output, 9);
             /// ```
@@ -243,7 +243,7 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 10>::new::<9>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<8, 10> = a.max::<8, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<8, 10> = a.max_to::<8, _>();")]
             ///
             /// assert_eq!(output, 9);
             /// ```
@@ -251,7 +251,7 @@ macro_rules! impl_ops {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<7, 12>::new::<9>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<10, 12> = a.max::<10, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<10, 12> = a.max_to::<10, _>();")]
             ///
             /// assert_eq!(output, 10);
             /// ```
@@ -499,7 +499,7 @@ macro_rules! impl_ops_nonzero_signed {
 }
 
 macro_rules! impl_ops_nonzero_unsigned {
-    ($type:ident, $p:ty $(,)?) => {
+    ($range:ident, $type:ident, $p:ty $(,)?) => {
         impl<const MIN: $p, const MAX: $p> $type<MIN, MAX> {
             /// Checked integer division by a non-zero number.
             ///
@@ -557,16 +557,16 @@ macro_rules! impl_ops_nonzero_unsigned {
             /// Return the smallest power of two greater than or equal to self.
             ///
             /// ```rust
-            #[doc = concat!("# use ranch::{Error, ", stringify!($type), "};")]
+            #[doc = concat!("# use ranch::{range::*, ", stringify!($type), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<1, 33>::new::<1>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 33>::new::<9>();")]
             #[doc = concat!("let c = ", stringify!($type), "::<1, 33>::new::<32>();")]
             #[doc = concat!("let d = ", stringify!($type), "::<1, 33>::new::<33>();")]
             ///
-            /// assert_eq!(a.next_power_of_two::<1, 64>().get(), 1);
-            /// assert_eq!(b.next_power_of_two::<1, 64>().get(), 16);
-            /// assert_eq!(c.next_power_of_two::<1, 64>().get(), 32);
-            /// assert_eq!(d.next_power_of_two::<1, 64>().get(), 64);
+            #[doc = concat!("assert_eq!(a.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 1);")]
+            #[doc = concat!("assert_eq!(b.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 16);")]
+            #[doc = concat!("assert_eq!(c.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 32);")]
+            #[doc = concat!("assert_eq!(d.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 64);")]
             /// ```
             #[must_use]
             pub const fn next_power_of_two_to<Out: Range<$p>>(self)
@@ -642,14 +642,14 @@ macro_rules! impl_ops_nonzero_unsigned {
             /// Return the smallest power of two greater than or equal to self.
             ///
             /// ```rust
-            #[doc = concat!("# use ranch::{Error, ", stringify!($type), "};")]
+            #[doc = concat!("# use ranch::{range::*, ", stringify!($type), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<1, 33>::new::<16>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<1, 33>::new::<23>();")]
             #[doc = concat!("let c = ", stringify!($type), "::<1, 33>::new::<33>();")]
             ///
-            /// assert_eq!(a.next_multiple_of_to::<8, 8, 40>().get(), 16);
-            /// assert_eq!(b.next_multiple_of_to::<8, 8, 40>().get(), 24);
-            /// assert_eq!(c.next_multiple_of_to::<8, 8, 40>().get(), 40);
+            #[doc = concat!("assert_eq!(a.next_multiple_of_to::<8, ", stringify!($range), "<8, 40>>().get(), 16);")]
+            #[doc = concat!("assert_eq!(b.next_multiple_of_to::<8, ", stringify!($range), "<8, 40>>().get(), 24);")]
+            #[doc = concat!("assert_eq!(c.next_multiple_of_to::<8, ", stringify!($range), "<8, 40>>().get(), 40);")]
             /// ```
             #[must_use]
             pub const fn next_multiple_of_to<const RHS: $p, Out: Range<$p>>(
@@ -706,7 +706,7 @@ macro_rules! impl_ops_nonzero_unsigned {
 }
 
 macro_rules! impl_ops_unsigned {
-    ($type:ident, $p:ty, $nonzero:ident, $with:ident $(,)?) => {
+    ($range:ident, $type:ident, $p:ty, $nonzero:ident, $with:ident $(,)?) => {
         impl<const MIN: $p, const MAX: $p> $type<MIN, MAX> {
             /// Return the smallest power of two greater than or equal to self.
             ///
@@ -743,16 +743,16 @@ macro_rules! impl_ops_unsigned {
             /// Return the smallest power of two greater than or equal to self.
             ///
             /// ```rust
-            #[doc = concat!("# use ranch::{Error, ", stringify!($type), "};")]
+            #[doc = concat!("# use ranch::{range::*, ", stringify!($type), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<0, 33>::new::<0>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<0, 33>::new::<9>();")]
             #[doc = concat!("let c = ", stringify!($type), "::<0, 33>::new::<32>();")]
             #[doc = concat!("let d = ", stringify!($type), "::<0, 33>::new::<33>();")]
             ///
-            /// assert_eq!(a.next_power_of_two::<1, 64>().get(), 1);
-            /// assert_eq!(b.next_power_of_two::<1, 64>().get(), 16);
-            /// assert_eq!(c.next_power_of_two::<1, 64>().get(), 32);
-            /// assert_eq!(d.next_power_of_two::<1, 64>().get(), 64);
+            #[doc = concat!("assert_eq!(a.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 1);")]
+            #[doc = concat!("assert_eq!(b.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 16);")]
+            #[doc = concat!("assert_eq!(c.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 32);")]
+            #[doc = concat!("assert_eq!(d.next_power_of_two_to::<", stringify!($range), "<1, 64>>().get(), 64);")]
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
@@ -833,14 +833,15 @@ macro_rules! impl_ops_unsigned {
             /// Return the smallest power of two greater than or equal to self.
             ///
             /// ```rust
-            #[doc = concat!("# use ranch::{Error, ", stringify!($type), "};")]
+            #[doc = concat!("# use ranch::{range::*, ", stringify!($type), "};")]
             #[doc = concat!("let a = ", stringify!($type), "::<0, 33>::new::<16>();")]
             #[doc = concat!("let b = ", stringify!($type), "::<0, 33>::new::<23>();")]
             #[doc = concat!("let c = ", stringify!($type), "::<0, 33>::new::<33>();")]
             ///
-            /// assert_eq!(a.next_multiple_of::<8, 0, 40>().get(), 16);
-            /// assert_eq!(b.next_multiple_of::<8, 0, 40>().get(), 24);
-            /// assert_eq!(c.next_multiple_of::<8, 0, 40>().get(), 40);
+            ///
+            #[doc = concat!("assert_eq!(a.next_multiple_of_to::<8, ", stringify!($range), "<0, 40>>().get(), 16);")]
+            #[doc = concat!("assert_eq!(b.next_multiple_of_to::<8, ", stringify!($range), "<0, 40>>().get(), 24);")]
+            #[doc = concat!("assert_eq!(c.next_multiple_of_to::<8, ", stringify!($range), "<0, 40>>().get(), 40);")]
             /// ```
             #[must_use = "this returns the result of the operation, \
                           without modifying the original"]
@@ -1055,7 +1056,7 @@ macro_rules! impl_ops_unsigned {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<65>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem::<3, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_to::<3, _>();")]
             ///
             /// assert_eq!(output, 2);
             /// ```
@@ -1081,7 +1082,7 @@ macro_rules! impl_ops_unsigned {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<65>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid::<3, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_to::<3, _>();")]
             ///
             /// assert_eq!(output, 2);
             /// ```
@@ -1107,7 +1108,7 @@ macro_rules! impl_ops_unsigned {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<60>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div_euclid::<2, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div_euclid_to::<2, _>();")]
             ///
             /// assert_eq!(output, 30);
             /// ```
@@ -1506,7 +1507,7 @@ macro_rules! impl_ops_signed {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<60>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div_euclid::<2, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<23, 42> = a.div_euclid_to::<2, _>();")]
             ///
             /// assert_eq!(output, 30);
             /// ```
@@ -1826,7 +1827,7 @@ macro_rules! impl_ops_signed {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<65>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem::<3, _, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_to::<3, _>();")]
             ///
             /// assert_eq!(output, 2);
             /// ```
@@ -1845,7 +1846,7 @@ macro_rules! impl_ops_signed {
             /// ```rust
             #[doc = concat!("# use ranch::", stringify!($type), ";")]
             #[doc = concat!("let a = ", stringify!($type), "::<46, 84>::new::<65>();")]
-            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid::<3, _>();")]
+            #[doc = concat!("let output: ", stringify!($type), "<0, 2> = a.rem_euclid_to::<3, _>();")]
             ///
             /// assert_eq!(output, 2);
             /// ```
@@ -1940,17 +1941,17 @@ impl_ops_nonzero_signed!(RangedNonZeroI32, i32);
 impl_ops_nonzero_signed!(RangedNonZeroI64, i64);
 impl_ops_nonzero_signed!(RangedNonZeroI128, i128);
 
-impl_ops_nonzero_unsigned!(RangedNonZeroU8, u8);
-impl_ops_nonzero_unsigned!(RangedNonZeroU16, u16);
-impl_ops_nonzero_unsigned!(RangedNonZeroU32, u32);
-impl_ops_nonzero_unsigned!(RangedNonZeroU64, u64);
-impl_ops_nonzero_unsigned!(RangedNonZeroU128, u128);
+impl_ops_nonzero_unsigned!(RangeU8, RangedNonZeroU8, u8);
+impl_ops_nonzero_unsigned!(RangeU16, RangedNonZeroU16, u16);
+impl_ops_nonzero_unsigned!(RangeU32, RangedNonZeroU32, u32);
+impl_ops_nonzero_unsigned!(RangeU64, RangedNonZeroU64, u64);
+impl_ops_nonzero_unsigned!(RangeU128, RangedNonZeroU128, u128);
 
-impl_ops_unsigned!(RangedU8, u8, RangedNonZeroU8, with_u8);
-impl_ops_unsigned!(RangedU16, u16, RangedNonZeroU16, with_u16);
-impl_ops_unsigned!(RangedU32, u32, RangedNonZeroU32, with_u32);
-impl_ops_unsigned!(RangedU64, u64, RangedNonZeroU64, with_u64);
-impl_ops_unsigned!(RangedU128, u128, RangedNonZeroU128, with_u128);
+impl_ops_unsigned!(RangeU8, RangedU8, u8, RangedNonZeroU8, with_u8);
+impl_ops_unsigned!(RangeU16, RangedU16, u16, RangedNonZeroU16, with_u16);
+impl_ops_unsigned!(RangeU32, RangedU32, u32, RangedNonZeroU32, with_u32);
+impl_ops_unsigned!(RangeU64, RangedU64, u64, RangedNonZeroU64, with_u64);
+impl_ops_unsigned!(RangeU128, RangedU128, u128, RangedNonZeroU128, with_u128);
 
 impl_ops_signed!(RangedI8, i8, RangedNonZeroI8, with_i8);
 impl_ops_signed!(RangedI16, i16, RangedNonZeroI16, with_i16);

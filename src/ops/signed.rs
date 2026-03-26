@@ -49,7 +49,7 @@ macro_rules! ops_signed {
             #[doc = concat!("# use ranch::", stringify!($name), ";")]
             #[doc = concat!("let a = ", stringify!($name), "::<2, 5>::new::<3>();")]
             #[doc = concat!("let b = ", stringify!($name), "::<-1, 3>::new::<1>();")]
-            #[doc = concat!("let output: ", stringify!($name), "::<-1, 6> = a.sub_ranged(b);")]
+            #[doc = concat!("let output: ", stringify!($name), "::<-1, 6> = a.sub_ranged_to(b);")]
             ///
             /// assert_eq!(output.get(), 2);
             /// ```
