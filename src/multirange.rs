@@ -5,7 +5,7 @@ use core::{num::NonZero, ops::RangeInclusive};
 pub use crate::num::ranged::Ranged;
 use crate::{cmp::Cmp, range::Range, *};
 
-/// A type with multiple valid ranges of values
+/// A type with one or more valid ranges of values
 pub trait MultiRange<T: Rangeable = Self>: Rangeable {
     ///// The minimum value of the type
     const MIN2: T;

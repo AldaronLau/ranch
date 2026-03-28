@@ -48,7 +48,7 @@ impl From<crate::Error> for Error {
     }
 }
 
-/// A type with a valid range of values
+/// A type with a valid contiguous range of values
 pub trait Range<T: Rangeable = Self>: Rangeable {
     /// The minimum value of the type
     const MIN: T;
