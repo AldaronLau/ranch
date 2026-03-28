@@ -39,12 +39,17 @@ macro_rules! nonzero_impl_multirange {
                 RangeInclusive::new(
                     Self::MIN2,
                     const {
-                        NonZero::new(min::<$p>(-1, NonZero::<$p>::MAX.get())).unwrap()
+                        NonZero::new(cmp_min::<$p>(
+                            -1,
+                            NonZero::<$p>::MAX.get(),
+                        ))
+                        .unwrap()
                     },
                 ),
                 RangeInclusive::new(
                     const {
-                        NonZero::new(max::<$p>(1, NonZero::<$p>::MIN.get())).unwrap()
+                        NonZero::new(cmp_max::<$p>(1, NonZero::<$p>::MIN.get()))
+                            .unwrap()
                     },
                     Self::MAX2,
                 ),
@@ -55,8 +60,8 @@ macro_rules! nonzero_impl_multirange {
             const MAX2: $p = <$p>::MAX;
             const MIN2: $p = <$p>::MIN;
             const SUBRANGES: &'static [RangeInclusive<$p>] = &[
-                RangeInclusive::new(<$p>::MIN, min::<$p>(-1, <$p>::MAX)),
-                RangeInclusive::new(max::<$p>(1, <$p>::MIN), <$p>::MAX),
+                RangeInclusive::new(<$p>::MIN, cmp_min::<$p>(-1, <$p>::MAX)),
+                RangeInclusive::new(cmp_max::<$p>(1, <$p>::MIN), <$p>::MAX),
             ];
         }
     };
@@ -71,8 +76,8 @@ macro_rules! nonzero_multirange_impl {
             const MAX2: $p = R::MAX2;
             const MIN2: $p = R::MIN2;
             const SUBRANGES: &'static [RangeInclusive<$p>] = &[
-                RangeInclusive::new(R::MIN2, min(-1, R::MAX2)),
-                RangeInclusive::new(max(1, R::MIN2), R::MAX2),
+                RangeInclusive::new(R::MIN2, cmp_min(-1, R::MAX2)),
+                RangeInclusive::new(cmp_max(1, R::MIN2), R::MAX2),
             ];
         }
 
@@ -89,14 +94,14 @@ macro_rules! nonzero_multirange_impl {
                     Self::MIN2,
                     const {
                         Self::from_unchecked(
-                            NonZero::new(min(-1, R::MAX2)).unwrap(),
+                            NonZero::new(cmp_min(-1, R::MAX2)).unwrap(),
                         )
                     },
                 ),
                 RangeInclusive::new(
                     const {
                         Self::from_unchecked(
-                            NonZero::new(max(1, R::MIN2)).unwrap(),
+                            NonZero::new(cmp_max(1, R::MIN2)).unwrap(),
                         )
                     },
                     Self::MAX2,
@@ -117,10 +122,10 @@ macro_rules! multirange_nonzero_impl {
             const SUBRANGES: &'static [RangeInclusive<NonZero<$p>>] = &[
                 RangeInclusive::new(
                     const { NonZero::new(R::MIN2).unwrap() },
-                    const { NonZero::new(min(-1, R::MAX2)).unwrap() },
+                    const { NonZero::new(cmp_min(-1, R::MAX2)).unwrap() },
                 ),
                 RangeInclusive::new(
-                    const { NonZero::new(max(1, R::MIN2)).unwrap() },
+                    const { NonZero::new(cmp_max(1, R::MIN2)).unwrap() },
                     const { NonZero::new(R::MAX2).unwrap() },
                 ),
             ];
@@ -235,14 +240,14 @@ pub trait Rangeable: Copy + Ord + 'static {}
 
 impl<T> Rangeable for T where T: Copy + Ord + 'static {}
 
-const fn max<T>(a: T, b: T) -> T
+const fn cmp_max<T>(a: T, b: T) -> T
 where
     T: Cmp,
 {
     if cmp::gt(a, b) { a } else { b }
 }
 
-const fn min<T>(a: T, b: T) -> T
+const fn cmp_min<T>(a: T, b: T) -> T
 where
     T: Cmp,
 {
