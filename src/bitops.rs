@@ -68,9 +68,9 @@ macro_rules! bitops_impl {
             {
                 const {
                     if N > as_primitive::as_primitive_expanding(
-                        multirange::max2::<T, T>(),
+                        multirange::max::<T, T>(),
                     ) || N < as_primitive::as_primitive_expanding(
-                        multirange::min2::<T, T>(),
+                        multirange::min::<T, T>(),
                     ) {
                         panic!("Mask must fit within bounds of output range");
                     }
@@ -122,7 +122,7 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                    if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
                         R,
                     >()) > Self::MAX.get()
@@ -176,7 +176,7 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                    if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
                         R,
                     >()) > Self::MAX.get()
@@ -230,7 +230,7 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                    if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
                         R,
                     >()) > Self::MAX.get()
@@ -441,12 +441,12 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(multirange::min2::<
+                    as_primitive::as_primitive_expanding(multirange::min::<
                         R,
                         R,
                     >());
 
-                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                    if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
                         R,
                     >()) >= Self::USED_BITS
@@ -485,12 +485,12 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(multirange::min2::<
+                    as_primitive::as_primitive_expanding(multirange::min::<
                         R,
                         R,
                     >());
 
-                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                    if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
                         R,
                     >()) >= Self::USED_BITS
@@ -565,9 +565,9 @@ macro_rules! bitops_impl {
             {
                 const {
                     if N > as_primitive::as_primitive_expanding(
-                        multirange::max2::<T, T>(),
+                        multirange::max::<T, T>(),
                     ) || N < as_primitive::as_primitive_expanding(
-                        multirange::min2::<T, T>(),
+                        multirange::min::<T, T>(),
                     ) {
                         panic!("Mask must fit within bounds of output range");
                     }
@@ -619,7 +619,7 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                    if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
                         R,
                     >()) > Self::MAX.get()
@@ -672,7 +672,7 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                    if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
                         R,
                     >()) > Self::MAX.get()
@@ -725,7 +725,7 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                    if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
                         R,
                     >()) > Self::MAX.get()
@@ -935,12 +935,12 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(multirange::min2::<
+                    as_primitive::as_primitive_expanding(multirange::min::<
                         R,
                         R,
                     >());
 
-                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                    if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
                         R,
                     >()) >= Self::USED_BITS
@@ -979,12 +979,12 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(multirange::min2::<
+                    as_primitive::as_primitive_expanding(multirange::min::<
                         R,
                         R,
                     >());
 
-                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                    if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
                         R,
                     >()) >= Self::USED_BITS

@@ -254,7 +254,7 @@ where
     if cmp::lt(a, b) { a } else { b }
 }
 
-pub const fn min2<M, T>() -> T
+pub const fn min<M, T>() -> T
 where
     M: MultiRange<T>,
     T: Rangeable,
@@ -262,7 +262,7 @@ where
     *M::SUBRANGES.first().unwrap().start()
 }
 
-pub const fn max2<M, T>() -> T
+pub const fn max<M, T>() -> T
 where
     M: MultiRange<T>,
     T: Rangeable,
