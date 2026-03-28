@@ -67,9 +67,11 @@ macro_rules! bitops_impl {
                 Self: AsPrimitive<<T as FromRepr>::Repr>,
             {
                 const {
-                    if N > as_primitive::as_primitive_expanding(T::MAX)
-                        || N < as_primitive::as_primitive_expanding(T::MIN)
-                    {
+                    if N > as_primitive::as_primitive_expanding(
+                        multirange::max2::<T, T>(),
+                    ) || N < as_primitive::as_primitive_expanding(
+                        multirange::min2::<T, T>(),
+                    ) {
                         panic!("Mask must fit within bounds of output range");
                     }
                 }
@@ -120,8 +122,10 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        > Self::MAX.get()
+                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                        R,
+                        R,
+                    >()) > Self::MAX.get()
                     {
                         panic!("cannot bitwise AND with a larger type")
                     }
@@ -172,8 +176,10 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        > Self::MAX.get()
+                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                        R,
+                        R,
+                    >()) > Self::MAX.get()
                     {
                         panic!("cannot bitwise AND with a larger type")
                     }
@@ -224,8 +230,10 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        > Self::MAX.get()
+                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                        R,
+                        R,
+                    >()) > Self::MAX.get()
                     {
                         panic!("cannot bitwise AND with a larger type")
                     }
@@ -433,10 +441,15 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(R::MIN);
+                    as_primitive::as_primitive_expanding(multirange::min2::<
+                        R,
+                        R,
+                    >());
 
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        >= Self::USED_BITS
+                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                        R,
+                        R,
+                    >()) >= Self::USED_BITS
                     {
                         panic!("cannot shift left more than size - 1 in bits");
                     }
@@ -472,10 +485,15 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(R::MIN);
+                    as_primitive::as_primitive_expanding(multirange::min2::<
+                        R,
+                        R,
+                    >());
 
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        >= Self::USED_BITS
+                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                        R,
+                        R,
+                    >()) >= Self::USED_BITS
                     {
                         panic!("cannot shift right more than size - 1 in bits");
                     }
@@ -546,9 +564,11 @@ macro_rules! bitops_impl {
                 Self: AsPrimitive<<T as FromRepr>::Repr>,
             {
                 const {
-                    if N > as_primitive::as_primitive_expanding(T::MAX)
-                        || N < as_primitive::as_primitive_expanding(T::MIN)
-                    {
+                    if N > as_primitive::as_primitive_expanding(
+                        multirange::max2::<T, T>(),
+                    ) || N < as_primitive::as_primitive_expanding(
+                        multirange::min2::<T, T>(),
+                    ) {
                         panic!("Mask must fit within bounds of output range");
                     }
                 }
@@ -599,8 +619,10 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        > Self::MAX.get()
+                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                        R,
+                        R,
+                    >()) > Self::MAX.get()
                     {
                         panic!("cannot bitwise AND with a larger type")
                     }
@@ -650,8 +672,10 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        > Self::MAX.get()
+                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                        R,
+                        R,
+                    >()) > Self::MAX.get()
                     {
                         panic!("cannot bitwise AND with a larger type")
                     }
@@ -701,8 +725,10 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        > Self::MAX.get()
+                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                        R,
+                        R,
+                    >()) > Self::MAX.get()
                     {
                         panic!("cannot bitwise AND with a larger type")
                     }
@@ -909,10 +935,15 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(R::MIN);
+                    as_primitive::as_primitive_expanding(multirange::min2::<
+                        R,
+                        R,
+                    >());
 
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        >= Self::USED_BITS
+                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                        R,
+                        R,
+                    >()) >= Self::USED_BITS
                     {
                         panic!("cannot shift left more than size - 1 in bits");
                     }
@@ -948,10 +979,15 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(R::MIN);
+                    as_primitive::as_primitive_expanding(multirange::min2::<
+                        R,
+                        R,
+                    >());
 
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        >= Self::USED_BITS
+                    if as_primitive::as_primitive_expanding(multirange::max2::<
+                        R,
+                        R,
+                    >()) >= Self::USED_BITS
                     {
                         panic!("cannot shift right more than size - 1 in bits");
                     }
