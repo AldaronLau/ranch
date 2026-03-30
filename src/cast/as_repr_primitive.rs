@@ -1,14 +1,25 @@
 // FIXME: Move to as_repr crate as `AsReprIntPrimitive`
 
+//! The trait [`AsReprPrimitive`] (`AsReprIntPrimitive`) makes certain const
+//! functions available, that aren't provided with the basic [`AsRepr`].
+
+#![allow(unsafe_code)]
+
 use core::num::NonZero;
 
 use as_repr::AsRepr;
 
 use super::as_primitive::Primitive;
-use crate::{
-    cmp::Cmp,
-    multirange::{MultiRange, Ranged},
-};
+use crate::multirange::{MultiRange, Ranged};
+
+#[repr(u32)]
+pub(crate) enum Size {
+    Byte = 1,
+    Half = 2,
+    Word = 4,
+    Long = 8,
+    Quad = 16,
+}
 
 /// Has a representation as a primitive
 pub trait AsReprPrimitive: AsRepr<Self::Repr> + Copy {
@@ -57,3 +68,200 @@ nonzero!(u16);
 nonzero!(u32);
 nonzero!(u64);
 nonzero!(u128);
+
+pub const fn ordering<T>(a: T, b: T) -> Ordering
+where
+    T: AsReprPrimitive,
+{
+    // Valid for ints only
+    const ORDERING: [[Ordering; 2]; 2] = [
+        [Ordering::Equal, Ordering::Greater],
+        [Ordering::Less, Ordering::Equal],
+    ];
+
+    const unsafe fn ordering_unsigned<T>(
+        a: *const T,
+        b: *const T,
+    ) -> (bool, bool) {
+        match const { size::<T>() } {
+            Size::Byte => {
+                let (a, b) = unsafe { (*a.cast::<u8>(), *b.cast::<u8>()) };
+                (a < b, a > b)
+            }
+            Size::Half => {
+                let (a, b) = unsafe { (*a.cast::<u16>(), *b.cast::<u16>()) };
+                (a < b, a > b)
+            }
+            Size::Word => {
+                let (a, b) = unsafe { (*a.cast::<u32>(), *b.cast::<u32>()) };
+                (a < b, a > b)
+            }
+            Size::Long => {
+                let (a, b) = unsafe { (*a.cast::<u64>(), *b.cast::<u64>()) };
+                (a < b, a > b)
+            }
+            Size::Quad => {
+                let (a, b) = unsafe { (*a.cast::<u128>(), *b.cast::<u128>()) };
+                (a < b, a > b)
+            }
+        }
+    }
+
+    const unsafe fn ordering_signed<T>(
+        a: *const T,
+        b: *const T,
+    ) -> (bool, bool) {
+        match const { size::<T>() } {
+            Size::Byte => {
+                let (a, b) = unsafe { (*a.cast::<i8>(), *b.cast::<i8>()) };
+                (a < b, a > b)
+            }
+            Size::Half => {
+                let (a, b) = unsafe { (*a.cast::<i16>(), *b.cast::<i16>()) };
+                (a < b, a > b)
+            }
+            Size::Word => {
+                let (a, b) = unsafe { (*a.cast::<i32>(), *b.cast::<i32>()) };
+                (a < b, a > b)
+            }
+            Size::Long => {
+                let (a, b) = unsafe { (*a.cast::<i64>(), *b.cast::<i64>()) };
+                (a < b, a > b)
+            }
+            Size::Quad => {
+                let (a, b) = unsafe { (*a.cast::<i128>(), *b.cast::<i128>()) };
+                (a < b, a > b)
+            }
+        }
+    }
+
+    // Valid for ints only
+    let a: *const T = &a;
+    let b: *const T = &b;
+    let (less, greater) = if T::SIGNED {
+        ordering_signed(a, b)
+    } else {
+        ordering_unsigned(a, b)
+    };
+
+    ORDERING[less as usize][greater as usize]
+}
+
+pub(crate) const fn wrapping_add_one<T>(mut t: T) -> T
+where
+    T: Primitive,
+{
+    // Valid for ints only
+    let size = const { size::<T>() };
+    let ptr: *mut T = &mut t;
+
+    unsafe {
+        match size {
+            Size::Byte => (*ptr.cast::<u8>()).wrapping_add(1),
+            Size::Half => (*ptr.cast::<u16>()).wrapping_add(1),
+            Size::Word => (*ptr.cast::<u32>()).wrapping_add(1),
+            Size::Long => (*ptr.cast::<u64>()).wrapping_add(1),
+            Size::Quad => (*ptr.cast::<u128>()).wrapping_add(1),
+        }
+    }
+}
+
+pub(crate) const fn wrapping_sub_one<T>(mut t: T) -> T
+where
+    T: Primitive,
+{
+    // Valid for ints only
+    let size = const { size::<T>() };
+    let ptr: *mut T = &mut t;
+
+    unsafe {
+        match size {
+            Size::Byte => (*ptr.cast::<u8>()).wrapping_sub(1),
+            Size::Half => (*ptr.cast::<u16>()).wrapping_sub(1),
+            Size::Word => (*ptr.cast::<u32>()).wrapping_sub(1),
+            Size::Long => (*ptr.cast::<u64>()).wrapping_sub(1),
+            Size::Quad => (*ptr.cast::<u128>()).wrapping_sub(1),
+        }
+    }
+}
+
+pub const fn is_zero<T>(a: T) -> bool
+where
+    T: AsReprPrimitive,
+{
+    // Valid for ints / floats
+    ordering(a, <T::Repr>::ZERO).is_eq()
+}
+
+pub const fn is_one<T>(a: T) -> bool
+where
+    T: AsReprPrimitive,
+{
+    // Valid for ints only
+    let one = const { wrapping_add_one(<T::Repr>::ZERO) };
+
+    ordering(a, one).is_eq()
+}
+
+pub const fn is_negative_one<T>(a: T) -> bool
+where
+    T: AsReprPrimitive,
+{
+    // Valid for ints only
+    let negative_one = const { wrapping_sub_one(<T::Repr>::ZERO) };
+
+    T::SIGNED && ordering(a, negative_one).is_eq()
+}
+
+pub const fn gt<T>(a: T, b: T) -> bool
+where
+    T: AsReprPrimitive,
+{
+    ordering(a, b).is_gt()
+}
+
+pub const fn ge<T>(a: T, b: T) -> bool
+where
+    T: AsReprPrimitive,
+{
+    ordering(a, b).is_ge()
+}
+
+pub const fn lt<T>(a: T, b: T) -> bool
+where
+    T: AsReprPrimitive,
+{
+    ordering(a, b).is_lt()
+}
+
+pub const fn le<T>(a: T, b: T) -> bool
+where
+    T: AsReprPrimitive,
+{
+    ordering(a, b).is_le()
+}
+
+pub const fn min<T>(a: T, b: T) -> T
+where
+    T: AsReprPrimitive,
+{
+    if ordering(a, b).is_le() { a } else { b }
+}
+
+pub const fn max<T>(a: T, b: T) -> T
+where
+    T: AsReprPrimitive,
+{
+    if ordering(a, b).is_le() { b } else { a }
+}
+
+pub const fn size<T>() -> Size {
+    match size_of::<T>() {
+        1 => Size::Byte,
+        2 => Size::Half,
+        4 => Size::Word,
+        8 => Size::Long,
+        16 => Size::Quad,
+        _ => panic!("invalid size"),
+    }
+}

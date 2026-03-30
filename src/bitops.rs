@@ -12,8 +12,8 @@ use crate::{
         as_repr_primitive::AsReprPrimitive,
     },
     from_repr::FromRepr,
-    shl::DowncastShl,
     multirange::Rangeable,
+    shl::DowncastShl,
     *,
 };
 

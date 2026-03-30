@@ -4,14 +4,22 @@ use core::{mem, num::NonZero, ptr};
 
 use as_repr::AsRepr;
 
+use super::as_repr_primitive::{self, Size};
 use crate::{
     multirange::{MultiRange, Ranged},
     num::rangeable_primitive::RangeablePrimitive,
 };
 
-pub trait Primitive: RangeablePrimitive<ZeroablePrimitive = Self> {}
+pub trait Primitive: RangeablePrimitive<ZeroablePrimitive = Self> {
+    const ZERO: Self;
+}
 
-impl<T> Primitive for T where T: RangeablePrimitive<ZeroablePrimitive = T> {}
+impl<T> Primitive for T
+where
+    T: RangeablePrimitive<ZeroablePrimitive = T>,
+{
+    const ZERO: Self = unsafe { mem::zeroed() };
+}
 
 /// Turn representation into a primitive
 ///
@@ -99,35 +107,8 @@ where
     V: AsPrimitive<T>,
     T: Primitive,
 {
-    #[repr(u32)]
-    enum Size {
-        Byte = 1,
-        Half = 2,
-        Word = 4,
-        Long = 8,
-        Quad = 16,
-    }
-
-    let in_size = const {
-        match size_of::<V::Repr>() {
-            1 => Size::Byte,
-            2 => Size::Half,
-            4 => Size::Word,
-            8 => Size::Long,
-            16 => Size::Quad,
-            _ => panic!("invalid size"),
-        }
-    };
-    let out_size = const {
-        match size_of::<T>() {
-            1 => Size::Byte,
-            2 => Size::Half,
-            4 => Size::Word,
-            8 => Size::Long,
-            16 => Size::Quad,
-            _ => panic!("invalid size"),
-        }
-    };
+    let in_size = const { as_repr_primitive::size::<V::Repr>() };
+    let out_size = const { as_repr_primitive::size::<T>() };
 
     let mut value = as_repr::as_repr(value);
     let negative = unsafe { is_negative(value) };
