@@ -205,6 +205,7 @@
 mod cast {
     pub(super) mod as_primitive;
     mod as_repr;
+    pub(super) mod as_repr_primitive;
     mod to;
 }
 

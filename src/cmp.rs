@@ -6,8 +6,8 @@ use core::cmp::Ordering;
 ///
 /// # Safety
 ///
-///  - `T` must be a primitive `i*` or `u*`
-pub unsafe trait Cmp: Copy + Clone {
+///  - `T` must implement `AsRepr<T>` where `T` is a primitive `i*` or `u*`
+pub unsafe trait Cmp: Copy + Ord + Clone + 'static {
     const SIGNED: bool;
     const ZERO: Self;
     const ONE: Self;

@@ -3,17 +3,16 @@
 use core::{num::NonZero, ops::RangeInclusive};
 
 pub use crate::num::ranged::Ranged;
-use crate::{cmp::Cmp, range::Range, *};
+use crate::{
+    cast::as_repr_primitive::AsReprPrimitive, cmp::Cmp,
+    num::rangeable_primitive::RangeablePrimitive, range::Range, *,
+};
 
 /// A type with one or more valid ranges of values
 pub trait MultiRange<T: Rangeable = Self>: Rangeable {
-    ///// The minimum value of the type
-    const MIN2: T;
-    ///// The maximum value of the type
-    const MAX2: T;
-    /// Each valid subrange (if range is continuous, should be empty).
+    /// Each valid subrange
     ///
-    /// The ranges should be returned from lowest to highest value, and never
+    /// The ranges must be returned from lowest to highest value, and never
     /// overlap (although this isn't enforced by the trait).
     ///
     /// The defined ranges may be empty.
@@ -25,19 +24,15 @@ where
     T: Rangeable,
     U: Range<T>,
 {
-    const MAX2: T = U::MAX;
-    const MIN2: T = U::MIN;
     const SUBRANGES: &'static [RangeInclusive<T>] = &[];
 }
 
 macro_rules! nonzero_impl_multirange {
     ($p:ty) => {
         impl MultiRange for NonZero<$p> {
-            const MAX2: Self = Self::MAX;
-            const MIN2: Self = Self::MIN;
             const SUBRANGES: &'static [RangeInclusive<NonZero<$p>>] = &[
                 RangeInclusive::new(
-                    Self::MIN2,
+                    Self::MIN,
                     const {
                         NonZero::new(cmp_min::<$p>(
                             -1,
@@ -51,14 +46,12 @@ macro_rules! nonzero_impl_multirange {
                         NonZero::new(cmp_max::<$p>(1, NonZero::<$p>::MIN.get()))
                             .unwrap()
                     },
-                    Self::MAX2,
+                    Self::MAX,
                 ),
             ];
         }
 
         impl MultiRange<$p> for NonZero<$p> {
-            const MAX2: $p = <$p>::MAX;
-            const MIN2: $p = <$p>::MIN;
             const SUBRANGES: &'static [RangeInclusive<$p>] = &[
                 RangeInclusive::new(<$p>::MIN, cmp_min::<$p>(-1, <$p>::MAX)),
                 RangeInclusive::new(cmp_max::<$p>(1, <$p>::MIN), <$p>::MAX),
@@ -71,40 +64,37 @@ macro_rules! nonzero_multirange_impl {
     ($p:ty) => {
         impl<R> MultiRange<$p> for Ranged<NonZero<$p>, R>
         where
-            R: MultiRange<$p>,
+            R: Range<$p>,
         {
-            const MAX2: $p = R::MAX2;
-            const MIN2: $p = R::MIN2;
             const SUBRANGES: &'static [RangeInclusive<$p>] = &[
-                RangeInclusive::new(R::MIN2, cmp_min(-1, R::MAX2)),
-                RangeInclusive::new(cmp_max(1, R::MIN2), R::MAX2),
+                RangeInclusive::new(
+                    min::<R, $p>(),
+                    cmp_min(-1, max::<R, $p>()),
+                ),
+                RangeInclusive::new(cmp_max(1, min::<R, $p>()), max::<R, $p>()),
             ];
         }
 
         impl<R> MultiRange for Ranged<NonZero<$p>, R>
         where
-            R: MultiRange<$p>,
+            R: Range<$p>,
         {
-            const MAX2: Self =
-                Self::from_unchecked(NonZero::new(R::MAX2).unwrap());
-            const MIN2: Self =
-                Self::from_unchecked(NonZero::new(R::MIN2).unwrap());
             const SUBRANGES: &'static [RangeInclusive<Self>] = &[
                 RangeInclusive::new(
-                    Self::MIN2,
+                    Self::from_unchecked(NonZero::new(min::<R, $p>()).unwrap()),
                     const {
                         Self::from_unchecked(
-                            NonZero::new(cmp_min(-1, R::MAX2)).unwrap(),
+                            NonZero::new(cmp_min(-1, max::<R, $p>())).unwrap(),
                         )
                     },
                 ),
                 RangeInclusive::new(
                     const {
                         Self::from_unchecked(
-                            NonZero::new(cmp_max(1, R::MIN2)).unwrap(),
+                            NonZero::new(cmp_max(1, min::<R, $p>())).unwrap(),
                         )
                     },
-                    Self::MAX2,
+                    Self::from_unchecked(NonZero::new(max::<R, $p>()).unwrap()),
                 ),
             ];
         }
@@ -117,16 +107,14 @@ macro_rules! multirange_nonzero_impl {
         where
             R: MultiRange<$p>,
         {
-            const MAX2: NonZero<$p> = const { NonZero::new(R::MAX2).unwrap() };
-            const MIN2: NonZero<$p> = const { NonZero::new(R::MIN2).unwrap() };
             const SUBRANGES: &'static [RangeInclusive<NonZero<$p>>] = &[
                 RangeInclusive::new(
-                    const { NonZero::new(R::MIN2).unwrap() },
-                    const { NonZero::new(cmp_min(-1, R::MAX2)).unwrap() },
+                    const { NonZero::new(min::<R, $p>()).unwrap() },
+                    const { NonZero::new(cmp_min(-1, max::<R, $p>())).unwrap() },
                 ),
                 RangeInclusive::new(
-                    const { NonZero::new(cmp_max(1, R::MIN2)).unwrap() },
-                    const { NonZero::new(R::MAX2).unwrap() },
+                    const { NonZero::new(cmp_max(1, min::<R, $p>())).unwrap() },
+                    const { NonZero::new(max::<R, $p>()).unwrap() },
                 ),
             ];
         }
@@ -225,20 +213,41 @@ where
         }
     }
 
-    if const { R::SUBRANGES.is_empty() } {
-        Ranges::Once(InclusiveRange {
-            min: R::MIN2,
-            max: R::MAX2,
-        })
-    } else {
-        Ranges::List(R::SUBRANGES)
-    }
+    Ranges::List(R::SUBRANGES)
 }
 
 /// Rangeable type.
 pub trait Rangeable: Copy + Ord + 'static {}
 
 impl<T> Rangeable for T where T: Copy + Ord + 'static {}
+
+pub const fn min<M, T>() -> T
+where
+    M: MultiRange<T>,
+    T: AsReprPrimitive,
+{
+    let mut i = 0;
+
+    while is_empty(&M::SUBRANGES[i]) {
+        i += 1;
+    }
+
+    *M::SUBRANGES[i].start()
+}
+
+pub const fn max<M, T>() -> T
+where
+    M: MultiRange<T>,
+    T: AsReprPrimitive,
+{
+    let mut i = M::SUBRANGES.len();
+
+    while is_empty(&M::SUBRANGES[i]) {
+        i -= 1;
+    }
+
+    *M::SUBRANGES[i].end()
+}
 
 const fn cmp_max<T>(a: T, b: T) -> T
 where
@@ -254,18 +263,12 @@ where
     if cmp::lt(a, b) { a } else { b }
 }
 
-pub const fn min<M, T>() -> T
+const fn is_empty<T>(range: &RangeInclusive<T>) -> bool
 where
-    M: MultiRange<T>,
-    T: Rangeable,
+    T: AsReprPrimitive,
 {
-    *M::SUBRANGES.first().unwrap().start()
-}
+    let start = as_repr::as_repr::<T::Repr>(*range.start());
+    let end = as_repr::as_repr::<T::Repr>(*range.end());
 
-pub const fn max<M, T>() -> T
-where
-    M: MultiRange<T>,
-    T: Rangeable,
-{
-    *M::SUBRANGES.last().unwrap().end()
+    !cmp::gt(end, start)
 }

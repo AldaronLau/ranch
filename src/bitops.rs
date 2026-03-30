@@ -7,9 +7,13 @@ use as_repr::AsRepr;
 
 use crate::{
     bitwise::*,
-    cast::as_primitive::{self, AsPrimitive},
+    cast::{
+        as_primitive::{self, AsPrimitive},
+        as_repr_primitive::AsReprPrimitive,
+    },
     from_repr::FromRepr,
     shl::DowncastShl,
+    multirange::Rangeable,
     *,
 };
 
@@ -441,10 +445,9 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(multirange::min::<
-                        R,
-                        R,
-                    >());
+                    as_primitive::as_primitive_expanding(
+                        multirange::min::<R, R>(),
+                    );
 
                     if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
@@ -485,10 +488,9 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(multirange::min::<
-                        R,
-                        R,
-                    >());
+                    as_primitive::as_primitive_expanding(
+                        multirange::min::<R, R>(),
+                    );
 
                     if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
@@ -935,10 +937,9 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(multirange::min::<
-                        R,
-                        R,
-                    >());
+                    as_primitive::as_primitive_expanding(
+                        multirange::min::<R, R>(),
+                    );
 
                     if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
@@ -979,10 +980,9 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(multirange::min::<
-                        R,
-                        R,
-                    >());
+                    as_primitive::as_primitive_expanding(
+                        multirange::min::<R, R>(),
+                    );
 
                     if as_primitive::as_primitive_expanding(multirange::max::<
                         R,
@@ -1270,14 +1270,16 @@ macro_rules! bitops {
     ($u:ty, $s:ty, $unsigned:ty, $signed:ty, $bits:literal) => {
         impl<T> BitwiseSigned<T> for $signed
         where
-            $signed: AsPrimitive<T>,
+            $signed: AsPrimitive<T> + AsReprPrimitive<Repr = T>,
+            T: Rangeable,
         {
             const USED_BITS: u32 = $bits;
         }
 
         impl<T> BitwiseUnsigned<T> for $unsigned
         where
-            $unsigned: AsPrimitive<T>,
+            $unsigned: AsPrimitive<T> + AsReprPrimitive<Repr = T>,
+            T: Rangeable,
         {
             const USED_BITS: u32 = $bits;
         }
