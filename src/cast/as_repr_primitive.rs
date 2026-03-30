@@ -147,42 +147,12 @@ where
     ORDERING[less as usize][greater as usize]
 }
 
-pub(crate) const fn wrapping_add_one<T>(mut t: T) -> T
+pub const fn is_nonzero<T>(a: T) -> bool
 where
-    T: Primitive,
+    T: AsReprPrimitive,
 {
-    // Valid for ints only
-    let size = const { size::<T>() };
-    let ptr: *mut T = &mut t;
-
-    unsafe {
-        match size {
-            Size::Byte => (*ptr.cast::<u8>()).wrapping_add(1),
-            Size::Half => (*ptr.cast::<u16>()).wrapping_add(1),
-            Size::Word => (*ptr.cast::<u32>()).wrapping_add(1),
-            Size::Long => (*ptr.cast::<u64>()).wrapping_add(1),
-            Size::Quad => (*ptr.cast::<u128>()).wrapping_add(1),
-        }
-    }
-}
-
-pub(crate) const fn wrapping_sub_one<T>(mut t: T) -> T
-where
-    T: Primitive,
-{
-    // Valid for ints only
-    let size = const { size::<T>() };
-    let ptr: *mut T = &mut t;
-
-    unsafe {
-        match size {
-            Size::Byte => (*ptr.cast::<u8>()).wrapping_sub(1),
-            Size::Half => (*ptr.cast::<u16>()).wrapping_sub(1),
-            Size::Word => (*ptr.cast::<u32>()).wrapping_sub(1),
-            Size::Long => (*ptr.cast::<u64>()).wrapping_sub(1),
-            Size::Quad => (*ptr.cast::<u128>()).wrapping_sub(1),
-        }
-    }
+    // Valid for ints / floats
+    ordering(a, <T::Repr>::ZERO).is_ne()
 }
 
 pub const fn is_zero<T>(a: T) -> bool
@@ -211,6 +181,44 @@ where
     let negative_one = const { wrapping_sub_one(<T::Repr>::ZERO) };
 
     T::SIGNED && ordering(a, negative_one).is_eq()
+}
+
+pub const fn is_negative<T>(a: T) -> bool
+where
+    T: AsReprPrimitive,
+{
+    if const { !T::SIGNED } {
+        return false;
+    }
+
+    unsafe {
+        match const { size::<T>() } {
+            Size::Byte => (*ptr.cast::<i8>()).is_negative(),
+            Size::Half => (*ptr.cast::<i16>()).is_negative(),
+            Size::Word => (*ptr.cast::<i32>()).is_negative(),
+            Size::Long => (*ptr.cast::<i64>()).is_negative(),
+            Size::Quad => (*ptr.cast::<i128>()).is_negative(),
+        }
+    }
+}
+
+pub const fn is_positive<T>(a: T) -> bool
+where
+    T: AsReprPrimitive,
+{
+    if const { !T::SIGNED } {
+        return is_nonzero(a);
+    }
+
+    unsafe {
+        match const { size::<T>() } {
+            Size::Byte => (*ptr.cast::<i8>()).is_positive(),
+            Size::Half => (*ptr.cast::<i16>()).is_positive(),
+            Size::Word => (*ptr.cast::<i32>()).is_positive(),
+            Size::Long => (*ptr.cast::<i64>()).is_positive(),
+            Size::Quad => (*ptr.cast::<i128>()).is_positive(),
+        }
+    }
 }
 
 pub const fn gt<T>(a: T, b: T) -> bool
@@ -255,7 +263,45 @@ where
     if ordering(a, b).is_le() { b } else { a }
 }
 
-pub const fn size<T>() -> Size {
+pub(crate) const fn wrapping_add_one<T>(mut t: T) -> T
+where
+    T: Primitive,
+{
+    // Valid for ints only
+    let size = const { size::<T>() };
+    let ptr: *mut T = &mut t;
+
+    unsafe {
+        match size {
+            Size::Byte => (*ptr.cast::<u8>()).wrapping_add(1),
+            Size::Half => (*ptr.cast::<u16>()).wrapping_add(1),
+            Size::Word => (*ptr.cast::<u32>()).wrapping_add(1),
+            Size::Long => (*ptr.cast::<u64>()).wrapping_add(1),
+            Size::Quad => (*ptr.cast::<u128>()).wrapping_add(1),
+        }
+    }
+}
+
+pub(crate) const fn wrapping_sub_one<T>(mut t: T) -> T
+where
+    T: Primitive,
+{
+    // Valid for ints only
+    let size = const { size::<T>() };
+    let ptr: *mut T = &mut t;
+
+    unsafe {
+        match size {
+            Size::Byte => (*ptr.cast::<u8>()).wrapping_sub(1),
+            Size::Half => (*ptr.cast::<u16>()).wrapping_sub(1),
+            Size::Word => (*ptr.cast::<u32>()).wrapping_sub(1),
+            Size::Long => (*ptr.cast::<u64>()).wrapping_sub(1),
+            Size::Quad => (*ptr.cast::<u128>()).wrapping_sub(1),
+        }
+    }
+}
+
+pub(crate) const fn size<T>() -> Size {
     match size_of::<T>() {
         1 => Size::Byte,
         2 => Size::Half,
