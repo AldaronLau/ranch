@@ -5,7 +5,7 @@
 
 #![allow(unsafe_code)]
 
-use core::num::NonZero;
+use core::{cmp::Ordering, num::NonZero};
 
 use as_repr::AsRepr;
 
@@ -139,9 +139,9 @@ where
     let a: *const T = &a;
     let b: *const T = &b;
     let (less, greater) = if T::SIGNED {
-        ordering_signed(a, b)
+        unsafe { ordering_signed(a, b) }
     } else {
-        ordering_unsigned(a, b)
+        unsafe { ordering_unsigned(a, b) }
     };
 
     ORDERING[less as usize][greater as usize]
@@ -191,6 +191,8 @@ where
         return false;
     }
 
+    let ptr: *const T = &a;
+
     unsafe {
         match const { size::<T>() } {
             Size::Byte => (*ptr.cast::<i8>()).is_negative(),
@@ -209,6 +211,8 @@ where
     if const { !T::SIGNED } {
         return is_nonzero(a);
     }
+
+    let ptr: *const T = &a;
 
     unsafe {
         match const { size::<T>() } {
