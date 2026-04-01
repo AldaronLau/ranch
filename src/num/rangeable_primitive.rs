@@ -2,9 +2,7 @@ use core::{hash::Hash, num::NonZero};
 
 use as_repr::AsRepr;
 
-use crate::{
-    cast::as_repr_primitive::AsReprPrimitive, cmp::Cmp, multirange::Rangeable,
-};
+use crate::{cast::as_repr_primitive::AsReprPrimitive, multirange::Rangeable};
 
 pub trait RangeablePrimitive:
     Hash + Sized + Rangeable + AsReprPrimitive<Repr = Self::ZeroablePrimitive>
@@ -12,7 +10,7 @@ pub trait RangeablePrimitive:
     const BITS: u32;
     const SIGNED: bool;
 
-    type ZeroablePrimitive: Sized + Rangeable + Cmp;
+    type ZeroablePrimitive: Sized + Rangeable + AsReprPrimitive;
 }
 
 macro_rules! rangeable_primitive {

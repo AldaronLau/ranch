@@ -10,7 +10,10 @@ use core::{cmp::Ordering, num::NonZero};
 use as_repr::AsRepr;
 
 use super::as_primitive::Primitive;
-use crate::multirange::{MultiRange, Ranged};
+use crate::{
+    multirange::{MultiRange, Ranged},
+    num::rangeable_primitive::RangeablePrimitive,
+};
 
 #[repr(u32)]
 pub(crate) enum Size {
@@ -40,7 +43,7 @@ where
 // Implement for `Ranged`
 impl<T, R> AsReprPrimitive for Ranged<T, R>
 where
-    T: AsReprPrimitive,
+    T: RangeablePrimitive,
     R: MultiRange<T::Repr>,
 {
     type Repr = T::Repr;
@@ -68,6 +71,62 @@ nonzero!(u16);
 nonzero!(u32);
 nonzero!(u64);
 nonzero!(u128);
+
+pub const fn shl<const N: u32, T>(value: T) -> T::Repr
+where
+    T: AsReprPrimitive,
+{
+    // Valid for ints only
+    let mut value = as_repr::as_repr(value);
+    let size = const { size::<T>() };
+    let ptr: *mut T = &mut value;
+
+    unsafe {
+        match size {
+            Size::Byte => *ptr.cast::<u8>() <<= N,
+            Size::Half => *ptr.cast::<u16>() <<= N,
+            Size::Word => *ptr.cast::<u32>() <<= N,
+            Size::Long => *ptr.cast::<u64>() <<= N,
+            Size::Quad => *ptr.cast::<u128>() <<= N,
+        }
+    }
+
+    value
+}
+
+pub const fn shr<const N: u32, T>(value: T) -> T::Repr
+where
+    T: AsReprPrimitive,
+{
+    // Valid for ints only
+    let mut value = as_repr::as_repr(value);
+    let size = const { size::<T>() };
+    let ptr: *mut T = &mut value;
+
+    if T::SIGNED {
+        unsafe {
+            match size {
+                Size::Byte => *ptr.cast::<i8>() >>= N,
+                Size::Half => *ptr.cast::<i16>() >>= N,
+                Size::Word => *ptr.cast::<i32>() >>= N,
+                Size::Long => *ptr.cast::<i64>() >>= N,
+                Size::Quad => *ptr.cast::<i128>() >>= N,
+            }
+        }
+    } else {
+        unsafe {
+            match size {
+                Size::Byte => *ptr.cast::<u8>() >>= N,
+                Size::Half => *ptr.cast::<u16>() >>= N,
+                Size::Word => *ptr.cast::<u32>() >>= N,
+                Size::Long => *ptr.cast::<u64>() >>= N,
+                Size::Quad => *ptr.cast::<u128>() >>= N,
+            }
+        }
+    }
+
+    value
+}
 
 pub const fn ordering<T>(a: T, b: T) -> Ordering
 where
@@ -173,14 +232,14 @@ where
     ordering(a, one).is_eq()
 }
 
-pub const fn is_negative_one<T>(a: T) -> bool
+pub const fn is_minus_one<T>(a: T) -> bool
 where
     T: AsReprPrimitive,
 {
     // Valid for ints only
-    let negative_one = const { wrapping_sub_one(<T::Repr>::ZERO) };
+    let minus_one = const { wrapping_sub_one(<T::Repr>::ZERO) };
 
-    T::SIGNED && ordering(a, negative_one).is_eq()
+    T::SIGNED && ordering(a, minus_one).is_eq()
 }
 
 pub const fn is_negative<T>(a: T) -> bool

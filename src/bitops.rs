@@ -1270,7 +1270,7 @@ macro_rules! bitops {
     ($u:ty, $s:ty, $unsigned:ty, $signed:ty, $bits:literal) => {
         impl<T> BitwiseSigned<T> for $signed
         where
-            $signed: AsPrimitive<T> + AsReprPrimitive<Repr = T>,
+            $signed: AsPrimitive<T>,
             T: Rangeable,
         {
             const USED_BITS: u32 = $bits;
@@ -1278,7 +1278,7 @@ macro_rules! bitops {
 
         impl<T> BitwiseUnsigned<T> for $unsigned
         where
-            $unsigned: AsPrimitive<T> + AsReprPrimitive<Repr = T>,
+            $unsigned: AsPrimitive<T>,
             T: Rangeable,
         {
             const USED_BITS: u32 = $bits;
@@ -1421,10 +1421,10 @@ bitops_impl!(RangedU32, RangedI32, u32, i32);
 bitops_impl!(RangedU64, RangedI64, u64, i64);
 bitops_impl!(RangedU128, RangedI128, u128, i128);
 
-pub trait BitwiseUnsigned<T>: AsPrimitive<T> {
+pub trait BitwiseUnsigned<T>: AsPrimitive<T> + AsReprPrimitive {
     const USED_BITS: u32;
 }
 
-pub trait BitwiseSigned<T>: AsPrimitive<T> {
+pub trait BitwiseSigned<T>: AsPrimitive<T> + AsReprPrimitive {
     const USED_BITS: u32;
 }

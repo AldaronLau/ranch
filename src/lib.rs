@@ -273,7 +273,6 @@ mod assertions;
 mod assign;
 mod bitops;
 pub mod bitwise;
-mod cmp;
 mod convert;
 mod error;
 mod format;

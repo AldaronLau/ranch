@@ -3,8 +3,10 @@ use core::num::NonZero;
 use as_repr::AsRepr;
 
 use crate::{
-    cast::as_primitive::{self, AsPrimitive},
-    cmp::Cmp,
+    cast::{
+        as_primitive::{self, AsPrimitive},
+        as_repr_primitive::{self, AsReprPrimitive},
+    },
     multirange::Ranged,
     num::rangeable_primitive::RangeablePrimitive,
     range::Range,
@@ -171,7 +173,7 @@ macro_rules! to {
             /// ```
             pub const fn to_ranged<T, R>(self) -> Ranged<T, R>
             where
-                T: RangeablePrimitive<ZeroablePrimitive = T> + Cmp,
+                T: RangeablePrimitive<ZeroablePrimitive = T>,
                 R: Range<T>,
                 Self: AsPrimitive<T>,
                 Ranged<T, R>: AsPrimitive<$p>,
@@ -187,11 +189,11 @@ macro_rules! to {
                             Ranged::<T, R>::MAX,
                         );
 
-                        if cmp::gt(min, Rn::MIN) {
+                        if as_repr_primitive::gt(min, Rn::MIN) {
                             panic!("minimum must be lower or match");
                         }
 
-                        if cmp::lt(max, Rn::MAX) {
+                        if as_repr_primitive::lt(max, Rn::MAX) {
                             panic!("maximum must be higher or match");
                         }
                     } else {
@@ -203,11 +205,11 @@ macro_rules! to {
                             Self::MAX,
                         );
 
-                        if cmp::gt(R::MIN, min) {
+                        if as_repr_primitive::gt(R::MIN, min) {
                             panic!("minimum must be lower or match");
                         }
 
-                        if cmp::lt(R::MAX, max) {
+                        if as_repr_primitive::lt(R::MAX, max) {
                             panic!("maximum must be higher or match");
                         }
                     }
@@ -256,19 +258,18 @@ macro_rules! to {
             where
                 T: RangeablePrimitive + IsNonZero,
                 T::ZeroablePrimitive:
-                    RangeablePrimitive<ZeroablePrimitive = T::ZeroablePrimitive>
-                    + Cmp,
+                    RangeablePrimitive<ZeroablePrimitive = T::ZeroablePrimitive>,
                 R: Range<T::ZeroablePrimitive>,
                 Self: AsPrimitive<T::ZeroablePrimitive>,
                 Ranged<T::ZeroablePrimitive, R>: AsPrimitive<$p>,
                 Ranged<T::ZeroablePrimitive, R>: AsRepr<Option<Ranged<T, R>>>,
             {
                 const {
-                    if cmp::is_zero(R::MIN) {
+                    if as_repr_primitive::is_zero(R::MIN) {
                         panic!("A non-zero integer's minimum cannot be zero");
                     }
 
-                    if cmp::is_zero(R::MAX) {
+                    if as_repr_primitive::is_zero(R::MAX) {
                         panic!("A non-zero integer's maximum cannot be zero");
                     }
 
@@ -282,7 +283,7 @@ macro_rules! to {
                             Ranged::<T::ZeroablePrimitive, R>::MAX,
                         );
 
-                        if cmp::gt(min, Rn::MIN)
+                        if as_repr_primitive::gt(min, Rn::MIN)
                             && Rn::MIN != 0
                             && min - 1 != 0
                         {
@@ -292,7 +293,7 @@ macro_rules! to {
                             );
                         }
 
-                        if cmp::lt(max, Rn::MAX)
+                        if as_repr_primitive::lt(max, Rn::MAX)
                             && Rn::MAX != 0
                             && max + 1 != 0
                         {
@@ -310,9 +311,9 @@ macro_rules! to {
                             Self::MAX,
                         );
 
-                        if cmp::gt(R::MIN, min)
+                        if as_repr_primitive::gt(R::MIN, min)
                             && Rn::MIN != 0
-                            && !cmp::is_one(R::MIN)
+                            && !as_repr_primitive::is_one(R::MIN)
                         {
                             panic!(
                                 "minimum must be lower or match or exclude \
@@ -320,9 +321,9 @@ macro_rules! to {
                             );
                         }
 
-                        if cmp::lt(R::MAX, max)
+                        if as_repr_primitive::lt(R::MAX, max)
                             && Rn::MAX != 0
-                            && !cmp::is_minus_one(R::MAX)
+                            && !as_repr_primitive::is_minus_one(R::MAX)
                         {
                             panic!(
                                 "maximum must be higher or match or exclude \

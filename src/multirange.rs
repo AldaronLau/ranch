@@ -5,7 +5,6 @@ use core::{num::NonZero, ops::RangeInclusive};
 pub use crate::num::ranged::Ranged;
 use crate::{
     cast::as_repr_primitive::{self, AsReprPrimitive},
-    cmp::Cmp,
     num::rangeable_primitive::RangeablePrimitive,
     range::Range,
     *,
@@ -253,7 +252,7 @@ impl<T> Rangeable for T where T: Copy + Ord + 'static {}
 pub const fn min<M, T>() -> T
 where
     M: MultiRange<T>,
-    T: AsReprPrimitive,
+    T: AsReprPrimitive + Rangeable,
 {
     let mut i = 0;
 
@@ -267,7 +266,7 @@ where
 pub const fn max<M, T>() -> T
 where
     M: MultiRange<T>,
-    T: AsReprPrimitive,
+    T: AsReprPrimitive + Rangeable,
 {
     let mut i = M::SUBRANGES.len();
 
@@ -280,7 +279,7 @@ where
 
 const fn is_empty<T>(range: &RangeInclusive<T>) -> bool
 where
-    T: AsReprPrimitive,
+    T: AsReprPrimitive + Rangeable,
 {
     as_repr_primitive::le(*range.end(), *range.start())
 }
