@@ -56,7 +56,7 @@ macro_rules! to {
             /// ```
             pub const fn to_ranged<T, R>(self) -> Ranged<T, R>
             where
-                T: RangeablePrimitive<ZeroablePrimitive = T> + Cmp,
+                T: RangeablePrimitive<ZeroablePrimitive = T>,
                 R: Range<T>,
                 Ranged<$p, Rn>: AsPrimitive<T>,
                 Ranged<T, R>: AsPrimitive<$p>,
@@ -101,8 +101,7 @@ macro_rules! to {
             where
                 T: RangeablePrimitive + IsNonZero,
                 T::ZeroablePrimitive:
-                    RangeablePrimitive<ZeroablePrimitive = T::ZeroablePrimitive>
-                    + Cmp,
+                    RangeablePrimitive<ZeroablePrimitive = T::ZeroablePrimitive>,
                 R: Range<T::ZeroablePrimitive>,
                 Ranged<$p, Rn>: AsPrimitive<T::ZeroablePrimitive>,
                 Ranged<T::ZeroablePrimitive, R>: AsPrimitive<$p>,
