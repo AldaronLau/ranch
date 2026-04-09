@@ -437,7 +437,7 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
     #[must_use = "this returns the result of the operation, \
                   without modifying the original"]
     pub const fn midpoint(self, rhs: Self) -> Self {
-        let Ok(value) = Self::with_i8(midpoint(self.get(), rhs.get())) else {
+        let Ok(value) = Self::with_i8(self.get().midpoint(rhs.get())) else {
             panic!("unexpected midpoint value")
         };
 
@@ -453,10 +453,4 @@ impl<const MIN: i8, const MAX: i8> core::str::FromStr for RangedI8<MIN, MAX> {
 
         Self::with_i8(parsed).map_err(From::from)
     }
-}
-
-// polyfill for midpoint (Added in Rust 1.87.0, MSRV is Rust 1.85.0)
-const fn midpoint(a: i8, b: i8) -> i8 {
-    let t = ((a ^ b) >> 1) + (a & b);
-    t + (if t < 0 { 1 } else { 0 } & (a ^ b))
 }
