@@ -24,7 +24,7 @@ include = [
     "/examples/*",
     "/src/*",
 ]
-rust-version = "1.85"
+rust-version = "1.91"
 
 [package.metadata.docs.rs]
 all-features = true
@@ -35,7 +35,8 @@ optional = true
 default-features = false
 
 [dependencies.as_repr]
-version = "1.3.0"
+package = "as_repr-core"
+version = "1.6.0"
 default-features = false
 
 [dependencies.bitflags]
@@ -88,15 +89,15 @@ features = ["std"]
 "full" = []
 
 "arbitrary" = ["arbitrary.v1"]
-"arbitrary.v1" = ["dep:arbitrary"]
+"arbitrary.v1" = ["dep:arbitrary", "full"]
 "bitflags" = ["bitflags.v2"]
-"bitflags.v2" = ["dep:bitflags"]
+"bitflags.v2" = ["dep:bitflags", "full"]
 "bytemuck" = ["bytemuck.v1"]
-"bytemuck.v1" = ["dep:bytemuck"]
+"bytemuck.v1" = ["dep:bytemuck", "full"]
 "fastrand" = ["fastrand.v2"]
-"fastrand.v2" = ["dep:fastrand"]
-"rand.v010" = ["dep:rand"]
+"fastrand.v2" = ["dep:fastrand", "full"]
+"rand.v010" = ["dep:rand", "full"]
 "serde" = ["serde.v1"]
-"serde.v1" = ["dep:serde_core"]
+"serde.v1" = ["dep:serde_core", "full"]
 "zeroize" = ["zeroize.v1"]
-"zeroize.v1" = ["dep:zeroize"]
+"zeroize.v1" = ["dep:zeroize", "full"]
