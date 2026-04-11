@@ -245,9 +245,9 @@ where
 }
 
 /// Rangeable type.
-pub trait Rangeable: Copy + Ord + 'static {}
+pub trait Rangeable: Sized + Copy + Ord + 'static {}
 
-impl<T> Rangeable for T where T: Copy + Ord + 'static {}
+impl<T> Rangeable for T where T: Sized + Copy + Ord + 'static {}
 
 pub const fn min<M, T>() -> T
 where
