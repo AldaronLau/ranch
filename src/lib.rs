@@ -316,6 +316,7 @@ pub mod range;
 mod shl;
 mod shr;
 pub mod types;
+mod unchecked;
 pub mod unit;
 
 pub use self::{
