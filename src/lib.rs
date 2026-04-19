@@ -41,10 +41,7 @@
 //! ## Strict
 //!
 //! Strict operations panic when out of range, or a division by nonzero occurs.
-//! This is exposed in ranch with `+`, `-`, `/`, `*`, `%`.  Using the other
-//! provided operation methods will never result in UB (even if unsafe is used
-//! to set the inner value to something out of range), but may result in logic
-//! bugs and panics on invalid bit patterns.
+//! This is exposed in ranch with `+`, `-`, `/`, `*`, `%`.
 //!
 //! ```rust
 //! # use ranch::RangedI32;
@@ -159,6 +156,35 @@
 //! assert_eq!(a[i], 2);
 //! ```
 //!
+//! # Pattern  Types
+//!
+//! [Pattern types] are currently unstable in Rust, but used for standard libary
+//! implementations.  They provide a "ranged" integer implementation that
+//! implements niches.  `NonZeroU8` (`NonZero<u8>`) internally has the
+//! representation `u8 is 1..`, providing the niche of `0`, which is why
+//! `Option<NonZeroU8>::None` has the representation of `0`.  Ranch's range
+//! types are guaranteed to never have additional niches besides the base type.
+//! So `RangedU8<1, 255>` (`Ranged<u8, RangeU8<1, 255>>`) has no niche,
+//! and `0u8` is safe to transmute to `RangedU8<1, 255>`.  And
+//! `RangedNonZeroU8<MIN, MAX>` (`Ranged<NonZero<u8>, RangeU8<MIN, MAX>>`) for
+//! constants `MIN` and `MAX` would have the same niche as `NonZeroU8`.
+//!
+//! While there are no invalid bit patterns for the zeroable ranged types
+//! provided by ranch, calling specific methods on types with out-of-range bit
+//! patterns may result in undefined behavior in a future version of ranch
+//! (although, it currently may only cause logic bugs or panics).
+//!
+//! ## Open Enums
+//!
+//! In Rust, open enums are a concept separate from the built-in `enum` syntax
+//! where all bit patterns are valid instead of only the defined variants having
+//! valid bit patterns.  They are good for FFI safety — when you might not trust
+//! the code beyond the FFI boundary to provide you with a valid bit pattern.
+//! This allows the Rust code to treat undefined values with a fallback rather
+//! than invalid bit patterns causing undefined behavior.  The ranged types in
+//! Ranch can be used in a similar manner as open enums (or even as a
+//! representation for them), sort of like an "open pattern type".
+//!
 //! [deranged]: https://docs.rs/crate/deranged
 //! [ux]: https://docs.rs/crate/ux
 //! [validate the range once]: RangedI32::with_i32()
@@ -166,6 +192,7 @@
 //! [`Serialize`]: serde_core::Serialize
 //! [`Deserialize`]: serde_core::Deserialize
 //! [`feature(generic_const_exprs)`]: https://github.com/rust-lang/rust/issues/76560
+//! [Pattern types]: https://github.com/rust-lang/rust/issues/123646
 
 #![cfg(feature = "full")]
 #![doc(
