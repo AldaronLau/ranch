@@ -3,9 +3,10 @@ use core::ops::{
     ShlAssign, Shr, ShrAssign,
 };
 
-use as_repr::AsRepr;
+use as_repr::{AsRepr, int};
 
 use crate::{
+    assertions,
     bitwise::*,
     cast::{
         as_primitive::{self, AsPrimitive},
@@ -301,12 +302,12 @@ macro_rules! bitops_impl {
                     if T::USED_BITS != Self::USED_BITS + N {
                         panic!("bit size plus shift must equal result bit size")
                     }
+
+                    assertions::assert_expanding::<Self, T>();
                 }
 
-                let scaled: <T as FromRepr>::Repr =
-                    as_primitive::as_primitive_expanding(self);
-                let shifted: <T as FromRepr>::Repr =
-                    shl::downcast_shl::<N, <T as FromRepr>::Repr>(scaled);
+                let scaled: <T as FromRepr>::Repr = int::strict_cast(self);
+                let shifted: <T as FromRepr>::Repr = int::strict_shl(scaled, N);
 
                 from_repr::from_repr(shifted)
             }
@@ -333,13 +334,13 @@ macro_rules! bitops_impl {
                             "bit size minus shift must equal result bit size"
                         )
                     }
+
+                    assertions::assert_shrinking::<Self, T>();
                 }
 
                 let repr: $s = as_repr::as_repr(self);
-                let shifted: $s = shr::downcast_shr_signed::<N, _>(repr);
-                let wrapped = Self::from_unchecked(shifted);
-                let scaled: <T as FromRepr>::Repr =
-                    as_primitive::as_primitive_shrinking(wrapped);
+                let shifted: $s = int::strict_shr(repr, N);
+                let scaled: <T as FromRepr>::Repr = int::strict_cast(shifted);
 
                 from_repr::from_repr(scaled)
             }
@@ -824,12 +825,12 @@ macro_rules! bitops_impl {
                     if T::USED_BITS != Self::USED_BITS + N {
                         panic!("bit size plus shift must equal result bit size")
                     }
+
+                    assertions::assert_expanding::<Self, T>();
                 }
 
-                let scaled: <T as FromRepr>::Repr =
-                    as_primitive::as_primitive_expanding(self);
-                let shifted: <T as FromRepr>::Repr =
-                    shl::downcast_shl::<N, <T as FromRepr>::Repr>(scaled);
+                let scaled: <T as FromRepr>::Repr = int::strict_cast(self);
+                let shifted: <T as FromRepr>::Repr = int::strict_shl(scaled, N);
 
                 from_repr::from_repr(shifted)
             }
@@ -856,13 +857,13 @@ macro_rules! bitops_impl {
                             "bit size minus shift must equal result bit size"
                         )
                     }
+
+                    assertions::assert_shrinking::<Self, T>();
                 }
 
-                let repr: $u = as_repr::as_repr(self);
-                let shifted: $u = shr::downcast_shr_unsigned::<N, _>(repr);
-                let wrapped = Self::from_unchecked(shifted);
-                let scaled: <T as FromRepr>::Repr =
-                    as_primitive::as_primitive_shrinking(wrapped);
+                let repr: $s = as_repr::as_repr(self);
+                let shifted: $s = int::strict_shr(repr, N);
+                let scaled: <T as FromRepr>::Repr = int::strict_cast(shifted);
 
                 from_repr::from_repr(scaled)
             }

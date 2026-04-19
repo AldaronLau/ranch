@@ -59,3 +59,15 @@ impl_assertions_nonzero!(RangedNonZeroI16, i16);
 impl_assertions_nonzero!(RangedNonZeroI32, i32);
 impl_assertions_nonzero!(RangedNonZeroI64, i64);
 impl_assertions_nonzero!(RangedNonZeroI128, i128);
+
+pub(crate) const fn assert_expanding<I, O>() {
+    if size_of::<I>() > size_of::<O>() {
+        panic!("input cannot be bigger than output")
+    }
+}
+
+pub(crate) const fn assert_shrinking<I, O>() {
+    if size_of::<O>() > size_of::<I>() {
+        panic!("output cannot be bigger than input")
+    }
+}

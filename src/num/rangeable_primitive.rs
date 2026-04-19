@@ -1,6 +1,12 @@
 use core::num::NonZero;
 
-use as_repr::{AsRepr, cmp::{self, Cmp}, num::Number, ops::{self, SaturatingAdd, SaturatingSub}, int::Integer};
+use as_repr::{
+    AsRepr,
+    cmp::{self, Cmp},
+    int::Integer,
+    num::Number,
+    ops::{self, SaturatingAdd, SaturatingSub},
+};
 
 use crate::multirange::Rangeable;
 
@@ -70,26 +76,21 @@ where
 
 pub(crate) const fn is_one<P>(p: P) -> bool
 where
-    P: RangeablePrimitive,
+    P: IntegerPrimitive,
 {
-    let value = zeroable(p);
-
-    cmp::cmp(value, <P::ZeroablePrimitive as Number>::REPR_ONE).is_eq()
+    cmp::cmp(p, <P::ZeroablePrimitive as Number>::REPR_ONE).is_eq()
 }
 
 pub(crate) const fn is_minus_one<P>(p: P) -> bool
 where
-    P: RangeablePrimitive,
+    P: IntegerPrimitive,
 {
-    let value = zeroable(p);
-    let minus_one = ops::saturating_sub(
-        value,
-        <P::ZeroablePrimitive as Number>::REPR_ONE,
-    );
+    let minus_one =
+        ops::saturating_sub(p, <P::ZeroablePrimitive as Number>::REPR_ONE);
 
     if cmp::is_zero(minus_one) {
         return false;
     }
 
-    cmp::cmp(value, minus_one).is_eq()
+    cmp::cmp(p, minus_one).is_eq()
 }
