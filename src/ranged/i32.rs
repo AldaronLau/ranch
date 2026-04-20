@@ -444,15 +444,3 @@ impl<const MIN: i32, const MAX: i32> RangedI32<MIN, MAX> {
         value
     }
 }
-
-impl<const MIN: i32, const MAX: i32> core::str::FromStr
-    for RangedI32<MIN, MAX>
-{
-    type Err = ParsingError;
-
-    fn from_str(src: &str) -> ParsingResult<Self> {
-        let parsed = src.parse::<i32>()?;
-
-        Self::with_i32(parsed).map_err(From::from)
-    }
-}

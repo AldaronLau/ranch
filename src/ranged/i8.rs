@@ -444,13 +444,3 @@ impl<const MIN: i8, const MAX: i8> RangedI8<MIN, MAX> {
         value
     }
 }
-
-impl<const MIN: i8, const MAX: i8> core::str::FromStr for RangedI8<MIN, MAX> {
-    type Err = ParsingError;
-
-    fn from_str(src: &str) -> ParsingResult<Self> {
-        let parsed = src.parse::<i8>()?;
-
-        Self::with_i8(parsed).map_err(From::from)
-    }
-}
