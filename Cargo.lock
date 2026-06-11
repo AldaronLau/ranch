@@ -22,9 +22,9 @@ checksum = "6b3f67344303b7c0716951b91b4e74aacfc2d32606a6546a9fcb6a158f823833"
 
 [[package]]
 name = "bitflags"
-version = "2.11.0"
+version = "2.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "843867be96c8daad0d758b57df9392b6d8d271134fce549de6ce169ff98a92af"
+checksum = "84d7ced0ae9557296835c32bf1b1e02b44c746701f898460fb000d7eaa84f00a"
 
 [[package]]
 name = "bytemuck"
