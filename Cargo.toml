@@ -36,11 +36,11 @@ default-features = false
 
 [dependencies.as_repr]
 package = "as_repr-core"
-version = "1.6.0"
+version = "1.7.0"
 default-features = false
 
 [dependencies.bitflags]
-version = "2.12.1"
+version = "2.13.0"
 optional = true
 default-features = false
 
