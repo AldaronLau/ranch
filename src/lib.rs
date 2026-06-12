@@ -230,7 +230,6 @@
 )]
 
 mod cast {
-    pub(super) mod as_primitive;
     mod as_repr;
     mod to;
 }
@@ -299,7 +298,6 @@ mod assertions;
 mod assign;
 mod bitops;
 pub mod bitwise;
-mod cmp;
 mod convert;
 mod error;
 mod format;

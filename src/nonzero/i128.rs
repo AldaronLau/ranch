@@ -5,11 +5,6 @@ use as_repr::AsRepr;
 use crate::*;
 
 impl<const MIN: i128, const MAX: i128> RangedNonZeroI128<MIN, MAX> {
-    /// The largest value that can be represented by this integer type.
-    pub const MAX: Self = Self::new::<MAX>();
-    /// The smallest value that can be represented by this integer type.
-    pub const MIN: Self = Self::new::<MIN>();
-
     /// Create a new ranged integer.
     ///
     /// Won't compile if out of bounds.

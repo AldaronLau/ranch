@@ -48,7 +48,7 @@ impl From<crate::Error> for Error {
     }
 }
 
-/// A type with a valid range of values
+/// A type with a valid contiguous range of values
 pub trait Range<T: Rangeable = Self>: Rangeable {
     /// The minimum value of the type
     const MIN: T;
@@ -138,7 +138,7 @@ macro_rules! ranged_impl_range {
     ($p:ty) => {
         impl<R> Range<$p> for Ranged<$p, R>
         where
-            R: MultiRange<$p>,
+            R: Range<$p> + MultiRange<$p>,
         {
             const MAX: $p = R::MAX;
             const MIN: $p = R::MIN;
@@ -146,7 +146,7 @@ macro_rules! ranged_impl_range {
 
         impl<R> Range for Ranged<$p, R>
         where
-            R: MultiRange<$p>,
+            R: Range<$p> + MultiRange<$p>,
         {
             const MAX: Self = Self::from_unchecked(R::MAX);
             const MIN: Self = Self::from_unchecked(R::MIN);
@@ -158,7 +158,7 @@ macro_rules! range_nonzero_impl {
     ($p:ty) => {
         impl<R> Range<$p> for Ranged<NonZero<$p>, R>
         where
-            R: MultiRange<$p>,
+            R: Range<$p> + MultiRange<$p>,
         {
             const MAX: $p = R::MAX;
             const MIN: $p = R::MIN;
@@ -166,7 +166,7 @@ macro_rules! range_nonzero_impl {
 
         impl<R> Range for Ranged<NonZero<$p>, R>
         where
-            R: MultiRange<$p>,
+            R: Range<$p> + MultiRange<$p>,
         {
             const MAX: Self =
                 Self::from_unchecked(NonZero::new(R::MAX).unwrap());
@@ -176,7 +176,7 @@ macro_rules! range_nonzero_impl {
 
         impl<R> Range<NonZero<$p>> for Ranged<NonZero<$p>, R>
         where
-            R: MultiRange<$p>,
+            R: Range<$p> + MultiRange<$p>,
         {
             const MAX: NonZero<$p> = const { NonZero::new(R::MAX).unwrap() };
             const MIN: NonZero<$p> = const { NonZero::new(R::MIN).unwrap() };

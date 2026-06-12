@@ -36,8 +36,9 @@ default-features = false
 
 [dependencies.as_repr]
 package = "as_repr-core"
-version = "1.6.0"
+version = "1.7.0"
 default-features = false
+features = ["cmp", "inherent", "int", "num", "ops"]
 
 [dependencies.bitflags]
 version = "2.12.1"
@@ -70,7 +71,7 @@ optional = true
 default-features = false
 
 [dev-dependencies.rand]
-version = "0.10.0"
+version = "0.10.1"
 default-features = false
 features = ["thread_rng"]
 

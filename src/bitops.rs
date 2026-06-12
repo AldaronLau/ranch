@@ -3,12 +3,17 @@ use core::ops::{
     ShlAssign, Shr, ShrAssign,
 };
 
-use as_repr::AsRepr;
+use as_repr::{AsRepr, int};
 
 use crate::{
+    assertions,
     bitwise::*,
-    cast::as_primitive::{self, AsPrimitive},
+    cast::{
+        as_primitive::{self, AsPrimitive},
+        as_repr_primitive::AsReprPrimitive,
+    },
     from_repr::FromRepr,
+    multirange::Rangeable,
     shl::DowncastShl,
     *,
 };
@@ -67,9 +72,11 @@ macro_rules! bitops_impl {
                 Self: AsPrimitive<<T as FromRepr>::Repr>,
             {
                 const {
-                    if N > as_primitive::as_primitive_expanding(T::MAX)
-                        || N < as_primitive::as_primitive_expanding(T::MIN)
-                    {
+                    if N > as_primitive::as_primitive_expanding(
+                        multirange::max::<T, T>(),
+                    ) || N < as_primitive::as_primitive_expanding(
+                        multirange::min::<T, T>(),
+                    ) {
                         panic!("Mask must fit within bounds of output range");
                     }
                 }
@@ -120,8 +127,10 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        > Self::MAX.get()
+                    if as_primitive::as_primitive_expanding(multirange::max::<
+                        R,
+                        R,
+                    >()) > Self::MAX.get()
                     {
                         panic!("cannot bitwise AND with a larger type")
                     }
@@ -172,8 +181,10 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        > Self::MAX.get()
+                    if as_primitive::as_primitive_expanding(multirange::max::<
+                        R,
+                        R,
+                    >()) > Self::MAX.get()
                     {
                         panic!("cannot bitwise AND with a larger type")
                     }
@@ -224,8 +235,10 @@ macro_rules! bitops_impl {
                 R: BitwiseSigned<$s>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        > Self::MAX.get()
+                    if as_primitive::as_primitive_expanding(multirange::max::<
+                        R,
+                        R,
+                    >()) > Self::MAX.get()
                     {
                         panic!("cannot bitwise AND with a larger type")
                     }
@@ -289,12 +302,12 @@ macro_rules! bitops_impl {
                     if T::USED_BITS != Self::USED_BITS + N {
                         panic!("bit size plus shift must equal result bit size")
                     }
+
+                    assertions::assert_expanding::<Self, T>();
                 }
 
-                let scaled: <T as FromRepr>::Repr =
-                    as_primitive::as_primitive_expanding(self);
-                let shifted: <T as FromRepr>::Repr =
-                    shl::downcast_shl::<N, <T as FromRepr>::Repr>(scaled);
+                let scaled: <T as FromRepr>::Repr = int::strict_cast(self);
+                let shifted: <T as FromRepr>::Repr = int::strict_shl(scaled, N);
 
                 from_repr::from_repr(shifted)
             }
@@ -321,13 +334,13 @@ macro_rules! bitops_impl {
                             "bit size minus shift must equal result bit size"
                         )
                     }
+
+                    assertions::assert_shrinking::<Self, T>();
                 }
 
                 let repr: $s = as_repr::as_repr(self);
-                let shifted: $s = shr::downcast_shr_signed::<N, _>(repr);
-                let wrapped = Self::from_unchecked(shifted);
-                let scaled: <T as FromRepr>::Repr =
-                    as_primitive::as_primitive_shrinking(wrapped);
+                let shifted: $s = int::strict_shr(repr, N);
+                let scaled: <T as FromRepr>::Repr = int::strict_cast(shifted);
 
                 from_repr::from_repr(scaled)
             }
@@ -433,10 +446,14 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(R::MIN);
+                    as_primitive::as_primitive_expanding(
+                        multirange::min::<R, R>(),
+                    );
 
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        >= Self::USED_BITS
+                    if as_primitive::as_primitive_expanding(multirange::max::<
+                        R,
+                        R,
+                    >()) >= Self::USED_BITS
                     {
                         panic!("cannot shift left more than size - 1 in bits");
                     }
@@ -472,10 +489,14 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(R::MIN);
+                    as_primitive::as_primitive_expanding(
+                        multirange::min::<R, R>(),
+                    );
 
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        >= Self::USED_BITS
+                    if as_primitive::as_primitive_expanding(multirange::max::<
+                        R,
+                        R,
+                    >()) >= Self::USED_BITS
                     {
                         panic!("cannot shift right more than size - 1 in bits");
                     }
@@ -546,9 +567,11 @@ macro_rules! bitops_impl {
                 Self: AsPrimitive<<T as FromRepr>::Repr>,
             {
                 const {
-                    if N > as_primitive::as_primitive_expanding(T::MAX)
-                        || N < as_primitive::as_primitive_expanding(T::MIN)
-                    {
+                    if N > as_primitive::as_primitive_expanding(
+                        multirange::max::<T, T>(),
+                    ) || N < as_primitive::as_primitive_expanding(
+                        multirange::min::<T, T>(),
+                    ) {
                         panic!("Mask must fit within bounds of output range");
                     }
                 }
@@ -599,8 +622,10 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        > Self::MAX.get()
+                    if as_primitive::as_primitive_expanding(multirange::max::<
+                        R,
+                        R,
+                    >()) > Self::MAX.get()
                     {
                         panic!("cannot bitwise AND with a larger type")
                     }
@@ -650,8 +675,10 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        > Self::MAX.get()
+                    if as_primitive::as_primitive_expanding(multirange::max::<
+                        R,
+                        R,
+                    >()) > Self::MAX.get()
                     {
                         panic!("cannot bitwise AND with a larger type")
                     }
@@ -701,8 +728,10 @@ macro_rules! bitops_impl {
                 R: BitwiseUnsigned<$u>,
             {
                 const {
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        > Self::MAX.get()
+                    if as_primitive::as_primitive_expanding(multirange::max::<
+                        R,
+                        R,
+                    >()) > Self::MAX.get()
                     {
                         panic!("cannot bitwise AND with a larger type")
                     }
@@ -796,12 +825,12 @@ macro_rules! bitops_impl {
                     if T::USED_BITS != Self::USED_BITS + N {
                         panic!("bit size plus shift must equal result bit size")
                     }
+
+                    assertions::assert_expanding::<Self, T>();
                 }
 
-                let scaled: <T as FromRepr>::Repr =
-                    as_primitive::as_primitive_expanding(self);
-                let shifted: <T as FromRepr>::Repr =
-                    shl::downcast_shl::<N, <T as FromRepr>::Repr>(scaled);
+                let scaled: <T as FromRepr>::Repr = int::strict_cast(self);
+                let shifted: <T as FromRepr>::Repr = int::strict_shl(scaled, N);
 
                 from_repr::from_repr(shifted)
             }
@@ -828,13 +857,13 @@ macro_rules! bitops_impl {
                             "bit size minus shift must equal result bit size"
                         )
                     }
+
+                    assertions::assert_shrinking::<Self, T>();
                 }
 
-                let repr: $u = as_repr::as_repr(self);
-                let shifted: $u = shr::downcast_shr_unsigned::<N, _>(repr);
-                let wrapped = Self::from_unchecked(shifted);
-                let scaled: <T as FromRepr>::Repr =
-                    as_primitive::as_primitive_shrinking(wrapped);
+                let repr: $s = as_repr::as_repr(self);
+                let shifted: $s = int::strict_shr(repr, N);
+                let scaled: <T as FromRepr>::Repr = int::strict_cast(shifted);
 
                 from_repr::from_repr(scaled)
             }
@@ -909,10 +938,14 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(R::MIN);
+                    as_primitive::as_primitive_expanding(
+                        multirange::min::<R, R>(),
+                    );
 
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        >= Self::USED_BITS
+                    if as_primitive::as_primitive_expanding(multirange::max::<
+                        R,
+                        R,
+                    >()) >= Self::USED_BITS
                     {
                         panic!("cannot shift left more than size - 1 in bits");
                     }
@@ -948,10 +981,14 @@ macro_rules! bitops_impl {
                 R: AsPrimitive<u32>,
             {
                 const {
-                    as_primitive::as_primitive_expanding(R::MIN);
+                    as_primitive::as_primitive_expanding(
+                        multirange::min::<R, R>(),
+                    );
 
-                    if as_primitive::as_primitive_expanding(R::MAX)
-                        >= Self::USED_BITS
+                    if as_primitive::as_primitive_expanding(multirange::max::<
+                        R,
+                        R,
+                    >()) >= Self::USED_BITS
                     {
                         panic!("cannot shift right more than size - 1 in bits");
                     }
@@ -1235,6 +1272,7 @@ macro_rules! bitops {
         impl<T> BitwiseSigned<T> for $signed
         where
             $signed: AsPrimitive<T>,
+            T: Rangeable,
         {
             const USED_BITS: u32 = $bits;
         }
@@ -1242,6 +1280,7 @@ macro_rules! bitops {
         impl<T> BitwiseUnsigned<T> for $unsigned
         where
             $unsigned: AsPrimitive<T>,
+            T: Rangeable,
         {
             const USED_BITS: u32 = $bits;
         }
@@ -1383,10 +1422,10 @@ bitops_impl!(RangedU32, RangedI32, u32, i32);
 bitops_impl!(RangedU64, RangedI64, u64, i64);
 bitops_impl!(RangedU128, RangedI128, u128, i128);
 
-pub trait BitwiseUnsigned<T>: AsPrimitive<T> {
+pub trait BitwiseUnsigned<T>: AsPrimitive<T> + AsReprPrimitive {
     const USED_BITS: u32;
 }
 
-pub trait BitwiseSigned<T>: AsPrimitive<T> {
+pub trait BitwiseSigned<T>: AsPrimitive<T> + AsReprPrimitive {
     const USED_BITS: u32;
 }

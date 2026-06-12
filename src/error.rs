@@ -1,6 +1,6 @@
 use core::{error, fmt};
 
-use crate::multirange::MultiRange;
+use crate::range::Range;
 
 /// Creating ranged integer result
 pub type Result<T = (), E = Error> = core::result::Result<T, E>;
@@ -48,7 +48,7 @@ impl Error {
     #[must_use]
     pub const fn clamp<T>(self) -> T
     where
-        T: MultiRange,
+        T: Range,
     {
         match self {
             Self::PosOverflow => T::MAX,
