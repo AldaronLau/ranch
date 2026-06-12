@@ -48,7 +48,7 @@ Check out the [documentation] for examples.
 
 ## MSRV
 
-The current MSRV is Rust 1.91.
+The current MSRV is Rust 1.95.
 
 Any future MSRV updates will follow the [Ardaku MSRV guidelines].
 

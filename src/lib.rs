@@ -302,6 +302,7 @@ pub mod bitwise;
 mod cmp;
 mod convert;
 mod error;
+pub mod float;
 mod format;
 mod from_repr;
 mod impl_ascii;
@@ -315,9 +316,11 @@ mod random;
 pub mod range;
 mod shl;
 mod shr;
+pub mod time;
 pub mod types;
 mod unchecked;
 pub mod unit;
+pub mod value;
 
 pub use self::{
     error::{Error, Result},
