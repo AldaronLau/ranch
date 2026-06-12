@@ -9,7 +9,7 @@
 [![Crates.io](https://img.shields.io/crates/l/ranch)](https://github.com/search?q=repo%3AAldaronLau%2Franch+path%3A**%2FLICENSE*&type=code)
 [![Docs.rs](https://docs.rs/ranch/badge.svg)](https://docs.rs/ranch/)
 
-Ranged integer types and math for Rust
+Rust library providing ranged types and math for integers, floats, and durations
 
 Do you ever need to restrict a `u8` from 0 to 100 or restrict any other integer
 type to any other range?  Then this crate is for you!  The ranges are encoded in

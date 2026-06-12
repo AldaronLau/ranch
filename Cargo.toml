@@ -2,7 +2,7 @@
 name = "ranch"
 version = "0.6.0"
 edition = "2024"
-description = "Ranged integer types and math"
+description = "Ranged types and math for integers, floats, and durations"
 license = "Apache-2.0 OR BSL-1.0 OR MIT"
 documentation = "https://docs.rs/ranch"
 homepage = "https://github.com/AldaronLau/ranch/releases"

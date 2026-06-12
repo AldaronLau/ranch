@@ -1,4 +1,4 @@
-//! Ranged integer types and math
+//! Ranged types and math for integers, floats, and durations
 //!
 //! Do you ever need to restrict a [`u8`] from 0 to 100 or restrict any other
 //! integer type to any other range?  Then this crate is for you!  The ranges
