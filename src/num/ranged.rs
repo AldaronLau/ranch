@@ -1,6 +1,9 @@
 #![allow(missing_debug_implementations)] // FIXME
 
-use core::marker::PhantomData;
+use core::{
+    hash::{Hash, Hasher},
+    marker::PhantomData,
+};
 
 use crate::{
     multirange::MultiRange, num::rangeable_primitive::RangeablePrimitive,
@@ -8,12 +11,38 @@ use crate::{
 };
 
 /// A value restricted to be within one of multiple ranges
-#[derive(Copy, Clone, Hash)]
 #[repr(transparent)]
 pub struct Ranged<T, R>(pub(crate) T, PhantomData<fn() -> R>)
 where
     T: RangeablePrimitive,
     R: MultiRange<T::ZeroablePrimitive>;
+
+impl<T, R> Hash for Ranged<T, R>
+where
+    T: RangeablePrimitive,
+    R: MultiRange<T::ZeroablePrimitive>,
+{
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
+    }
+}
+
+impl<T, R> Copy for Ranged<T, R>
+where
+    T: RangeablePrimitive,
+    R: MultiRange<T::ZeroablePrimitive>,
+{
+}
+
+impl<T, R> Clone for Ranged<T, R>
+where
+    T: RangeablePrimitive,
+    R: MultiRange<T::ZeroablePrimitive>,
+{
+    fn clone(&self) -> Self {
+        Ranged::from_unchecked(self.0)
+    }
+}
 
 impl<T, R> Ranged<T, R>
 where
