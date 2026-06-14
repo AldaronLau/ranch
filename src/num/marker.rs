@@ -3,10 +3,11 @@ use crate::range::Range;
 macro_rules! marker_range {
     ($name:ident, $p:ty) => {
         #[doc = concat!("Marker type range of [`", stringify!($p), "`]")]
-        #[derive(
-            Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Default,
-        )]
-        pub struct $name<const MIN: $p, const MAX: $p>;
+        #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
+        #[non_exhaustive]
+        pub struct $name<const MIN: $p, const MAX: $p>(
+            core::convert::Infallible,
+        );
 
         impl<const MIN: $p, const MAX: $p> Range<$p> for $name<MIN, MAX> {
             const MAX: $p = MAX;
