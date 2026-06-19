@@ -10,10 +10,19 @@ use core::{marker::PhantomData, range::RangeInclusive, time::Duration};
 
 use as_repr::{cmp::Cmp, num::Number};
 
+macro_rules! impl_value_for_numbers {
+    ($($number:ty),* $(,)?) => {
+        $(
+            impl Value for $number {
+                const MAX: Self = <Self as Number>::REPR_MAX;
+                const MIN: Self = <Self as Number>::REPR_MIN;
+            }
+        )*
+    };
+}
+
 /// A type with an minimum and maximum value
-pub trait Value:
-    Sized + Copy + PartialOrd + Cmp + val::Sealed + 'static
-{
+pub trait Value: Sized + Copy + PartialOrd + Cmp + 'static {
     /// The smallest value that can be represented by this type
     const MIN: Self;
     /// The largest value that can be represented by this type
@@ -25,12 +34,8 @@ impl Value for Duration {
     const MIN: Self = Duration::ZERO;
 }
 
-impl<T> Value for T
-where
-    T: Sized + Copy + PartialOrd + Cmp + num::Num + 'static,
-{
-    const MAX: Self = <Self as Number>::REPR_MAX;
-    const MIN: Self = <Self as Number>::REPR_MIN;
+impl_value_for_numbers! {
+    f32, f64, i8, i16, i32, i64, i128, u8, u16, u32, u64, u128,
 }
 
 /// A value that cannot be constructed
@@ -103,33 +108,4 @@ mod sets {
         /// The number of contiguous sets
         const COUNT: usize;
     }
-}
-
-mod num {
-    use super::*;
-
-    /// A numeric type
-    pub trait Num: Number<ToRepr = Self> {}
-
-    impl Num for f32 {}
-    impl Num for f64 {}
-    impl Num for i8 {}
-    impl Num for i16 {}
-    impl Num for i32 {}
-    impl Num for i64 {}
-    impl Num for i128 {}
-    impl Num for u8 {}
-    impl Num for u16 {}
-    impl Num for u32 {}
-    impl Num for u64 {}
-    impl Num for u128 {}
-}
-
-mod val {
-    use super::*;
-
-    pub trait Sealed {}
-
-    impl Sealed for Duration {}
-    impl<T> Sealed for T where T: num::Num {}
 }

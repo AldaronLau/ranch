@@ -40,7 +40,7 @@ where
     R: MultiRange<T::ZeroablePrimitive>,
 {
     fn clone(&self) -> Self {
-        Ranged::from_unchecked(self.0)
+        *self
     }
 }
 
