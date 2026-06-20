@@ -71,6 +71,16 @@ Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 licensed as described above, without any additional terms or conditions.
 
+## AI / LLM (Non-)Usage
+
+This project was developed without using AI tooling.  AI usage for contributions
+is strictly banned, with the exception of AI tooling trained on exclusively CC0,
+Unlicense, or equivalently-licensed code.  By opening a PR on this repository,
+you assert that the work (excluding any test data) is either human generated,
+computer generated trained on works in the public domain, or a combination of
+the two.  AI bug reports are welcome as issues, as long as there is a disclaimer
+that it was discovered with AI.
+
 ## Help
 
 If you want help using or contributing to this library, feel free to send me an
