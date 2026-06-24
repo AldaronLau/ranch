@@ -24,7 +24,7 @@ include = [
     "/examples/*",
     "/src/*",
 ]
-rust-version = "1.91"
+rust-version = "1.95"
 
 [package.metadata.docs.rs]
 all-features = true
@@ -38,6 +38,7 @@ default-features = false
 package = "as_repr-core"
 version = "1.7.0"
 default-features = false
+features = ["cmp", "num"]
 
 [dependencies.bitflags]
 version = "2.13.0"
