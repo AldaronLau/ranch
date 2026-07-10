@@ -1,62 +1,23 @@
-//! Error types related to parsing
+use core::{error, fmt, num::NonZero, result, str::FromStr};
 
-use core::{error, fmt, num::NonZero, result};
+use crate::{error::*, *};
 
-use super::*;
+macro_rules! parse {
+    ($nonzero:ident, $ranged:ident, $p:ident, $with:ident) => {
+        impl<const MIN: $p, const MAX: $p> FromStr for $ranged<MIN, MAX> {
+            type Err = ParseIntError;
 
-/// Parsing ranged integer result
-pub type Result<T = (), E = Error> = result::Result<T, E>;
+            fn from_str(src: &str) -> ParseIntResult<Self> {
+                let parsed = src.parse::<$p>()?;
 
-/// Error parsing ranged integer
-#[derive(Eq, PartialEq, Debug)]
-pub enum Error {
-    /// Integer is too large to store in target integer type
-    PosOverflow,
-    /// Integer is too small to store in target integer type
-    NegOverflow,
-    /// Internal parsing error
-    ParseInt(core::num::ParseIntError),
-}
-
-impl error::Error for Error {}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::ParseInt(err) => err.fmt(f),
-            Self::PosOverflow => f.write_str(
-                "Integer is too large to store in target integer type",
-            ),
-            Self::NegOverflow => f.write_str(
-                "Integer is too small to store in target integer type",
-            ),
+                Self::$with(parsed).map_err(From::from)
+            }
         }
-    }
-}
 
-impl From<core::num::ParseIntError> for Error {
-    fn from(error: core::num::ParseIntError) -> Self {
-        Self::ParseInt(error)
-    }
-}
+        impl<const MIN: $p, const MAX: $p> FromStr for $nonzero<MIN, MAX> {
+            type Err = ParseNonZeroIntError;
 
-impl From<crate::Error> for Error {
-    fn from(error: crate::Error) -> Self {
-        match error {
-            crate::Error::PosOverflow => Self::PosOverflow,
-            crate::Error::NegOverflow => Self::NegOverflow,
-        }
-    }
-}
-
-macro_rules! parse_nonzero {
-    ($nonzero:ident, $p:ident) => {
-        impl<const MIN: $p, const MAX: $p> core::str::FromStr
-            for $nonzero<MIN, MAX>
-        {
-            type Err = Error;
-
-            fn from_str(src: &str) -> Result<Self> {
+            fn from_str(src: &str) -> ParseNonZeroIntResult<Self> {
                 Self::with_nonzero(src.parse::<NonZero<$p>>()?)
                     .map_err(From::from)
             }
@@ -64,14 +25,14 @@ macro_rules! parse_nonzero {
     };
 }
 
-parse_nonzero!(RangedNonZeroI8, i8);
-parse_nonzero!(RangedNonZeroI16, i16);
-parse_nonzero!(RangedNonZeroI32, i32);
-parse_nonzero!(RangedNonZeroI64, i64);
-parse_nonzero!(RangedNonZeroI128, i128);
+parse!(RangedNonZeroI8, RangedI8, i8, with_i8);
+parse!(RangedNonZeroI16, RangedI16, i16, with_i16);
+parse!(RangedNonZeroI32, RangedI32, i32, with_i32);
+parse!(RangedNonZeroI64, RangedI64, i64, with_i64);
+parse!(RangedNonZeroI128, RangedI128, i128, with_i128);
 
-parse_nonzero!(RangedNonZeroU8, u8);
-parse_nonzero!(RangedNonZeroU16, u16);
-parse_nonzero!(RangedNonZeroU32, u32);
-parse_nonzero!(RangedNonZeroU64, u64);
-parse_nonzero!(RangedNonZeroU128, u128);
+parse!(RangedNonZeroU8, RangedU8, u8, with_u8);
+parse!(RangedNonZeroU16, RangedU16, u16, with_u16);
+parse!(RangedNonZeroU32, RangedU32, u32, with_u32);
+parse!(RangedNonZeroU64, RangedU64, u64, with_u64);
+parse!(RangedNonZeroU128, RangedU128, u128, with_u128);

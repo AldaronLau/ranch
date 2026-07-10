@@ -391,15 +391,3 @@ impl<const MIN: u128, const MAX: u128> RangedU128<MIN, MAX> {
         value
     }
 }
-
-impl<const MIN: u128, const MAX: u128> core::str::FromStr
-    for RangedU128<MIN, MAX>
-{
-    type Err = ParsingError;
-
-    fn from_str(src: &str) -> ParsingResult<Self> {
-        let parsed = src.parse::<u128>()?;
-
-        Self::with_u128(parsed).map_err(From::from)
-    }
-}

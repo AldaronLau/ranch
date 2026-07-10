@@ -386,15 +386,3 @@ impl<const MIN: u64, const MAX: u64> RangedU64<MIN, MAX> {
         value
     }
 }
-
-impl<const MIN: u64, const MAX: u64> core::str::FromStr
-    for RangedU64<MIN, MAX>
-{
-    type Err = ParsingError;
-
-    fn from_str(src: &str) -> ParsingResult<Self> {
-        let parsed = src.parse::<u64>()?;
-
-        Self::with_u64(parsed).map_err(From::from)
-    }
-}

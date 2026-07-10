@@ -444,15 +444,3 @@ impl<const MIN: i64, const MAX: i64> RangedI64<MIN, MAX> {
         value
     }
 }
-
-impl<const MIN: i64, const MAX: i64> core::str::FromStr
-    for RangedI64<MIN, MAX>
-{
-    type Err = ParsingError;
-
-    fn from_str(src: &str) -> ParsingResult<Self> {
-        let parsed = src.parse::<i64>()?;
-
-        Self::with_i64(parsed).map_err(From::from)
-    }
-}

@@ -301,7 +301,8 @@ mod bitops;
 pub mod bitwise;
 mod cmp;
 mod convert;
-mod error;
+pub mod error;
+mod error_legacy;
 mod format;
 mod from_repr;
 mod impl_ascii;
@@ -309,7 +310,7 @@ mod index;
 pub mod multirange;
 mod neg;
 mod ord;
-pub mod parsing;
+mod parsing;
 mod quotient;
 mod random;
 pub mod range;
@@ -320,7 +321,7 @@ mod unchecked;
 pub mod unit;
 
 pub use self::{
-    error::{Error, Result},
+    error_legacy::{Error, Result},
     num::aliases::{
         RangedI8, RangedI16, RangedI32, RangedI64, RangedI128, RangedNonZeroI8,
         RangedNonZeroI16, RangedNonZeroI32, RangedNonZeroI64,
@@ -330,4 +331,3 @@ pub use self::{
     },
     quotient::Quotient,
 };
-use crate::parsing::{Error as ParsingError, Result as ParsingResult};
